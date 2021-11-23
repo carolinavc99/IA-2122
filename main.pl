@@ -42,20 +42,30 @@ rua(r9, f5).
 rua(r10, f5).
 
 % clientes - numero de identificação, nome, id da rua de morada
-clientes(c1, 'Filmina Ribano', r1).
-clientes(c2, 'Santónio Mabalares', r2).
-clientes(c3, 'Namuel Ponino', r3).
-clientes(c4, 'Diliana Ramaz', r4).
-clientes(c5, 'Sarina Compares', r5).
-clientes(c6, 'Romana Sardezes', r6).
-clientes(c7, 'Carminela Lopanor', r7).
-clientes(c8, 'Iolina Rumos', r8).
+cliente(c1, 'Filmina Ribano', r1).
+cliente(c2, 'Santónio Mabalares', r2).
+cliente(c3, 'Namuel Ponino', r3).
+cliente(c4, 'Diliana Ramaz', r4).
+cliente(c5, 'Sarina Compares', r5).
+cliente(c6, 'Romana Sardezes', r6).
+cliente(c7, 'Carminela Lopanor', r7).
+cliente(c8, 'Iolina Rumos', r8).
 
 % entregas - número de identificação, encomenda, estafeta, classificação (0-5)
-
+entrega(ent1, enc1, est1, 5).
+entrega(ent2, enc2, est2, 3).
+entrega(ent3, enc3, est3, 2).
+entrega(ent4, enc4, est4, 1).
+entrega(ent5, enc5, est1, 4).
+entrega(ent6, enc6, est3, 2).
 
 % grafo aranha
 % começar simples: 10 zonas, grafo com distâncias e estimativas
+
+% ----------- GRAFO -----------
+% 10 ruas
+% 5 freguesias - para que servem as frequesias? -acho que é puramente para poder perguntar quantas entregas por freguesia (para estatística)
+
 
 % ------ FUNCIONALIDADES NECESSÁRIAS ------
 % pedir encomenda
@@ -65,15 +75,34 @@ clientes(c8, 'Iolina Rumos', r8).
 
 % ------ FUNCIONALIDADES PEDIDAS ------
 % (1) O estafeta que utilizou mais vezes um meio de transporte mais ecológico
+f1_estafetaEcologico(R).
+
 % (2) Que estafetas entregaram determinadas encomendas a determinado cliente
+f2_estafetasCliente(C,R).
+
 % (3) Os clientes servidos por determinado estafeta
+f3_clientesEstafeta(E,R).
+
 % (4) O valor faturado pela Green Distribution num determinado dia
+f4_faturacaoDia(D,R).
+
 % (5) As zonas com maior volume de entregas
+f5_zonasMaiorVolume(R).
+
 % (6) Classificação média de um dado estafeta
+f6_classificacaoMedia(E,R).
+
 % (7) Número total de entregas pelos meios de transporte, em determinado intervalo de tempo
+f7_entregasVeiculoIntervalo(V,Ii,If,R).
+
 % (8) Número total de entregas pelos estafetas, em determinado intervalo de tempo
+f8_entregasEstafetaIntervalo(E,Ii,If,R).
+
 % (9) Peso total transportado por um estafeta num determinado dia
+f9_pesoEstafetaDia(E,D,R).
 
 % ------ FUNCIONALIDADES EXTRA ------
-% implementar mais meios de transporte
+% (esta secção é à nossa escolha)
+
+% (1) implementar mais meios de transporte
     %veiculo(hoverboard, 5, 15, 2) % mais rapido que a bicicleta mas menos ecológico pois usa energia
