@@ -1,16 +1,10 @@
 % ------ BASE DE CONHECIMENTO ------
-% datahora - dia/mes/ano, hora (relógio de 24h)
-datahora(D/2/A,H) :- H >= 1, H < 25,
-    D >= 1, D <= 28.
-datahora(D/M/A,H) :- H >= 1, H < 25,
-    M >= 1, M <= 12,
-    D >= 1, ( 2 =:= mod(M,2) 
-        -> D <=30 ; D <=31).
+
 
 % veículos - tipo (3), carga (máxima), velocidade (média), preço
 veiculo(bicicleta, 5, 10, 5).
-veiculo(mota, 20, 35, 10).
-veiculo(carro, 100, 25, 15).
+veiculo(mota, 20,35,10).
+veiculo(carro, 100,25,15).
 
 % estafetas - numero de identificação, nome
 estafeta(est1, 'Lomberto Felgado').
@@ -19,8 +13,20 @@ estafeta(est3, 'Davim Ariezes').
 estafeta(est4, 'Sofira Mangostim').
 estafeta(est5, 'Miriana Rubardezes').
 
-% encomenda - numero de identificação, datahora, tempo máximo de entrega, peso, volume, preço (5 (base) + 48 - tempo_em_horas + preço_veiculo), rua
-% encomenda(enc1, datahora(1/1/2021, 17), 2, ) $ Hold on. Como é suposto implementar a passagem de tempo? Also, o cliente diz prazo de entrega mas depois temos de saber quantas entregas foram entregues num dado dia isso vai ser complicado
+% encomenda - numero de identificação, datahora, tempo máximo de entrega, peso, volume, preço, rua, veiculo
+% NOTA: o volume não vai interessar para cálculo nenhum, logo fica sempre 5
+% para calcular o preço de uma entrega de carro, fazer: preco(Tempo_máximo_entrega, carro, P). P vai unificar com o preço.
+% ATENÇÃO! Ter em atenção o peso da entrega porque cada veículo tem um limite de peso. Por exemplo é impossível ter uma entrega de 200kg pois nenhum veículo é capaz de carregar tal peso.
+% ATENÇÃO! Ao criar encomenda (ainda não fiz esse predicado), o programa vai atribuir o veículo automaticamente. O que vai fazer é essencialmente ver qual é o veículo mais ecológico que consegue carregar essa encomenda, ou seja, começa por ver se a bicicleta a pode carregar. Se não, vê se a mota consegue. Se não, vê se o carro consegue.
+% Logo, uma encomenda de 20 kilos é SEMPRE levada por uma mota, enquanto que uma encomenda de 30 kilos é sempre levada por um carro, e uma encomenda de 4 kilos é sempre levada por uma bicicleta.
+encomenda(enc1, 1/1/2021/18/30, 2, 10, 5, 56, rua1, bicicleta).
+encomenda(enc2, 20/7/2021/10/00, 24, 40, 5, 44, rua2, carro).
+encomenda(enc3, 20/7/2021/9/20, 4, 5, 5, 54, rua3, bicicleta).
+encomenda(enc4, 20/7/2021/16/00, 1, 15, 5, 62, rua4, mota).
+encomenda(enc5, 2/8/2021/3/40, 4, 20, 5, 59, rua5, mota).
+encomenda(enc6, 2/8/2021/15/50, 6, 25, 5, 62, rua6, carro).
+encomenda(enc7, 2/8/2021/17/10, 2, 96, 5, 66, rua7, carro).
+encomenda(enc8, 2/8/2021/20/00, 2, 4, 5, 56, rua8, bicicleta).
 
 % freguesias - codigo de identificação
 freguesia(f1).
@@ -59,15 +65,14 @@ entrega(ent4, enc4, est4, 1).
 entrega(ent5, enc5, est1, 4).
 entrega(ent6, enc6, est3, 2).
 
-% grafo aranha
-% começar simples: 10 zonas, grafo com distâncias e estimativas
-
 % ----------- GRAFO -----------
 % 10 ruas
-% 5 freguesias - para que servem as frequesias? -acho que é puramente para poder perguntar quantas entregas por freguesia (para estatística)
+% as freguesias servem puramente para estatística, pelo que não se devem incluir no grafo
+% o algoritmo de pesquisa a utilizar, por indicação do professor, é o de pesquisa gulosa. Logo fazer um grafo que vá de acordo com isso
 
 
 % ------ FUNCIONALIDADES NECESSÁRIAS ------
+% estas funcionalidades são, para *quando o programa está a correr*, fazer coisas do tipo: criar uma nova encomenda, criar um novo estafeta, fazer uma entrega, etc. Não é necessário fazer isto já, principalmente sem o grafo feito!
 % pedir encomenda
 % fazer entrega ( estafeta escolhe, aleatoriamente, o veículo)
 % navegação?
@@ -106,3 +111,27 @@ f9_pesoEstafetaDia(E,D,R).
 
 % (1) implementar mais meios de transporte
     %veiculo(hoverboard, 5, 15, 2) % mais rapido que a bicicleta mas menos ecológico pois usa energia
+
+
+% ------ PREDICADOS AUXILIARES ------
+% Devolve a datahora atual no formato pedido
+datahora(D/M/A/H/Min) :-
+    get_time(Epoch),
+    stamp_date_time(Epoch, DateTime, local),
+    date_time_value(year, DateTime, A),
+    date_time_value(month, DateTime, M),
+    date_time_value(day, DateTime, D),
+    date_time_value(hour, DateTime, H),
+    date_time_value(minute, DateTime, Min).
+
+% Calcula o preço da encomenda: 5 (base) + 48 - tempo_em_horas + preço_veiculo
+preco(TLimite, Veiculo, P) :-
+    veiculo(Veiculo,_,_,PrecoVeiculo),
+    P is 5 + 48 - TLimite + PrecoVeiculo.
+
+% Determina qual o veículo a usar para a entrega
+determinarVeiculo(Peso, Volume, Veiculo):-
+    veiculo(MVeiculo, MPeso, MVolume),
+    Peso =< MPeso,
+    Volume =< MVolume,
+    Veiculo is MVeiculo.
