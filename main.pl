@@ -1,6 +1,5 @@
 % ------ BASE DE CONHECIMENTO ------
 
-
 % veículos - tipo (3), carga (máxima), velocidade (média), preço
 veiculo(bicicleta, 5, 10, 5).
 veiculo(mota, 20,35,10).
@@ -19,14 +18,14 @@ estafeta(est5, 'Miriana Rubardezes').
 % ATENÇÃO! Ter em atenção o peso da entrega porque cada veículo tem um limite de peso. Por exemplo é impossível ter uma entrega de 200kg pois nenhum veículo é capaz de carregar tal peso.
 % ATENÇÃO! Ao criar encomenda (ainda não fiz esse predicado), o programa vai atribuir o veículo automaticamente. O que vai fazer é essencialmente ver qual é o veículo mais ecológico que consegue carregar essa encomenda, ou seja, começa por ver se a bicicleta a pode carregar. Se não, vê se a mota consegue. Se não, vê se o carro consegue.
 % Logo, uma encomenda de 20 kilos é SEMPRE levada por uma mota, enquanto que uma encomenda de 30 kilos é sempre levada por um carro, e uma encomenda de 4 kilos é sempre levada por uma bicicleta.
-encomenda(enc1, 1/1/2021/18/30, 2, 10, 5, 56, rua1, bicicleta).
-encomenda(enc2, 20/7/2021/10/00, 24, 40, 5, 44, rua2, carro).
-encomenda(enc3, 20/7/2021/9/20, 4, 5, 5, 54, rua3, bicicleta).
-encomenda(enc4, 20/7/2021/16/00, 1, 15, 5, 62, rua4, mota).
-encomenda(enc5, 2/8/2021/3/40, 4, 20, 5, 59, rua5, mota).
-encomenda(enc6, 2/8/2021/15/50, 6, 25, 5, 62, rua6, carro).
-encomenda(enc7, 2/8/2021/17/10, 2, 96, 5, 66, rua7, carro).
-encomenda(enc8, 2/8/2021/20/00, 2, 4, 5, 56, rua8, bicicleta).
+encomenda(enc1, 1/1/2021/18/30, 2, 10, 5, 56, rua1).
+encomenda(enc2, 20/7/2021/10/00, 24, 40, 5, 44, rua2).
+encomenda(enc3, 20/7/2021/9/20, 4, 5, 5, 54, rua3).
+encomenda(enc4, 20/7/2021/16/00, 1, 15, 5, 62, rua4).
+encomenda(enc5, 2/8/2021/3/40, 4, 20, 5, 59, rua5).
+encomenda(enc6, 2/8/2021/15/50, 6, 25, 5, 62, rua6).
+encomenda(enc7, 2/8/2021/17/10, 2, 96, 5, 66, rua7).
+encomenda(enc8, 2/8/2021/20/00, 2, 4, 5, 56, rua8).
 
 % freguesias - codigo de identificação
 freguesia(f1).
@@ -57,13 +56,13 @@ cliente(c6, 'Romana Sardezes', r6).
 cliente(c7, 'Carminela Lopanor', r7).
 cliente(c8, 'Iolina Rumos', r8).
 
-% entregas - número de identificação, encomenda, estafeta, classificação (0-5)
-entrega(ent1, enc1, est1, 5).
-entrega(ent2, enc2, est2, 3).
-entrega(ent3, enc3, est3, 2).
-entrega(ent4, enc4, est4, 1).
-entrega(ent5, enc5, est1, 4).
-entrega(ent6, enc6, est3, 2).
+% entregas - número de identificação, encomenda, estafeta, classificação (0-5), veiculo
+entrega(ent1, enc1, est1, 5, bicicleta).
+entrega(ent2, enc2, est2, 3, carro).
+entrega(ent3, enc3, est3, 2, bicicleta).
+entrega(ent4, enc4, est4, 1, mota).
+entrega(ent5, enc5, est1, 4, mota).
+entrega(ent6, enc6, est3, 2, carro).
 
 % ----------- GRAFO -----------
 % 10 ruas
@@ -80,7 +79,12 @@ entrega(ent6, enc6, est3, 2).
 
 % ------ FUNCIONALIDADES PEDIDAS ------
 % (1) O estafeta que utilizou mais vezes um meio de transporte mais ecológico
-f1_estafetaEcologico(R).
+f1_estafetaEcologico(R):-findall(Estafeta,entrega(_,_,Estafeta,_,bicicleta),Lista),Lista \= [],!, write(Lista).
+f1_estafetaEcologico(R):-findall(Estafeta,entrega(_,_,Estafeta,_,mota),Lista),Lista \= [],!, write(Lista).
+f1_estafetaEcologico(R):-findall(Estafeta,entrega(_,_,Estafeta,_,carro),Lista),Lista \= [], write(Lista).
+
+    
+
 
 % (2) Que estafetas entregaram determinadas encomendas a determinado cliente
 f2_estafetasCliente(C,R).
