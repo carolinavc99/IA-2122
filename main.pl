@@ -134,8 +134,7 @@ preco(TLimite, Veiculo, P) :-
     P is 5 + 48 - TLimite + PrecoVeiculo.
 
 % Determina qual o veículo a usar para a entrega
-determinarVeiculo(Peso, Volume, Veiculo):-
-    veiculo(MVeiculo, MPeso, MVolume),
+determinarVeiculo(Peso, Veiculo):-
+    veiculo(MVeiculo, MPeso, _ , _),
     Peso =< MPeso,
-    Volume =< MVolume,
     Veiculo is MVeiculo.
