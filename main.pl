@@ -63,6 +63,7 @@ entrega(ent3, enc3, est3, 2, bicicleta).
 entrega(ent4, enc4, est4, 1, mota).
 entrega(ent5, enc5, est1, 4, mota).
 entrega(ent6, enc6, est3, 2, carro).
+entrega(ent7, enc7, est1, 4, bicicleta).
 
 % ----------- GRAFO -----------
 % 10 ruas
@@ -79,12 +80,11 @@ entrega(ent6, enc6, est3, 2, carro).
 
 % ------ FUNCIONALIDADES PEDIDAS ------
 % (1) O estafeta que utilizou mais vezes um meio de transporte mais ecológico
-f1_estafetaEcologico(R):-findall(Estafeta,entrega(_,_,Estafeta,_,bicicleta),Lista),Lista \= [],!, write(Lista).
-f1_estafetaEcologico(R):-findall(Estafeta,entrega(_,_,Estafeta,_,mota),Lista),Lista \= [],!, write(Lista).
-f1_estafetaEcologico(R):-findall(Estafeta,entrega(_,_,Estafeta,_,carro),Lista),Lista \= [], write(Lista).
+%f1_estafetaEcologico(R) :- f1_aux(L,V).
 
-    
-
+f1_aux(L,bicicleta) :- findall(Estafeta,entrega(_,_,Estafeta,_,bicicleta),Lista),Lista \= [],!, L is Lista.
+f1_aux(L,mota) :- findall(Estafeta,entrega(_,_,Estafeta,_,mota),Lista),Lista \= [],!, L is Lista.
+f1_aux(L,carro) :- findall(Estafeta,entrega(_,_,Estafeta,_,carro),Lista),Lista \= [], L is Lista.
 
 % (2) Que estafetas entregaram determinadas encomendas a determinado cliente
 f2_estafetasCliente(C,R).
@@ -105,10 +105,24 @@ f6_classificacaoMedia(E,R).
 f7_entregasVeiculoIntervalo(V,Ii,If,R).
 
 % (8) Número total de entregas pelos estafetas, em determinado intervalo de tempo
-f8_entregasEstafetaIntervalo(E,Ii,If,R).
+% por "estafetas" interpreto, todas as entregas num dado intervalo de tempo
+f8_entregasEstafetaIntervalo(DI/MI/AI/HI/MiI, DF/MF/AF/HF/MiF, R) :-
+    findall(Entrega, , Entregas).
+
+% True se datahora dada está entre o intervalo de tempo dado
+f8_aux_intervalo(D/M/A/H/Mi, DI/MI/AI/HI/MiI, DF/MF/AF/HF/MiF) :- 
+    datahoramenor(DI/MI/AI/HI/MiI, D/M/A/H/Mi),
+    datahoramenor(D/M/A/H/Mi, DF/MF/AF/HF/MiF).
 
 % (9) Peso total transportado por um estafeta num determinado dia
-f9_pesoEstafetaDia(E,D,R).
+f9_pesoEstafetaDia(Estafeta,D/M/A,R) :-
+    % encontrar todas as encomendas que o estafeta entregou
+    % filtrar encomendas daquele dia
+    findall(Peso, (entrega(_, Encomenda, Estafeta,_,_), encomenda(Encomenda, D/M/A/_/_,_,Peso,_,_,_)), Pesos),
+    % somatório do peso
+    sumlist(Pesos,R).
+
+% encomenda(enc8, 2/8/2021/20/00, 2, (4,) 5, 56, rua8).
 
 % ------ FUNCIONALIDADES EXTRA ------
 % (esta secção é à nossa escolha)
@@ -128,6 +142,15 @@ datahora(D/M/A/H/Min) :-
     date_time_value(hour, DateTime, H),
     date_time_value(minute, DateTime, Min).
 
+% True se data1 é menor que data2
+datahoramenor(D1/M1/A1/H1/Mi1, D2/M2/A2/H2/Mi2) :-
+    % calcula o número de segundos desde o Epoch até à data dada
+    date_time_stamp(date(A1,M1,D1,H1,Mi1,0,0,-,-), Stamp1),
+    date_time_stamp(date(A2,M2,D2,H2,Mi2,0,0,-,-), Stamp2),
+    R1 is integer(Stamp1),
+    R2 is integer(Stamp2),
+    R1 =< R2.
+
 % Calcula o preço da encomenda: 5 (base) + 48 - tempo_em_horas + preço_veiculo
 preco(TLimite, Veiculo, P) :-
     veiculo(Veiculo,_,_,PrecoVeiculo),
@@ -138,3 +161,27 @@ determinarVeiculo(Peso, Veiculo):-
     veiculo(MVeiculo, MPeso, _ , _),
     Peso =< MPeso,
     Veiculo is MVeiculo.
+
+% Calcula o elemento mais frequente numa lista -- NÃO FUNCIONA --
+elemento_mais_frequente(Lista, E) :-
+    sort(Lista, [H|T]), % a sort limpa elementos repetidos
+    elemento_mais_frequente_aux(Lista, [H|T], H, 0),
+    E is H.
+    
+% -- NÃO FUNCIONA --
+% este predicado está a matar-me não consigo fazer com recursividade de cauda decente
+elemento_mais_frequente_aux(Lista, [H], H, Frequencia) :-
+    frequencia(H, Lista, Frequencia).
+elemento_mais_frequente_aux(Lista, [H|T], H, Frequencia) :-
+    frequencia(H, Lista, Fx),
+    elemento_mais_frequente_aux(Lista, T, H, Fx),
+    Frequencia < Fx.
+elemento_mais_frequente_aux(Lista, [H|T], Elemento, Frequencia) :-
+    frequencia(H, Lista, Fx),
+    elemento_mais_frequente_aux(Lista, T, Elemento, Frequencia),
+    Frequencia > Fx.
+
+% Calcula frequência de um elemento numa lista
+frequencia(E, [], 0).
+frequencia(E, [E|T], F) :- frequencia(E, T, F1), F is F1 + 1.
+frequencia(E, [H|T], F) :- frequencia(E, T, F).
