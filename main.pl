@@ -102,15 +102,20 @@ f5_zonasMaiorVolume(R).
 f6_classificacaoMedia(E,R).
 
 % (7) Número total de entregas pelos meios de transporte, em determinado intervalo de tempo
-f7_entregasVeiculoIntervalo(V,Ii,If,R).
+f7_entregasVeiculoIntervalo(V,DI/MI/AI/HI/MiI,DF/MF/AF/HF/MiF,R) :- % veiculo, intervalo inicial, intervalo final, resposta
+    findall(Entrega, 
+    (entrega(Entrega, Encomenda,_,_,V), 
+        encomenda(Encomenda, D/M/A/H/Mi,_,_,_,_,_),
+        datahora_intervalo(D/M/A/H/Mi, DI/MI/AI/HI/MiI, DF/MF/AF/HF/MiF)),
+    R).
 
 % (8) Número total de entregas pelos estafetas, em determinado intervalo de tempo
 % por "estafetas" (plural), interpreto todas as entregas num dado intervalo de tempo
 f8_entregasEstafetaIntervalo(DI/MI/AI/HI/MiI, DF/MF/AF/HF/MiF, R) :-
     findall(Entrega, 
-    (entrega(Entrega, Encomenda,_,_,_), 
+    (entrega(Entrega, Encomenda,_,_,_),
         encomenda(Encomenda, D/M/A/H/Mi,_,_,_,_,_),
-        f8_aux_intervalo(D/M/A/H/Mi, DI/MI/AI/HI/MiI, DF/MF/AF/HF/MiF)),
+        datahora_intervalo(D/M/A/H/Mi, DI/MI/AI/HI/MiI, DF/MF/AF/HF/MiF)),
     R).
 
 % (9) Peso total transportado por um estafeta num determinado dia
@@ -120,8 +125,6 @@ f9_pesoEstafetaDia(Estafeta,D/M/A,R) :-
     findall(Peso, (entrega(_, Encomenda, Estafeta,_,_), encomenda(Encomenda, D/M/A/_/_,_,Peso,_,_,_)), Pesos),
     % somatório do peso
     sumlist(Pesos,R).
-
-% encomenda(enc8, 2/8/2021/20/00, 2, (4,) 5, 56, rua8).
 
 % ------ FUNCIONALIDADES EXTRA ------
 % (esta secção é à nossa escolha)
