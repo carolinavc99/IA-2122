@@ -105,9 +105,13 @@ f6_classificacaoMedia(E,R).
 f7_entregasVeiculoIntervalo(V,Ii,If,R).
 
 % (8) Número total de entregas pelos estafetas, em determinado intervalo de tempo
-% por "estafetas" interpreto, todas as entregas num dado intervalo de tempo
+% por "estafetas" (plural), interpreto todas as entregas num dado intervalo de tempo
 f8_entregasEstafetaIntervalo(DI/MI/AI/HI/MiI, DF/MF/AF/HF/MiF, R) :-
-    findall(Entrega, , Entregas).
+    findall(Entrega, 
+    (entrega(Entrega, Encomenda,_,_,_), 
+        encomenda(Encomenda, D/M/A/H/Mi,_,_,_,_,_),
+        f8_aux_intervalo(D/M/A/H/Mi, DI/MI/AI/HI/MiI, DF/MF/AF/HF/MiF)),
+    R).
 
 % True se datahora dada está entre o intervalo de tempo dado
 f8_aux_intervalo(D/M/A/H/Mi, DI/MI/AI/HI/MiI, DF/MF/AF/HF/MiF) :- 
