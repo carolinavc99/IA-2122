@@ -113,11 +113,6 @@ f8_entregasEstafetaIntervalo(DI/MI/AI/HI/MiI, DF/MF/AF/HF/MiF, R) :-
         f8_aux_intervalo(D/M/A/H/Mi, DI/MI/AI/HI/MiI, DF/MF/AF/HF/MiF)),
     R).
 
-% True se datahora dada está entre o intervalo de tempo dado
-f8_aux_intervalo(D/M/A/H/Mi, DI/MI/AI/HI/MiI, DF/MF/AF/HF/MiF) :- 
-    datahoramenor(DI/MI/AI/HI/MiI, D/M/A/H/Mi),
-    datahoramenor(D/M/A/H/Mi, DF/MF/AF/HF/MiF).
-
 % (9) Peso total transportado por um estafeta num determinado dia
 f9_pesoEstafetaDia(Estafeta,D/M/A,R) :-
     % encontrar todas as encomendas que o estafeta entregou
@@ -154,6 +149,11 @@ datahoramenor(D1/M1/A1/H1/Mi1, D2/M2/A2/H2/Mi2) :-
     R1 is integer(Stamp1),
     R2 is integer(Stamp2),
     R1 =< R2.
+
+% True se datahora dada está entre o intervalo de tempo dado
+datahora_intervalo(D/M/A/H/Mi, DI/MI/AI/HI/MiI, DF/MF/AF/HF/MiF) :- 
+    datahoramenor(DI/MI/AI/HI/MiI, D/M/A/H/Mi),
+    datahoramenor(D/M/A/H/Mi, DF/MF/AF/HF/MiF).
 
 % Calcula o preço da encomenda: 5 (base) + 48 - tempo_em_horas + preço_veiculo
 preco(TLimite, Veiculo, P) :-
