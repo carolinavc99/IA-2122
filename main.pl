@@ -95,31 +95,34 @@ f3_clientesEstafeta(E,R).
 % (4) O valor faturado pela Green Distribution num determinado dia
 f4_faturacaoDia(D,R).
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% -- TEM DE ORDENAR POR #ENTREGAS --
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % (5) As zonas com maior volume de entregas
 % Interpreto em: imprime as zonas por ordem de número de entregas, zona pode ser rua ou freguesia
 % a. Zona é freguesia
 f5_zonasMaiorVolume(freguesia) :-
     findall(Freguesia, freguesia(Freguesia), Freguesias),
-    f5_aux_recursivo(Freguesias).
+    f5_aux_recursivo(Freguesias,[]).
 % b. Zona é rua
 f5_zonasMaiorVolume(rua) :-
     findall(Rua, rua(Rua,_), Ruas),
-    f5_aux_recursivo(Ruas).
+    f5_aux_recursivo(Ruas,[]).
 
 % f5 recursiva
-f5_aux_recursivo([]).
+f5_aux_recursivo([],List) :- !, f5_aux_orderList(List).
 % rua
-f5_aux_recursivo([H|T]) :-
+f5_aux_recursivo([H|T],List) :-
     rua(H,_),
     f5_aux_numeroentregas(rua, H,N),
-    write("Rua: "), write(H), write(" Entregas: "), write(N), write("\n"),
-    f5_aux_recursivo(T).
+    append(["Rua: ",H," Entregas: ",N,"\n"],List,ListJ),
+    f5_aux_recursivo(T,ListJ).
 % freguesia
-f5_aux_recursivo([H|T]) :-
+f5_aux_recursivo([H|T],List) :-
     freguesia(H),
     f5_aux_numeroentregas(freguesia, H,N),
-    write("Freguesia: "), write(H), write(" Entregas: "), write(N), write("\n"),
-    f5_aux_recursivo(T).
+    append(["Freguesia: ",H," Entregas: ",N,"\n"],List,ListJ),
+    f5_aux_recursivo(T,ListJ).
 
 % Devolve o número de entregas de uma zona dada
 % a. Zona é uma freguesia
@@ -208,24 +211,22 @@ determinarVeiculo(Peso, Veiculo):-
     Peso =< MPeso,
     Veiculo is MVeiculo.
 
-% Calcula o elemento mais frequente numa lista -- NÃO FUNCIONA --
+%%%%%%%%%%%%%%%%%%%%%%% NOT WORKING %%%%%%%%%%%%%%%%%%%%%%%
+% Calcula o elemento mais frequente numa lista
 elemento_mais_frequente(Lista, E) :-
-    sort(Lista, [H|T]), % a sort limpa elementos repetidos
-    elemento_mais_frequente_aux(Lista, [H|T], H, 0),
-    E is H.
-    
-% -- NÃO FUNCIONA --
-% este predicado está a matar-me não consigo fazer com recursividade de cauda decente
-elemento_mais_frequente_aux(Lista, [H], H, Frequencia) :-
-    frequencia(H, Lista, Frequencia).
-elemento_mais_frequente_aux(Lista, [H|T], H, Frequencia) :-
-    frequencia(H, Lista, Fx),
-    elemento_mais_frequente_aux(Lista, T, H, Fx),
-    Frequencia < Fx.
+    sort(Lista, Sorted), % a sort limpa elementos repetidos
+    elemento_mais_frequente_aux(Lista, Sorted, E, 0).
+
+%%%%%%%%%%%%%%%%%%%%%%% NOT WORKING %%%%%%%%%%%%%%%%%%%%%%%
+elemento_mais_frequente_aux(Lista, [], H, Frequencia) :- !.
 elemento_mais_frequente_aux(Lista, [H|T], Elemento, Frequencia) :-
     frequencia(H, Lista, Fx),
-    elemento_mais_frequente_aux(Lista, T, Elemento, Frequencia),
-    Frequencia > Fx.
+    Frequencia =< Fx,
+    elemento_mais_frequente_aux(Lista, T, H, Fx), !.
+elemento_mais_frequente_aux(Lista, [H|T], Elemento, Frequencia) :-
+    frequencia(H, Lista, Fx),
+    Frequencia >= Fx,
+    elemento_mais_frequente_aux(Lista, T, Elemento, Frequencia), !.
 
 % Calcula frequência de um elemento numa lista
 frequencia(E, [], 0).
