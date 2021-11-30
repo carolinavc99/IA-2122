@@ -35,26 +35,26 @@ freguesia(f4).
 freguesia(f5).
 
 % ruas - codigo de identificação, id da freguesia
-rua(r1, f1).
-rua(r2, f1).
-rua(r3, f2).
-rua(r4, f2).
-rua(r5, f3).
-rua(r6, f3).
-rua(r7, f4).
-rua(r8, f4).
-rua(r9, f5).
-rua(r10, f5).
+rua(rua1, f1).
+rua(rua2, f1).
+rua(rua3, f2).
+rua(rua4, f2).
+rua(rua5, f3).
+rua(rua6, f3).
+rua(rua7, f4).
+rua(rua8, f4).
+rua(rua9, f5).
+rua(rua10, f5).
 
 % clientes - numero de identificação, nome, id da rua de morada
-cliente(c1, 'Filmina Ribano', r1).
-cliente(c2, 'Santónio Mabalares', r2).
-cliente(c3, 'Namuel Ponino', r3).
-cliente(c4, 'Diliana Ramaz', r4).
-cliente(c5, 'Sarina Compares', r5).
-cliente(c6, 'Romana Sardezes', r6).
-cliente(c7, 'Carminela Lopanor', r7).
-cliente(c8, 'Iolina Rumos', r8).
+cliente(c1, 'Filmina Ribano', rua1).
+cliente(c2, 'Santónio Mabalares', rua2).
+cliente(c3, 'Namuel Ponino', rua3).
+cliente(c4, 'Diliana Ramaz', rua4).
+cliente(c5, 'Sarina Compares', rua5).
+cliente(c6, 'Romana Sardezes', rua6).
+cliente(c7, 'Carminela Lopanor', rua7).
+cliente(c8, 'Iolina Rumos', rua8).
 
 % entregas - número de identificação, encomenda, estafeta, classificação (0-5), veiculo
 entrega(ent1, enc1, est1, 5, bicicleta).
@@ -96,10 +96,49 @@ f3_clientesEstafeta(E,R).
 f4_faturacaoDia(D,R).
 
 % (5) As zonas com maior volume de entregas
-f5_zonasMaiorVolume(R).
+% Interpreto em: imprime as zonas por ordem de número de entregas, zona pode ser rua ou freguesia
+% a. Zona é freguesia
+f5_zonasMaiorVolume(freguesia) :-
+    findall(Freguesia, freguesia(Freguesia), Freguesias),
+    f5_aux_recursivo(Freguesias).
+% b. Zona é rua
+f5_zonasMaiorVolume(rua) :-
+    findall(Rua, rua(Rua,_), Ruas),
+    f5_aux_recursivo(Ruas).
+
+% f5 recursiva
+f5_aux_recursivo([]).
+% rua
+f5_aux_recursivo([H|T]) :-
+    rua(H,_),
+    f5_aux_numeroentregas(rua, H,N),
+    write("Rua: "), write(H), write(" Entregas: "), write(N), write("\n"),
+    f5_aux_recursivo(T).
+% freguesia
+f5_aux_recursivo([H|T]) :-
+    freguesia(H),
+    f5_aux_numeroentregas(freguesia, H,N),
+    write("Freguesia: "), write(H), write(" Entregas: "), write(N), write("\n"),
+    f5_aux_recursivo(T).
+
+% Devolve o número de entregas de uma zona dada
+% a. Zona é uma freguesia
+f5_aux_numeroentregas(freguesia, Z, R) :-
+    findall(Entrega, (entrega(Entrega,Encomenda,_,_,_), encomenda(Encomenda,_,_,_,_,_, Rua), rua(Rua,Z)), Entregas),
+    length(Entregas, R).
+% b. Zona é uma rua
+f5_aux_numeroentregas(rua, Z, R) :-
+    findall(Entrega, (entrega(Entrega,Encomenda,_,_,_), encomenda(Encomenda,_,_,_,_,_,Z)), Entregas),
+    length(Entregas, R).
+
 
 % (6) Classificação média de um dado estafeta
-f6_classificacaoMedia(E,R).
+f6_classificacaoMedia(E,R) :-
+    findall(Class, entrega(_,_,E,Class,_), Classes),
+    length(Classes, Length),
+    Length =\= 0,
+    sumlist(Classes, Sum),
+    R is div(Sum, Length).
 
 % (7) Número total de entregas pelos meios de transporte, em determinado intervalo de tempo
 f7_entregasVeiculoIntervalo(V,DI/MI/AI/HI/MiI,DF/MF/AF/HF/MiF,R) :- % veiculo, intervalo inicial, intervalo final, resposta
