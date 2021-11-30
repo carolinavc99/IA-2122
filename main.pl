@@ -95,31 +95,34 @@ f3_clientesEstafeta(E,R).
 % (4) O valor faturado pela Green Distribution num determinado dia
 f4_faturacaoDia(D,R).
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% -- TEM DE ORDENAR POR #ENTREGAS --
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % (5) As zonas com maior volume de entregas
 % Interpreto em: imprime as zonas por ordem de número de entregas, zona pode ser rua ou freguesia
 % a. Zona é freguesia
 f5_zonasMaiorVolume(freguesia) :-
     findall(Freguesia, freguesia(Freguesia), Freguesias),
-    f5_aux_recursivo(Freguesias).
+    f5_aux_recursivo(Freguesias,[]).
 % b. Zona é rua
 f5_zonasMaiorVolume(rua) :-
     findall(Rua, rua(Rua,_), Ruas),
-    f5_aux_recursivo(Ruas).
+    f5_aux_recursivo(Ruas,[]).
 
 % f5 recursiva
-f5_aux_recursivo([]).
+f5_aux_recursivo([],List) :- !, f5_aux_orderList(List).
 % rua
-f5_aux_recursivo([H|T]) :-
+f5_aux_recursivo([H|T],List) :-
     rua(H,_),
     f5_aux_numeroentregas(rua, H,N),
-    write("Rua: "), write(H), write(" Entregas: "), write(N), write("\n"),
-    f5_aux_recursivo(T).
+    append(["Rua: ",H," Entregas: ",N,"\n"],List,ListJ),
+    f5_aux_recursivo(T,ListJ).
 % freguesia
-f5_aux_recursivo([H|T]) :-
+f5_aux_recursivo([H|T],List) :-
     freguesia(H),
     f5_aux_numeroentregas(freguesia, H,N),
-    write("Freguesia: "), write(H), write(" Entregas: "), write(N), write("\n"),
-    f5_aux_recursivo(T).
+    append(["Freguesia: ",H," Entregas: ",N,"\n"],List,ListJ),
+    f5_aux_recursivo(T,ListJ).
 
 % Devolve o número de entregas de uma zona dada
 % a. Zona é uma freguesia
