@@ -63,7 +63,7 @@ entrega(ent3, enc3, est3, 2, bicicleta).
 entrega(ent4, enc4, est4, 1, mota).
 entrega(ent5, enc5, est1, 4, mota).
 entrega(ent6, enc6, est3, 2, carro).
-entrega(ent7, enc7, est1, 4, bicicleta).
+entrega(ent7, enc7, est3, 4, bicicleta).
 
 % ----------- GRAFO -----------
 % 10 ruas
@@ -80,11 +80,11 @@ entrega(ent7, enc7, est1, 4, bicicleta).
 
 % ------ FUNCIONALIDADES PEDIDAS ------
 % (1) O estafeta que utilizou mais vezes um meio de transporte mais ecológico
-%f1_estafetaEcologico(R) :- f1_aux(L,V).
+f1_estafetaEcologico(R) :- f1_aux(R,V).
 
-f1_aux(L,bicicleta) :- findall(Estafeta,entrega(_,_,Estafeta,_,bicicleta),Lista),Lista \= [],!, L is Lista.
-f1_aux(L,mota) :- findall(Estafeta,entrega(_,_,Estafeta,_,mota),Lista),Lista \= [],!, L is Lista.
-f1_aux(L,carro) :- findall(Estafeta,entrega(_,_,Estafeta,_,carro),Lista),Lista \= [], L is Lista.
+f1_aux(Elem,bicicleta) :- findall(Estafeta,entrega(_,_,Estafeta,_,bicicleta),Lista),elemento_mais_frequente(Lista,Elem).
+f1_aux(Elem,mota) :- findall(Estafeta,entrega(_,_,Estafeta,_,mota),Lista),elemento_mais_frequente(Lista,Elem).
+f1_aux(Elem,carro) :- findall(Estafeta,entrega(_,_,Estafeta,_,carro),Lista),elemento_mais_frequente(Lista,Elem).
 
 % (2) Que estafetas entregaram determinadas encomendas a determinado cliente
 f2_estafetasCliente(C,R).
@@ -209,25 +209,28 @@ determinarVeiculo(Peso, Veiculo):-
     Veiculo is MVeiculo.
 
 % Calcula o elemento mais frequente numa lista -- NÃO FUNCIONA --
+elemento_mais_frequente([],0).
 elemento_mais_frequente(Lista, E) :-
     sort(Lista, [H|T]), % a sort limpa elementos repetidos
-    elemento_mais_frequente_aux(Lista, [H|T], H, 0),
-    E is H.
+    elemento_mais_frequente_aux(Lista, [H|T], HN, Freq),
+    E = HN.
     
 % -- NÃO FUNCIONA --
 % este predicado está a matar-me não consigo fazer com recursividade de cauda decente
 elemento_mais_frequente_aux(Lista, [H], H, Frequencia) :-
     frequencia(H, Lista, Frequencia).
-elemento_mais_frequente_aux(Lista, [H|T], H, Frequencia) :-
+elemento_mais_frequente_aux(Lista, [H|T], H, Fx) :-
     frequencia(H, Lista, Fx),
-    elemento_mais_frequente_aux(Lista, T, H, Fx),
-    Frequencia < Fx.
+    elemento_mais_frequente_aux(Lista, T, HCauda, Frequencia),
+    Frequencia =< Fx.
 elemento_mais_frequente_aux(Lista, [H|T], Elemento, Frequencia) :-
     frequencia(H, Lista, Fx),
     elemento_mais_frequente_aux(Lista, T, Elemento, Frequencia),
     Frequencia > Fx.
+    
 
 % Calcula frequência de um elemento numa lista
 frequencia(E, [], 0).
 frequencia(E, [E|T], F) :- frequencia(E, T, F1), F is F1 + 1.
-frequencia(E, [H|T], F) :- frequencia(E, T, F).
+frequencia(E, [H|T], F) :- E \= H,
+    frequencia(E, T, F).
