@@ -100,39 +100,37 @@ f4_faturacaoDia(D,R).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % (5) As zonas com maior volume de entregas
 % Interpreto em: imprime as zonas por ordem de número de entregas, zona pode ser rua ou freguesia
-% a. Zona é freguesia
-f5_zonasMaiorVolume(freguesia) :-
-    findall(Freguesia, freguesia(Freguesia), Freguesias),
-    f5_aux_recursivo(Freguesias,[]).
-% b. Zona é rua
-f5_zonasMaiorVolume(rua) :-
-    findall(Rua, rua(Rua,_), Ruas),
-    f5_aux_recursivo(Ruas,[]).
+f5_zonasMaiorVolume(Zona) :-
+    (freguesia(Zona) ->
+        (findall(Freguesia, freguesia(Freguesia), Freguesias), f5_aux_recursivo(Freguesias,[]));
+        (findall(Rua, rua(Rua,_), Ruas),f5_aux_recursivo(Ruas,[]))).
 
 % f5 recursiva
-f5_aux_recursivo([],List) :- !, f5_aux_orderList(List).
+f5_aux_recursivo([],List).% :- !, f5_aux_orderList(List).
 % rua
 f5_aux_recursivo([H|T],List) :-
-    rua(H,_),
-    f5_aux_numeroentregas(rua, H,N),
-    append(["Rua: ",H," Entregas: ",N,"\n"],List,ListJ),
-    f5_aux_recursivo(T,ListJ).
-% freguesia
-f5_aux_recursivo([H|T],List) :-
-    freguesia(H),
-    f5_aux_numeroentregas(freguesia, H,N),
-    append(["Freguesia: ",H," Entregas: ",N,"\n"],List,ListJ),
-    f5_aux_recursivo(T,ListJ).
+    (freguesia(H) ->
+        (f5_aux_numeroentregas(freguesia, H,N),
+            append(["Freguesia: ",H," Entregas: ",N,"\n"],List,ListJ),
+            f5_aux_recursivo(T,ListJ)
+        );
+        (f5_aux_numeroentregas(rua, H,N),
+            append(["Rua: ",H," Entregas: ",N,"\n"],List,ListJ),
+            f5_aux_recursivo(T,ListJ)
+        )
+    ).
 
 % Devolve o número de entregas de uma zona dada
-% a. Zona é uma freguesia
-f5_aux_numeroentregas(freguesia, Z, R) :-
-    findall(Entrega, (entrega(Entrega,Encomenda,_,_,_), encomenda(Encomenda,_,_,_,_,_, Rua,_), rua(Rua,Z)), Entregas),
-    length(Entregas, R).
-% b. Zona é uma rua
-f5_aux_numeroentregas(rua, Z, R) :-
-    findall(Entrega, (entrega(Entrega,Encomenda,_,_,_), encomenda(Encomenda,_,_,_,_,_,Z,_)), Entregas),
-    length(Entregas, R).
+f5_aux_numeroentregas(Zona, Z, R) :-
+    (freguesia(Zona) -> 
+        findall(Entrega,
+            (entrega(Entrega,Encomenda,_,_,_), encomenda(Encomenda,_,_,_,_,_, Rua,_), rua(Rua,Z)),
+            Entregas);
+        findall(Entrega,
+            (entrega(Entrega,Encomenda,_,_,_), encomenda(Encomenda,_,_,_,_,_,Z,_)),
+            Entregas)
+        ),
+        length(Entregas, R).
 
 
 % (6) Classificação média de um dado estafeta
@@ -168,7 +166,13 @@ f9_encomendasEntreguesIntervalo(Ii, If, R) :-
     R = "Encomendas entregues: "/Entregues/"\nEncomendas não entregues: "/NEntregues.
 
 % Encontra o número de encomendas entregues e não entregues
-f9_aux(DI/MI/AI/HI/MiI, DF/MF/AF/HF/MiF, E, NE).
+f9_aux(DI/MI/AI/HI/MiI, DF/MF/AF/HF/MiF, E, NE) :-
+    findall(Entregue,
+        (entrega(Entrega, Encomenda,_,_,_),
+            encomenda(Encomenda, D/M/A/H/Mi,_,_,_,_,_,_),
+            datahora_intervalo(D/M/A/H/Mi, DI/MI/AI/HI/MiI, DF/MF/AF/HF/MiF)
+        ), Entregues),
+
     
 
 % (10) Peso total transportado por um estafeta num determinado dia
