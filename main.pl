@@ -18,14 +18,14 @@ estafeta(est5, 'Miriana Rubardezes').
 % ATENÇÃO! Ter em atenção o peso da entrega porque cada veículo tem um limite de peso. Por exemplo é impossível ter uma entrega de 200kg pois nenhum veículo é capaz de carregar tal peso.
 % ATENÇÃO! Ao criar encomenda (ainda não fiz esse predicado), o programa vai atribuir o veículo automaticamente. O que vai fazer é essencialmente ver qual é o veículo mais ecológico que consegue carregar essa encomenda, ou seja, começa por ver se a bicicleta a pode carregar. Se não, vê se a mota consegue. Se não, vê se o carro consegue.
 % Logo, uma encomenda de 20 kilos é SEMPRE levada por uma mota, enquanto que uma encomenda de 30 kilos é sempre levada por um carro, e uma encomenda de 4 kilos é sempre levada por uma bicicleta.
-encomenda(enc1, 1/1/2021/18/30, 2, 10, 5, 56, rua1).
-encomenda(enc2, 20/7/2021/10/00, 24, 40, 5, 44, rua2).
-encomenda(enc3, 20/7/2021/9/20, 4, 5, 5, 54, rua3).
-encomenda(enc4, 20/7/2021/16/00, 1, 15, 5, 62, rua4).
-encomenda(enc5, 2/8/2021/3/40, 4, 20, 5, 59, rua5).
-encomenda(enc6, 2/8/2021/15/50, 6, 25, 5, 62, rua6).
-encomenda(enc7, 2/8/2021/17/10, 2, 96, 5, 66, rua7).
-encomenda(enc8, 2/8/2021/20/00, 2, 4, 5, 56, rua8).
+encomenda(enc1, 1/1/2021/18/30, 2, 10, 5, 56, rua1,c1).
+encomenda(enc2, 20/7/2021/10/00, 24, 40, 5, 44, rua2,c2).
+encomenda(enc3, 20/7/2021/9/20, 4, 5, 5, 54, rua3, c3).
+encomenda(enc4, 20/7/2021/16/00, 1, 15, 5, 62, rua4, c4).
+encomenda(enc5, 2/8/2021/3/40, 4, 20, 5, 59, rua5, c5).
+encomenda(enc6, 2/8/2021/15/50, 6, 25, 5, 62, rua6, c6).
+encomenda(enc7, 2/8/2021/17/10, 2, 96, 5, 66, rua7, c7).
+encomenda(enc8, 2/8/2021/20/00, 2, 4, 5, 56, rua8, c8).
 
 % freguesias - codigo de identificação
 freguesia(f1).
@@ -93,7 +93,7 @@ f2_estafetasCliente(C,R).
 f3_clientesEstafeta(E,R).
 
 % (4) O valor faturado pela Green Distribution num determinado dia
-f4_faturacaoDia(D,R):-
+f4_faturacaoDia(D,R).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % -- TEM DE ORDENAR POR #ENTREGAS --
@@ -127,11 +127,11 @@ f5_aux_recursivo([H|T],List) :-
 % Devolve o número de entregas de uma zona dada
 % a. Zona é uma freguesia
 f5_aux_numeroentregas(freguesia, Z, R) :-
-    findall(Entrega, (entrega(Entrega,Encomenda,_,_,_), encomenda(Encomenda,_,_,_,_,_, Rua), rua(Rua,Z)), Entregas),
+    findall(Entrega, (entrega(Entrega,Encomenda,_,_,_), encomenda(Encomenda,_,_,_,_,_, Rua,_), rua(Rua,Z)), Entregas),
     length(Entregas, R).
 % b. Zona é uma rua
 f5_aux_numeroentregas(rua, Z, R) :-
-    findall(Entrega, (entrega(Entrega,Encomenda,_,_,_), encomenda(Encomenda,_,_,_,_,_,Z)), Entregas),
+    findall(Entrega, (entrega(Entrega,Encomenda,_,_,_), encomenda(Encomenda,_,_,_,_,_,Z,_)), Entregas),
     length(Entregas, R).
 
 
@@ -147,7 +147,7 @@ f6_classificacaoMedia(E,R) :-
 f7_entregasVeiculoIntervalo(V,DI/MI/AI/HI/MiI,DF/MF/AF/HF/MiF,R) :- % veiculo, intervalo inicial, intervalo final, resposta
     findall(Entrega, 
     (entrega(Entrega, Encomenda,_,_,V), 
-        encomenda(Encomenda, D/M/A/H/Mi,_,_,_,_,_),
+        encomenda(Encomenda, D/M/A/H/Mi,_,_,_,_,_,_),
         datahora_intervalo(D/M/A/H/Mi, DI/MI/AI/HI/MiI, DF/MF/AF/HF/MiF)),
     Lista),
     length(Lista,R).
@@ -157,16 +157,19 @@ f7_entregasVeiculoIntervalo(V,DI/MI/AI/HI/MiI,DF/MF/AF/HF/MiF,R) :- % veiculo, i
 f8_entregasEstafetaIntervalo(DI/MI/AI/HI/MiI, DF/MF/AF/HF/MiF, R) :-
     findall(Entrega, 
     (entrega(Entrega, Encomenda,_,_,_),
-        encomenda(Encomenda, D/M/A/H/Mi,_,_,_,_,_),
+        encomenda(Encomenda, D/M/A/H/Mi,_,_,_,_,_,_),
         datahora_intervalo(D/M/A/H/Mi, DI/MI/AI/HI/MiI, DF/MF/AF/HF/MiF)),
     Lista),
     length(Lista,R).
 
-% (9) Peso total transportado por um estafeta num determinado dia
+% (9) Número de encomendas entregues e não entregues pela Green Distribution, num determinado período de tempo
+f9_encomendasEntreguesIntervalo(Ii, If, R).
+
+% (10) Peso total transportado por um estafeta num determinado dia
 f10_pesoEstafetaDia(Estafeta,D/M/A,R) :-
     % encontrar todas as encomendas que o estafeta entregou
     % filtrar encomendas daquele dia
-    findall(Peso, (entrega(_, Encomenda, Estafeta,_,_), encomenda(Encomenda, D/M/A/_/_,_,Peso,_,_,_)), Pesos),
+    findall(Peso, (entrega(_, Encomenda, Estafeta,_,_), encomenda(Encomenda, D/M/A/_/_,_,Peso,_,_,_,_)), Pesos),
     % somatório do peso
     sumlist(Pesos,R).
 
