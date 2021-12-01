@@ -12,7 +12,7 @@ estafeta(est3, 'Davim Ariezes').
 estafeta(est4, 'Sofira Mangostim').
 estafeta(est5, 'Miriana Rubardezes').
 
-% encomenda - numero de identificação, datahora, tempo máximo de entrega, peso, volume, preço, rua, veiculo
+% encomenda - numero de identificação, datahora, tempo máximo de entrega, peso, volume, preço, rua, cliente
 % NOTA: o volume não vai interessar para cálculo nenhum, logo fica sempre 5
 % para calcular o preço de uma entrega de carro, fazer: preco(Tempo_máximo_entrega, carro, P). P vai unificar com o preço.
 % ATENÇÃO! Ter em atenção o peso da entrega porque cada veículo tem um limite de peso. Por exemplo é impossível ter uma entrega de 200kg pois nenhum veículo é capaz de carregar tal peso.
@@ -26,6 +26,7 @@ encomenda(enc5, 2/8/2021/3/40, 4, 20, 5, 59, rua5, c5).
 encomenda(enc6, 2/8/2021/15/50, 6, 25, 5, 62, rua6, c6).
 encomenda(enc7, 2/8/2021/17/10, 2, 96, 5, 66, rua7, c7).
 encomenda(enc8, 2/8/2021/20/00, 2, 4, 5, 56, rua8, c8).
+encomenda(enc9, 2/8/2021/20/00, 2, 4, 5, 56, rua8, c8).
 
 % freguesias - codigo de identificação
 freguesia(f1).
@@ -93,7 +94,9 @@ f2_estafetasCliente(C,R).
 f3_clientesEstafeta(E,R).
 
 % (4) O valor faturado pela Green Distribution num determinado dia
-f4_faturacaoDia(D,R).
+f4_faturacaoDia(D/M/A,R):-
+    findall(Preco, (entrega(_, Encomenda, Estafeta,_,_), encomenda(Encomenda, D/M/A/_/_,_,_,Preco,_,_,_)), Precos),
+    sumlist(Precos,R).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % -- TEM DE ORDENAR POR #ENTREGAS --
