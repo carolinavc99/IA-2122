@@ -104,8 +104,8 @@ f4_faturacaoDia(D/M/A,R):-
 
 % (5) As zonas com maior volume de entregas
 % Interpreto em: imprime as zonas por ordem de número de entregas, zona pode ser rua ou freguesia
-f5_zonasMaiorVolume(TipoZona) :-
-    findall(Zona/Entregas, , Pares)
+f5_zonasMaiorVolume(TipoZona).% :-
+    %findall(Zona/Entregas, , Pares)
 
 % (6) Classificação média de um dado estafeta
 f6_classificacaoMedia(E,R) :-
@@ -135,10 +135,10 @@ f8_entregasEstafetaIntervalo(DI/MI/AI/HI/MiI, DF/MF/AF/HF/MiF, R) :-
     length(Lista,R).
 
 % (9) Número de encomendas entregues e não entregues pela Green Distribution, num determinado período de tempo
-f9_encomendasEntreguesIntervalo(Ii, If) :-
-    findall(Entrega, entrega(Entrega,_,_,_,_), Entregas),
+f9_encomendasEntreguesIntervalo(DI/MI/AI/HI/MiI, DF/MF/AF/HF/MiF) :-
+    findall(Entrega, (entrega(Entrega, Encomenda,_,_,_) , encomenda(Encomenda, D/M/A/H/Mi,_,_,_,_,_,_), datahora_intervalo(D/M/A/H/Mi, DI/MI/AI/HI/MiI, DF/MF/AF/HF/MiF)), Entregas),
     % Sabendo quantas foram entregues, então o resto não foi entregue, logo Total - Entregue = NEntregue
-    findall(EncID, encomenda(EncID,_,_,_,_,_,_,_), EncomendasTotal),
+    findall(EncID, (encomenda(EncID, D/M/A/H/Mi,_,_,_,_,_,_), datahora_intervalo(D/M/A/H/Mi, DI/MI/AI/HI/MiI, DF/MF/AF/HF/MiF)), EncomendasTotal),
     length(Entregas, E),
     length(EncomendasTotal, ET),
     NE is ET - E,
