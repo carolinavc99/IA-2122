@@ -27,6 +27,7 @@ encomenda(enc6, 2/8/2021/15/50, 6, 25, 5, 62, rua6, c6).
 encomenda(enc7, 2/8/2021/17/10, 2, 96, 5, 66, rua7, c7).
 encomenda(enc8, 2/8/2021/20/00, 2, 4, 5, 56, rua8, c8).
 encomenda(enc9, 2/8/2021/20/00, 2, 4, 5, 56, rua8, c8).
+encomenda(enc10, 20/7/2021/10/00, 24, 40, 5, 44, rua2,c2).
 
 % freguesias - codigo de identificação
 freguesia(f1).
@@ -65,6 +66,7 @@ entrega(ent4, enc4, est4, 1, mota).
 entrega(ent5, enc5, est1, 4, mota).
 entrega(ent6, enc6, est3, 2, carro).
 entrega(ent7, enc7, est3, 4, bicicleta).
+entrega(ent8,enc10,est2,4,bicicleta).
 
 % ----------- GRAFO -----------
 % 10 ruas
@@ -88,7 +90,8 @@ f1_aux(Elem,mota) :- findall(Estafeta,entrega(_,_,Estafeta,_,mota),Lista),elemen
 f1_aux(Elem,carro) :- findall(Estafeta,entrega(_,_,Estafeta,_,carro),Lista),elemento_mais_frequente(Lista,Elem).
 
 % (2) Que estafetas entregaram determinadas encomendas a determinado cliente
-f2_estafetasCliente(C,R).
+f2_estafetasCliente(C,R):-
+    findall((Encomenda, Estafeta), (entrega(_, Encomenda, Estafeta,_,_), encomenda(Encomenda, _/_/_,_,_,_,_,_,C)), R).
 
 % (3) Os clientes servidos por determinado estafeta
 f3_clientesEstafeta(E,R):-
