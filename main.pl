@@ -93,7 +93,7 @@ f2_estafetasCliente(C,R).
 f3_clientesEstafeta(E,R).
 
 % (4) O valor faturado pela Green Distribution num determinado dia
-f4_faturacaoDia(D,R).
+f4_faturacaoDia(D,R):-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % -- TEM DE ORDENAR POR #ENTREGAS --
@@ -149,7 +149,8 @@ f7_entregasVeiculoIntervalo(V,DI/MI/AI/HI/MiI,DF/MF/AF/HF/MiF,R) :- % veiculo, i
     (entrega(Entrega, Encomenda,_,_,V), 
         encomenda(Encomenda, D/M/A/H/Mi,_,_,_,_,_),
         datahora_intervalo(D/M/A/H/Mi, DI/MI/AI/HI/MiI, DF/MF/AF/HF/MiF)),
-    R).
+    Lista),
+    length(Lista,R).
 
 % (8) Número total de entregas pelos estafetas, em determinado intervalo de tempo
 % por "estafetas" (plural), interpreto todas as entregas num dado intervalo de tempo
@@ -158,10 +159,11 @@ f8_entregasEstafetaIntervalo(DI/MI/AI/HI/MiI, DF/MF/AF/HF/MiF, R) :-
     (entrega(Entrega, Encomenda,_,_,_),
         encomenda(Encomenda, D/M/A/H/Mi,_,_,_,_,_),
         datahora_intervalo(D/M/A/H/Mi, DI/MI/AI/HI/MiI, DF/MF/AF/HF/MiF)),
-    R).
+    Lista),
+    length(Lista,R).
 
 % (9) Peso total transportado por um estafeta num determinado dia
-f9_pesoEstafetaDia(Estafeta,D/M/A,R) :-
+f10_pesoEstafetaDia(Estafeta,D/M/A,R) :-
     % encontrar todas as encomendas que o estafeta entregou
     % filtrar encomendas daquele dia
     findall(Peso, (entrega(_, Encomenda, Estafeta,_,_), encomenda(Encomenda, D/M/A/_/_,_,Peso,_,_,_)), Pesos),
@@ -170,6 +172,31 @@ f9_pesoEstafetaDia(Estafeta,D/M/A,R) :-
 
 % ------ FUNCIONALIDADES EXTRA ------
 % (esta secção é à nossa escolha)
+
+menu:-
+    write('1 - Estafeta que utilizou um meio de transporte mais ecológico mais vezes'),nl,
+    write('2 - Estafetas que entregaram determinada(s) encomenda(s) a um determinado cliente'),nl,
+    write('3 - Clientes servidos por determinado cliente'),nl,
+    write('4 - Valor faturado pela Green Distribution num determinado dia'),nl,
+    write('5 - Zonas com maior volume de entregas por parte da Green Distribution'),nl,
+    write('6 - Classificação média de satisfação de cliente para um determinado estafeta'),nl,
+    write('7 - Número total de entregas pelos diferentes meios de transporte num determinado intervalo de tempo'),nl,
+    write('8 - Número total de entregas pelos estafetas num determinado intervalo de tempo'),nl,
+    write('9 - Número de encomendas entregues e não entregues pela Green Distribution num determinado periodo de tempo'),nl,
+    write('10 - Peso total transportado por estafeta num determinado dia'),nl,
+    read(Opcao), Opcao>0, Opcao =<10,
+    fazOpcao(Opcao).
+
+fazOpcao(1):-f1_estafetaEcologico(R),write(R),nl.
+fazOpcao(2):-write('Não implementado').
+fazOpcao(3):-write('Não implementado').
+fazOpcao(4):-write('Não implementado').
+fazOpcao(5):-write('Não implementado').
+fazOpcao(6):-f1_estafetaEcologico(R),write(R),nl.
+fazOpcao(7):-f1_estafetaEcologico(R),write(R),nl.
+fazOpcao(8):-f1_estafetaEcologico(R),write(R),nl.
+fazOpcao(9):-write('Não implementado').
+fazOpcao(10):-f1_estafetaEcologico(R),write(R),nl.
 
 % (1) implementar mais meios de transporte
     %veiculo(hoverboard, 5, 15, 2) % mais rapido que a bicicleta mas menos ecológico pois usa energia
