@@ -91,7 +91,8 @@ f1_aux(Elem,carro) :- findall(Estafeta,entrega(_,_,Estafeta,_,carro),Lista),elem
 f2_estafetasCliente(C,R).
 
 % (3) Os clientes servidos por determinado estafeta
-f3_clientesEstafeta(E,R).
+f3_clientesEstafeta(E,R):-
+    findall(Cliente, (entrega(_, Encomenda, E,_,_), encomenda(Encomenda, _/_/_,_,_,_,_,_,Cliente)), R).
 
 % (4) O valor faturado pela Green Distribution num determinado dia
 f4_faturacaoDia(D/M/A,R):-
