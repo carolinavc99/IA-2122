@@ -66,7 +66,7 @@ entrega(ent4, enc4, est4, 1, mota).
 entrega(ent5, enc5, est1, 4, mota).
 entrega(ent6, enc6, est3, 2, carro).
 entrega(ent7, enc7, est3, 4, bicicleta).
-entrega(ent8,enc10,est2,4,bicicleta).
+entrega(ent8, enc10, est2, 4, bicicleta).
 
 % ----------- GRAFO -----------
 % 10 ruas
@@ -102,43 +102,9 @@ f4_faturacaoDia(D/M/A,R):-
     findall(Preco, (entrega(_, Encomenda, Estafeta,_,_), encomenda(Encomenda, D/M/A/_/_,_,_,Preco,_,_,_)), Precos),
     sumlist(Precos,R).
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% -- TEM DE ORDENAR POR #ENTREGAS --
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % (5) As zonas com maior volume de entregas
 % Interpreto em: imprime as zonas por ordem de número de entregas, zona pode ser rua ou freguesia
-f5_zonasMaiorVolume(Zona) :-
-    (freguesia(Zona) ->
-        (findall(Freguesia, freguesia(Freguesia), Freguesias), f5_aux_recursivo(Freguesias,[]));
-        (findall(Rua, rua(Rua,_), Ruas),f5_aux_recursivo(Ruas,[]))).
-
-% f5 recursiva
-f5_aux_recursivo([],List).% :- !, f5_aux_orderList(List).
-% rua
-f5_aux_recursivo([H|T],List) :-
-    (freguesia(H) ->
-        (f5_aux_numeroentregas(freguesia, H,N),
-            append(["Freguesia: ",H," Entregas: ",N,"\n"],List,ListJ),
-            f5_aux_recursivo(T,ListJ)
-        );
-        (f5_aux_numeroentregas(rua, H,N),
-            append(["Rua: ",H," Entregas: ",N,"\n"],List,ListJ),
-            f5_aux_recursivo(T,ListJ)
-        )
-    ).
-
-% Devolve o número de entregas de uma zona dada
-f5_aux_numeroentregas(Zona, Z, R) :-
-    (freguesia(Zona) -> 
-        findall(Entrega,
-            (entrega(Entrega,Encomenda,_,_,_), encomenda(Encomenda,_,_,_,_,_, Rua,_), rua(Rua,Z)),
-            Entregas);
-        findall(Entrega,
-            (entrega(Entrega,Encomenda,_,_,_), encomenda(Encomenda,_,_,_,_,_,Z,_)),
-            Entregas)
-        ),
-        length(Entregas, R).
-
+f5_zonasMaiorVolume(TipoZona).
 
 % (6) Classificação média de um dado estafeta
 f6_classificacaoMedia(E,R) :-
@@ -173,14 +139,14 @@ f9_encomendasEntreguesIntervalo(Ii, If, R) :-
     R = "Encomendas entregues: "/Entregues/"\nEncomendas não entregues: "/NEntregues.
 
 % Encontra o número de encomendas entregues e não entregues
-f9_aux(DI/MI/AI/HI/MiI, DF/MF/AF/HF/MiF, E, NE) :-
-    findall(Entregue,
-        (entrega(Entrega, Encomenda,_,_,_),
-            encomenda(Encomenda, D/M/A/H/Mi,_,_,_,_,_,_),
-            datahora_intervalo(D/M/A/H/Mi, DI/MI/AI/HI/MiI, DF/MF/AF/HF/MiF)
-        ), Entregues),
-
-    
+f9_encomendasEntreguesIntervalo(Ii, If) :-
+    findall(Entrega, entrega(Entrega,_,_,_,_), Entregas),
+    % Sabendo quantas foram entregues, então o resto não foi entregue, logo Total - Entregue = NEntregue
+    findall(EncID, encomenda(EncID,_,_,_,_,_,_,_), EncomendasTotal),
+    length(Entregas, E),
+    length(EncomendasTotal, ET),
+    NE is ET - E,
+    write("Encomendas entregues: "), write(E), write("\nEncomendas não entregues: "), write(NE).
 
 % (10) Peso total transportado por um estafeta num determinado dia
 f10_pesoEstafetaDia(Estafeta,D/M/A,R) :-
@@ -191,8 +157,8 @@ f10_pesoEstafetaDia(Estafeta,D/M/A,R) :-
     sumlist(Pesos,R).
 
 % ------ FUNCIONALIDADES EXTRA ------
-% (esta secção é à nossa escolha)
 
+% Menu
 menu:-
     write('1 - Estafeta que utilizou um meio de transporte mais ecológico mais vezes'),nl,
     write('2 - Estafetas que entregaram determinada(s) encomenda(s) a um determinado cliente'),nl,
@@ -252,17 +218,13 @@ preco(TLimite, Veiculo, P) :-
     veiculo(Veiculo,_,_,PrecoVeiculo),
     P is 5 + 48 - TLimite + PrecoVeiculo.
 
-% Determina qual o veículo a usar para a entrega
-
-
+% Calcula o elemento mais frequente de uma lista
 elemento_mais_frequente([],0).
 elemento_mais_frequente(Lista, E) :-
     sort(Lista, [H|T]), % a sort limpa elementos repetidos
     elemento_mais_frequente_aux(Lista, [H|T], HN, Freq),
     E = HN.
     
-% -- NÃO FUNCIONA --
-% este predicado está a matar-me não consigo fazer com recursividade de cauda decente
 elemento_mais_frequente_aux(Lista, [H], H, Frequencia) :-
     frequencia(H, Lista, Frequencia).
 elemento_mais_frequente_aux(Lista, [H|T], H, Fx) :-
@@ -274,7 +236,6 @@ elemento_mais_frequente_aux(Lista, [H|T], Elemento, Frequencia) :-
     elemento_mais_frequente_aux(Lista, T, Elemento, Frequencia),
     Frequencia > Fx.
     
-
 % Calcula frequência de um elemento numa lista
 frequencia(E, [], 0).
 frequencia(E, [E|T], F) :- frequencia(E, T, F1), F is F1 + 1.
