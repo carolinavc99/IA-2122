@@ -233,12 +233,8 @@ preco(TLimite, Veiculo, P) :-
     P is 5 + 48 - TLimite + PrecoVeiculo.
 
 % Determina qual o veículo a usar para a entrega
-determinarVeiculo(Peso, Veiculo):-
-    veiculo(MVeiculo, MPeso, _ , _),
-    Peso =< MPeso,
-    Veiculo is MVeiculo.
 
-% Calcula o elemento mais frequente numa lista -- NÃO FUNCIONA --
+
 elemento_mais_frequente([],0).
 elemento_mais_frequente(Lista, E) :-
     sort(Lista, [H|T]), % a sort limpa elementos repetidos
