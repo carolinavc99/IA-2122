@@ -163,7 +163,13 @@ f8_entregasEstafetaIntervalo(DI/MI/AI/HI/MiI, DF/MF/AF/HF/MiF, R) :-
     length(Lista,R).
 
 % (9) Número de encomendas entregues e não entregues pela Green Distribution, num determinado período de tempo
-f9_encomendasEntreguesIntervalo(Ii, If, R).
+f9_encomendasEntreguesIntervalo(Ii, If, R) :-
+    f9_aux(Ii, If, Entregues, NEntregues),
+    R = "Encomendas entregues: "/Entregues/"\nEncomendas não entregues: "/NEntregues.
+
+% Encontra o número de encomendas entregues e não entregues
+f9_aux(DI/MI/AI/HI/MiI, DF/MF/AF/HF/MiF, E, NE).
+    
 
 % (10) Peso total transportado por um estafeta num determinado dia
 f10_pesoEstafetaDia(Estafeta,D/M/A,R) :-
