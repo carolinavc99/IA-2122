@@ -1,5 +1,7 @@
-% ------ BASE DE CONHECIMENTO ------
+% ------ REGRAS PARA EVITAR WARNINGS ------
+:- discontiguous veiculo/4
 
+% ------ BASE DE CONHECIMENTO ------
 % veículos - tipo (3), carga (máxima), velocidade (média), preço
 veiculo(bicicleta, 5, 10, 5).
 veiculo(mota, 20,35,10).
@@ -13,11 +15,6 @@ estafeta(est4, 'Sofira Mangostim').
 estafeta(est5, 'Miriana Rubardezes').
 
 % encomenda - numero de identificação, datahora, tempo máximo de entrega, peso, volume, preço, rua, cliente
-% NOTA: o volume não vai interessar para cálculo nenhum, logo fica sempre 5
-% para calcular o preço de uma entrega de carro, fazer: preco(Tempo_máximo_entrega, carro, P). P vai unificar com o preço.
-% ATENÇÃO! Ter em atenção o peso da entrega porque cada veículo tem um limite de peso. Por exemplo é impossível ter uma entrega de 200kg pois nenhum veículo é capaz de carregar tal peso.
-% ATENÇÃO! Ao criar encomenda (ainda não fiz esse predicado), o programa vai atribuir o veículo automaticamente. O que vai fazer é essencialmente ver qual é o veículo mais ecológico que consegue carregar essa encomenda, ou seja, começa por ver se a bicicleta a pode carregar. Se não, vê se a mota consegue. Se não, vê se o carro consegue.
-% Logo, uma encomenda de 20 kilos é SEMPRE levada por uma mota, enquanto que uma encomenda de 30 kilos é sempre levada por um carro, e uma encomenda de 4 kilos é sempre levada por uma bicicleta.
 encomenda(enc1, 1/1/2021/18/30, 2, 10, 5, 56, rua1,cli1).
 encomenda(enc2, 20/7/2021/10/00, 24, 40, 5, 44, rua2,cli2).
 encomenda(enc3, 20/7/2021/9/20, 4, 5, 5, 54, rua3, cli3).
@@ -130,12 +127,6 @@ criar_entrega(EntId, EncId, EstId, Class, Veiculo) :-
         Class =< 5, Class >= 0,
         assert(encomenda(EncId, EncId, EstId, Class, Veiculo))).
 
-% estas funcionalidades são, para *quando o programa está a correr*, fazer coisas do tipo: criar uma nova encomenda, criar um novo estafeta, fazer uma entrega, etc. Não é necessário fazer isto já, principalmente sem o grafo feito!
-% pedir encomenda
-% fazer entrega
-% navegação?
-% etc
-
 % ------ FUNCIONALIDADES PEDIDAS ------
 % (1) O estafeta que utilizou mais vezes um meio de transporte mais ecológico
 f1_estafetaEcologico(R) :- f1_aux(R,_).
@@ -143,6 +134,8 @@ f1_estafetaEcologico(R) :- f1_aux(R,_).
 f1_aux(Elem,bicicleta) :- findall(Estafeta,entrega(_,_,Estafeta,_,bicicleta),Lista),elemento_mais_frequente(Lista,Elem).
 f1_aux(Elem,mota) :- findall(Estafeta,entrega(_,_,Estafeta,_,mota),Lista),elemento_mais_frequente(Lista,Elem).
 f1_aux(Elem,carro) :- findall(Estafeta,entrega(_,_,Estafeta,_,carro),Lista),elemento_mais_frequente(Lista,Elem).
+f1_aux(Elem,jato) :- findall(Estafeta,entrega(_,_,Estafeta,_,jato),Lista),elemento_mais_frequente(Lista,Elem).
+f1_aux(Elem,hoverboard) :- findall(Estafeta,entrega(_,_,Estafeta,_,hoverboard),Lista),elemento_mais_frequente(Lista,Elem).
 
 % (2) Que estafetas entregaram determinadas encomendas a determinado cliente
 f2_estafetasCliente(C,R):-
@@ -150,7 +143,7 @@ f2_estafetasCliente(C,R):-
 
 % (3) Os clientes servidos por determinado estafeta
 f3_clientesEstafeta(E,R):-
-    findall(Cliente, (entrega(_, Encomenda, E,_,_), encomenda(Encomenda, _/_/_,_,_,_,_,_,Cliente)), L),
+    findall(Cliente, (entrega(_, Encomenda, E,_,_), encomenda(Encomenda, _,_,_,_,_,_,Cliente)), L),
     sort(L,R).
 
 % (4) O valor faturado pela Green Distribution num determinado dia
@@ -203,10 +196,10 @@ f8_entregasEstafetaIntervalo(Ii, If, R) :-
     length(Lista,R).
 
 % (9) Número de encomendas entregues e não entregues pela Green Distribution, num determinado período de tempo
-f9_encomendasEntreguesIntervalo(DI/MI/AI/HI/MiI, DF/MF/AF/HF/MiF) :-
-    findall(Entrega, (entrega(Entrega, Encomenda,_,_,_) , encomenda(Encomenda, D/M/A/H/Mi,_,_,_,_,_,_), datahora_intervalo(D/M/A/H/Mi, DI/MI/AI/HI/MiI, DF/MF/AF/HF/MiF)), Entregas),
+f9_encomendasEntreguesIntervalo(Ii, If) :-
+    findall(Entrega, (entrega(Entrega, Encomenda,_,_,_) , encomenda(Encomenda, I,_,_,_,_,_,_), datahora_intervalo(I, Ii, If)), Entregas),
     % Sabendo quantas foram entregues, então o resto não foi entregue, logo Total - Entregue = NEntregue
-    findall(EncID, (encomenda(EncID, D/M/A/H/Mi,_,_,_,_,_,_), datahora_intervalo(D/M/A/H/Mi, DI/MI/AI/HI/MiI, DF/MF/AF/HF/MiF)), EncomendasTotal),
+    findall(EncID, (encomenda(EncID, I,_,_,_,_,_,_), datahora_intervalo(I, Ii, If)), EncomendasTotal),
     length(Entregas, E),
     length(EncomendasTotal, ET),
     NE is ET - E,
@@ -221,169 +214,13 @@ f10_pesoEstafetaDia(Estafeta,D/M/A,R) :-
     sumlist(Pesos,R).
 
 % ------ FUNCIONALIDADES EXTRA ------
-
-% Menu
-menu:-
-    write('1 - Estafeta que utilizou um meio de transporte mais ecológico mais vezes'),nl,
-    write('2 - Estafetas que entregaram determinada(s) encomenda(s) a um determinado cliente'),nl,
-    write('3 - Clientes servidos por determinado cliente'),nl,
-    write('4 - Valor faturado pela Green Distribution num determinado dia'),nl,
-    write('5 - Zonas com maior volume de entregas por parte da Green Distribution'),nl,
-    write('6 - Classificação média de satisfação de cliente para um determinado estafeta'),nl,
-    write('7 - Número total de entregas pelos diferentes meios de transporte num determinado intervalo de tempo'),nl,
-    write('8 - Número total de entregas pelos estafetas num determinado intervalo de tempo'),nl,
-    write('9 - Número de encomendas entregues e não entregues pela Green Distribution num determinado periodo de tempo'),nl,
-    write('10 - Peso total transportado por estafeta num determinado dia'),nl,
-    write('0 - Sair'), nl,
-    read(Opcao), Opcao>=0, Opcao =<10,
-    fazOpcao(Opcao).
-
-fazOpcao(1):-call_f1,menu.
-fazOpcao(2):-call_f2,menu.
-fazOpcao(3):-call_f3,menu.
-fazOpcao(4):-call_f4,menu.
-fazOpcao(5):-call_f5,menu.
-fazOpcao(6):-call_f6,menu.
-fazOpcao(7):-call_f7,menu.
-fazOpcao(8):-call_f8,menu.
-fazOpcao(9):-call_f9,menu.
-fazOpcao(10):-call_f10,menu.
-fazOpcao(0):-halt.
-
-call_f1:-
-    f1_estafetaEcologico(R),
-    write('Estafeta mais ecológico: '),
-    write(R),nl,nl.
-
-call_f2:-
-    write('Código de Cliente: '),nl,
-    read(Codigo),
-    f2_estafetasCliente(Codigo,R),
-    write('(Encomenda,Estafeta)'),nl,
-    write(R),nl,nl.
-
-call_f3:-
-    write('Código de Estafeta: '),nl,
-    read(Codigo),
-    f3_clientesEstafeta(Codigo,R),
-    write('Clientes servidos por '), write(Codigo), write(': '),nl,
-    write(R),nl,nl.
-
-call_f4:-
-    write('Dia: '),nl, 
-    read(Dia),
-    write('Mês: '),nl,
-    read(Mes),
-    write('Ano: '), nl,
-    read(Ano),
-    f4_faturacaoDia(Dia/Mes/Ano,R), 
-    write('Faturaram-se '), write(R), write('€'),nl,nl.
-
-call_f5:-
-    write('rua/freguesia: '),nl,
-    read(Opcao),
-    f5_zonasMaiorVolume(Opcao,R),
-    write('Maior volume ---------> Menor Volume'),nl,
-    write(R),nl,nl.
-
-call_f6:-
-    write('Código de Estafeta: '),nl,
-    read(Codigo),
-    f6_classificacaoMedia(Codigo,R),
-    write('Classificação média: '), write(R),nl,nl.
-
-call_f7:-
-    write('Veículo: '),nl,
-    read(Veiculo),
-    write('Primeira Data -> Dia: '),nl,
-    read(Dia1),
-    write('Priemira Data -> Mes: '),nl,
-    read(Mes1),
-    write('Primeira Data -> Ano: '),nl,
-    read(Ano1),
-    write('Primeira Data -> Hora: '),nl,
-    read(Hora1),
-    write('Primeira Data -> Minuto: '),nl,
-    read(Minuto1),
-    write('Segunda Data -> Dia: '),nl,
-    read(Dia2),
-    write('Segunda Data -> Mes: '),nl,
-    read(Mes2),
-    write('Segunda Data -> Ano: '),nl,
-    read(Ano2),
-    write('Primeira Data -> Hora: '),nl,
-    read(Hora2),
-    write('Primeira Data -> Minuto: '),nl,
-    read(Minuto2),
-    f7_entregasVeiculoIntervalo(Veiculo,Dia1/Mes1/Ano1/Hora1/Minuto1,Dia2/Mes2/Ano2/Hora2/Minuto2,R),
-    write('Entregas efetuadas de '),write(Veiculo),
-    write(' na intervalo inserido: '), write(R),nl,nl.
-
-call_f8:-
-    write('Primeira Data -> Dia: '),nl,
-    read(Dia1),
-    write('Priemira Data -> Mes: '),nl,
-    read(Mes1),
-    write('Primeira Data -> Ano: '),nl,
-    read(Ano1),
-    write('Primeira Data -> Hora: '),nl,
-    read(Hora1),
-    write('Primeira Data -> Minuto: '),nl,
-    read(Minuto1),
-    write('Segunda Data -> Dia: '),nl,
-    read(Dia2),
-    write('Segunda Data -> Mes: '),nl,
-    read(Mes2),
-    write('Segunda Data -> Ano: '),nl,
-    read(Ano2),
-    write('Primeira Data -> Hora: '),nl,
-    read(Hora2),
-    write('Primeira Data -> Minuto: '),nl,
-    read(Minuto2),
-    f8_entregasEstafetaIntervalo(Dia1/Mes1/Ano1/Hora1/Minuto1,Dia2/Mes2/Ano2/Hora2/Minuto2,R),
-    write('Entregas no intervalo de tempo selecionado: '), write(R),nl,nl.
-
-call_f9:-
-    write('Primeira Data -> Dia: '),nl,
-    read(Dia1),
-    write('Priemira Data -> Mes: '),nl,
-    read(Mes1),
-    write('Primeira Data -> Ano: '),nl,
-    read(Ano1),
-    write('Primeira Data -> Hora: '),nl,
-    read(Hora1),
-    write('Primeira Data -> Minuto: '),nl,
-    read(Minuto1),
-    write('Segunda Data -> Dia: '),nl,
-    read(Dia2),
-    write('Segunda Data -> Mes: '),nl,
-    read(Mes2),
-    write('Segunda Data -> Ano: '),nl,
-    read(Ano2),
-    write('Primeira Data -> Hora: '),nl,
-    read(Hora2),
-    write('Primeira Data -> Minuto: '),nl,
-    read(Minuto2),
-    f9_encomendasEntreguesIntervalo(Dia1/Mes1/Ano1/Hora1/Minuto1,Dia2/Mes2/Ano2/Hora2/Minuto2), nl,nl.
-
-call_f10:-
-    write('Estafeta: '),nl,
-    read(Estafeta),
-    write('Dia: '),nl,
-    read(Dia),
-    write('Mes'),nl,
-    read(Mes),
-    write('Ano'),nl,
-    read(Ano),
-    f10_pesoEstafetaDia(Estafeta,Dia/Mes/Ano,R),
-    write('O peso total transportado por '), write(Estafeta),
-    write(' é: '), write(R),nl,nl.
-
-
-
-
 % (1) implementar mais meios de transporte
-   % veiculo(hoverboard, 2, 15, 2). % mais rapido que a bicicleta mas menos ecológico pois usa energia
+% carga, velocidade, preço
+veiculo(jato, 200, 800, 200).
+veiculo(hoverboard, 2, 15, 5).
+
+
+% (2) Pedir informações sobre as entidades do sistema
 
 
 % ------ PREDICADOS AUXILIARES ------
@@ -454,8 +291,103 @@ frequencia(E, [E|T], F) :- frequencia(E, T, F1), F is F1 + 1.
 frequencia(E, [H|T], F) :- E \= H,
     frequencia(E, T, F).
 
-% Calcula número do Id do próximo cliente
-id_prox_cliente(Id) :-
-    findall(Cliente, cliente(Cliente,_,_), Clientes),
-    length(Clientes, L),
-    Id is L + 1.
+% Menu
+menu:-
+    write('1 - Estafeta que utilizou um meio de transporte mais ecológico mais vezes'),nl,
+    write('2 - Estafetas que entregaram determinada(s) encomenda(s) a um determinado cliente'),nl,
+    write('3 - Clientes servidos por determinado cliente'),nl,
+    write('4 - Valor faturado pela Green Distribution num determinado dia'),nl,
+    write('5 - Zonas com maior volume de entregas por parte da Green Distribution'),nl,
+    write('6 - Classificação média de satisfação de cliente para um determinado estafeta'),nl,
+    write('7 - Número total de entregas pelos diferentes meios de transporte num determinado intervalo de tempo'),nl,
+    write('8 - Número total de entregas pelos estafetas num determinado intervalo de tempo'),nl,
+    write('9 - Número de encomendas entregues e não entregues pela Green Distribution num determinado periodo de tempo'),nl,
+    write('10 - Peso total transportado por estafeta num determinado dia'),nl,
+    write('0 - Sair'), nl,
+    read(Opcao), Opcao>=0, Opcao =<10,
+    fazOpcao(Opcao).
+
+fazOpcao(1):-call_f1,menu.
+fazOpcao(2):-call_f2,menu.
+fazOpcao(3):-call_f3,menu.
+fazOpcao(4):-call_f4,menu.
+fazOpcao(5):-call_f5,menu.
+fazOpcao(6):-call_f6,menu.
+fazOpcao(7):-call_f7,menu.
+fazOpcao(8):-call_f8,menu.
+fazOpcao(9):-call_f9,menu.
+fazOpcao(10):-call_f10,menu.
+fazOpcao(0):-halt.
+
+call_f1:-
+    f1_estafetaEcologico(R),
+    write('Estafeta mais ecológico: '),
+    write(R),nl,nl.
+
+call_f2:-
+    write('Código de Cliente: '),nl,
+    read(Codigo),
+    f2_estafetasCliente(Codigo,R),
+    write('(Encomenda,Estafeta)'),nl,
+    write(R),nl,nl.
+
+call_f3:-
+    write('Código de Estafeta: '),nl,
+    read(Codigo),
+    f3_clientesEstafeta(Codigo,R),
+    write('Clientes servidos por '), write(Codigo), write(': '),nl,
+    write(R),nl,nl.
+
+call_f4:-
+    write('Data no formato: D/M/A/Hora/Minuto (separado por barra): '),nl,
+    read(Data),
+    f4_faturacaoDia(Data,R), 
+    write('Faturaram-se '), write(R), write('€'),nl,nl.
+
+call_f5:-
+    write('Rua/Freguesia: '),nl,
+    read(Opcao),
+    f5_zonasMaiorVolume(Opcao,R),
+    write('Maior volume ---------> Menor Volume'),nl,
+    write(R),nl,nl.
+
+call_f6:-
+    write('Código de Estafeta: '),nl,
+    read(Codigo),
+    f6_classificacaoMedia(Codigo,R),
+    write('Classificação média: '), write(R),nl,nl.
+
+call_f7:-
+    write('Veículo: '),nl,
+    read(Veiculo),
+    write('Primeira Data no formato: D/M/A/Hora/Minuto (separado por barra): '),nl,
+    read(Data1),
+    write('Segunda Data no formato: D/M/A/Hora/Minuto (separado por barra): '),nl,
+    read(Data1),
+    f7_entregasVeiculoIntervalo(Veiculo,Data1,Data2,R),
+    write('Entregas efetuadas de '),write(Veiculo),
+    write(' na intervalo inserido: '), write(R),nl,nl.
+
+call_f8:-
+    write('Primeira Data no formato: D/M/A/Hora/Minuto (separado por barra): '),nl,
+    read(Data1),
+    write('Segunda Data no formato: D/M/A/Hora/Minuto (separado por barra): '),nl,
+    read(Data1),
+    f8_entregasEstafetaIntervalo(Data1,Data2,R),
+    write('Entregas no intervalo de tempo selecionado: '), write(R),nl,nl.
+
+call_f9:-
+    write('Primeira Data no formato: D/M/A/Hora/Minuto (separado por barra): '),nl,
+    read(Data1),
+    write('Segunda Data no formato: D/M/A/Hora/Minuto (separado por barra): '),nl,
+    read(Data1),
+    f9_encomendasEntreguesIntervalo(Data1,Data2), nl,nl.
+
+call_f10:-
+    write('Estafeta: '),nl,
+    read(Estafeta),
+    write('Data no formato: D/M/A (separado por barra): '),nl,
+    read(Data),
+    f10_pesoEstafetaDia(Estafeta,Data,R),
+    write('O peso total transportado por '), write(Estafeta),
+    write(' é: '), write(R),nl,nl.
