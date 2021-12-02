@@ -95,7 +95,8 @@ f2_estafetasCliente(C,R):-
 
 % (3) Os clientes servidos por determinado estafeta
 f3_clientesEstafeta(E,R):-
-    findall(Cliente, (entrega(_, Encomenda, E,_,_), encomenda(Encomenda, _/_/_,_,_,_,_,_,Cliente)), R).
+    findall(Cliente, (entrega(_, Encomenda, E,_,_), encomenda(Encomenda, _/_/_,_,_,_,_,_,Cliente)), L),
+    sort(L,R).
 
 % (4) O valor faturado pela Green Distribution num determinado dia
 f4_faturacaoDia(D/M/A,R):-
@@ -179,19 +180,85 @@ menu:-
     write('8 - Número total de entregas pelos estafetas num determinado intervalo de tempo'),nl,
     write('9 - Número de encomendas entregues e não entregues pela Green Distribution num determinado periodo de tempo'),nl,
     write('10 - Peso total transportado por estafeta num determinado dia'),nl,
+    write('0 - Sair'), nl,
     read(Opcao), Opcao>0, Opcao =<10,
     fazOpcao(Opcao).
 
-fazOpcao(1):-f1_estafetaEcologico(R),write(R),nl.
-fazOpcao(2):-write('Não implementado').
-fazOpcao(3):-write('Não implementado').
-fazOpcao(4):-write('Não implementado').
-fazOpcao(5):-write('Não implementado').
-fazOpcao(6):-write('Não implementado').
-fazOpcao(7):-write('Não implementado').
-fazOpcao(8):-write('Não implementado').
-fazOpcao(9):-write('Não implementado').
-fazOpcao(10):-write('Não implementado').
+fazOpcao(1):-call_f1,menu.
+fazOpcao(2):-call_f2,menu.
+fazOpcao(3):-call_f3,menu.
+fazOpcao(4):-call_f4,menu.
+fazOpcao(5):-call_f5,menu.
+fazOpcao(6):-call_f6,menu.
+fazOpcao(7):-call_f7,menu.
+fazOpcao(8):-call_f8,menu.
+fazOpcao(9):-call_f9,menu.
+fazOpcao(10):-call_f10,menu.
+
+call_f1:-
+    f1_estafetaEcologico(R),
+    write('Estafeta mais ecológico: '),
+    write(R),nl,nl.
+
+call_f2:-
+    write('Código de Cliente: '),nl,
+    read(Codigo),
+    f2_estafetasCliente(Codigo,R),
+    write('(Encomenda,Estafeta)'),nl,
+    write(R),nl,nl.
+
+call_f3:-
+    write('Código de Estafeta: '),nl,
+    read(Codigo),
+    f3_clientesEstafeta(Codigo,R),
+    write('Clientes servidos por '), write(Codigo), write(': '),nl,
+    write(R),nl,nl.
+
+call_f4:-
+    write('Dia: '),nl, 
+    read(Dia),
+    write('Mês: '),nl,
+    read(Mes),
+    write('Ano: '), nl,
+    read(Ano),
+    f4_faturacaoDia(Dia/Mes/Ano,R), 
+    write('Faturaram-se '), write(R), write('€'),nl,nl.
+
+call_f5:-
+    write('rua/freguesia: '),nl,
+    read(Opcao),
+    f5_zonasMaiorVolume(Opcao,R),
+    write('Maior volume ---------> Menor Volume'),nl,
+    write(R),nl,nl.
+
+call_f6:-
+    write('Código de Estafeta: '),nl,
+    read(Codigo),
+    f6_classificacaoMedia(Codigo,R),
+    write('Classificação média: '), write(R),nl,nl.
+
+call_f7:-
+    write('Veículo: '),nl,
+    read(Veiculo),
+    write('Primeira Data -> Dia: '),nl,
+    read(Dia1),
+    write('Priemira Data -> Mes: '),nl,
+    read(Mes1),
+    write('Primeira Data -> Ano: '),nl,
+    read(Ano1),
+    write('Segunda Data -> Dia: '),nl,
+    read(Dia2),
+    write('Segunda Data -> Mes: '),nl,
+    read(Mes2),
+    write('Segunda Data -> Ano: '),nl,
+    read(Ano2),
+    f7_entregasVeiculoIntervalo(Veiculo,Dia1/Mes1/Ano1,Dia2/Mes2/Ano2,R),
+    write('Entregas efetuados de '),write(Veiculo),
+    write(' na intervalo inserido: '), write(R),nl,nl.
+
+
+
+
 
 % (1) implementar mais meios de transporte
     %veiculo(hoverboard, 5, 15, 2) % mais rapido que a bicicleta mas menos ecológico pois usa energia
