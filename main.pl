@@ -75,33 +75,64 @@ entrega(ent8, enc10, est2, 4, bicicleta).
 
 
 % ------ FUNCIONALIDADES NECESSÁRIAS ------
-% Criar encomenda
-criar_encomenda(EncId, Tempo, Peso, Volume, Rua, ClienteId) :- 
-    datahora(Data),
-    preco(Tempo, Peso, Preco),
-    cliente(ClienteId, Nome, _),
-    %id_prox_cliente(NumProxCliente),
-    %Id is "cli"/NumProxCliente,
-    veiculo_encomenda(Peso, Veiculo),
-    assert(encomenda(EncId, Data, Tempo, Peso, Volume, Rua, ClienteId)),
-    write("Encomenda realizada:\nCliente: "), write(Nome), write(" "), write(ClienteId),
-        write("\nData atual: "), write(Data), 
-        write("\nTempo limite de entrega: "), write(Tempo), 
-        write("\nPeso: "), write(Peso),
-        write("\nVeiculo: "), write(Veiculo),
-        write("\nVolume: "), write(Volume),
-        write("\nPreço: "), write(Preco),
-        write("\nRua: "), write(Rua).
+% Criar novo estafeta
+criar_estafeta(EstId, Nome) :-
+    (estafeta(EstId, _) -> write("Id do estafeta já existe.");
+        assert(estafeta(EstId, Nome)),
+        write("Estafeta criado.")).
 
-% Calcula número do Id do próximo cliente
-id_prox_cliente(Id) :-
-    findall(Cliente, cliente(Cliente,_,_), Clientes),
-    length(Clientes, L),
-    Id is L + 1.
+% Criar nova encomenda
+criar_encomenda(EncId, Tempo, Peso, Volume, Rua, ClienteId) :- 
+    (encomenda(EncId, _,_,_,_,_,_,_) -> write("Id  da encomenda já existe.");
+        (datahora(Data),
+        preco(Tempo, Peso, Preco),
+        cliente(ClienteId, Nome, _),
+        rua(Rua,_),
+        %id_prox_cliente(NumProxCliente),
+        %Id is "cli"/NumProxCliente,
+        veiculo_encomenda(Peso, Veiculo),
+        assert(encomenda(EncId, Data, Tempo, Peso, Volume, Rua, ClienteId)),
+        write("Encomenda realizada:\nCliente: "), write(Nome), write(" "), write(ClienteId),
+            write("\nData atual: "), write(Data), 
+            write("\nTempo limite de entrega: "), write(Tempo), 
+            write("\nPeso: "), write(Peso),
+            write("\nVeiculo: "), write(Veiculo),
+            write("\nVolume: "), write(Volume),
+            write("\nPreço: "), write(Preco),
+            write("\nRua: "), write(Rua)
+        )
+    ).
+
+% Criar nova freguesia
+criar_freguesia(Id) :-
+    (freguesia(Id) -> write("Freguesia já existe.\n");
+        assert(freguesia(Id)),
+        write("Freguesia criada.")).
+
+% Criar nova rua
+criar_rua(RId, FId) :-
+    (rua(RId, _) -> write("Rua já existe.\n");
+    assert(rua(RId, FId)),
+    write("Rua criada.")).
+
+% Criar novo cliente
+criar_cliente(ClienteId, Nome, Rua) :-
+    (cliente(ClienteId,_,_) -> write("Id do cliente já existe.");
+        assert(cliente(ClienteId, Nome, Rua)),
+        write("Cliente criado.")).
+
+% Criar nova entrega
+criar_entrega(EntId, EncId, EstId, Class, Veiculo) :-
+    (entrega(EntId,_,_,_,_) -> write("Id da entrega já existe.");
+        encomenda(EncId,_,_,_,_,_),
+        estafeta(EstId,_),
+        veiculo(Veiculo,_,_,_),
+        Class =< 5, Class >= 0,
+        assert(encomenda(EncId, EncId, EstId, Class, Veiculo))).
 
 % estas funcionalidades são, para *quando o programa está a correr*, fazer coisas do tipo: criar uma nova encomenda, criar um novo estafeta, fazer uma entrega, etc. Não é necessário fazer isto já, principalmente sem o grafo feito!
 % pedir encomenda
-% fazer entrega ( estafeta escolhe, aleatoriamente, o veículo)
+% fazer entrega
 % navegação?
 % etc
 
@@ -350,11 +381,8 @@ call_f10:-
 
 
 
-
-
-
 % (1) implementar mais meios de transporte
-    %veiculo(hoverboard, 5, 15, 2) % mais rapido que a bicicleta mas menos ecológico pois usa energia
+   % veiculo(hoverboard, 2, 15, 2). % mais rapido que a bicicleta mas menos ecológico pois usa energia
 
 
 % ------ PREDICADOS AUXILIARES ------
@@ -394,7 +422,6 @@ veiculo_encomenda(Peso, mota) :- Peso =< 20.
 veiculo_encomenda(Peso, carro) :- Peso =< 100.
 veiculo_encomenda(_, _) :- write("Demasiado peso.").
 
-
 % Calcula a ordem dos elementos mais frequentes numa lista, de maior para menor, através de eliminação
 f5_aux([],[]).
 f5_aux(ListaAll,[Elem|ListaFinal]):-
@@ -425,3 +452,9 @@ frequencia(_, [], 0).
 frequencia(E, [E|T], F) :- frequencia(E, T, F1), F is F1 + 1.
 frequencia(E, [H|T], F) :- E \= H,
     frequencia(E, T, F).
+
+% Calcula número do Id do próximo cliente
+id_prox_cliente(Id) :-
+    findall(Cliente, cliente(Cliente,_,_), Clientes),
+    length(Clientes, L),
+    Id is L + 1.
