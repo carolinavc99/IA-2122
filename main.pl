@@ -1,11 +1,15 @@
 % ------ REGRAS PARA EVITAR WARNINGS ------
-:- discontiguous veiculo/4
+% :- discontiguous veiculo/4
 
 % ------ BASE DE CONHECIMENTO ------
-% veículos - tipo (3), carga (máxima), velocidade (média), preço
+% veículos - tipo, carga, velocidade, preço
+veiculo(usainBolt, 1, 45, 20).
 veiculo(bicicleta, 5, 10, 5).
 veiculo(mota, 20,35,10).
 veiculo(carro, 100,25,15).
+veiculo(rollsRoyce, 150, 120, 80).
+veiculo(jato, 200, 800, 200).
+veiculo(fogetao, 48600, 24944, 185e6).
 
 % estafetas - numero de identificação, nome
 estafeta(est1, 'Lomberto Felgado').
@@ -131,11 +135,14 @@ criar_entrega(EntId, EncId, EstId, Class, Veiculo) :-
 % (1) O estafeta que utilizou mais vezes um meio de transporte mais ecológico
 f1_estafetaEcologico(R) :- f1_aux(R,_).
 
+% Por ordem de mais amigo do ambiente para menos
+f1_aux(Elem,usainBolt) :- findall(Estafeta,entrega(_,_,Estafeta,_,usainBolt),Lista),elemento_mais_frequente(Lista,Elem).
 f1_aux(Elem,bicicleta) :- findall(Estafeta,entrega(_,_,Estafeta,_,bicicleta),Lista),elemento_mais_frequente(Lista,Elem).
 f1_aux(Elem,mota) :- findall(Estafeta,entrega(_,_,Estafeta,_,mota),Lista),elemento_mais_frequente(Lista,Elem).
 f1_aux(Elem,carro) :- findall(Estafeta,entrega(_,_,Estafeta,_,carro),Lista),elemento_mais_frequente(Lista,Elem).
+f1_aux(Elem,rollsRoyce) :- findall(Estafeta,entrega(_,_,Estafeta,_,rollsRoyce),Lista),elemento_mais_frequente(Lista,Elem).
 f1_aux(Elem,jato) :- findall(Estafeta,entrega(_,_,Estafeta,_,jato),Lista),elemento_mais_frequente(Lista,Elem).
-f1_aux(Elem,hoverboard) :- findall(Estafeta,entrega(_,_,Estafeta,_,hoverboard),Lista),elemento_mais_frequente(Lista,Elem).
+f1_aux(Elem,fogetao) :- findall(Estafeta,entrega(_,_,Estafeta,_,fogetao),Lista),elemento_mais_frequente(Lista,Elem).
 
 % (2) Que estafetas entregaram determinadas encomendas a determinado cliente
 f2_estafetasCliente(C,R):-
@@ -214,13 +221,13 @@ f10_pesoEstafetaDia(Estafeta,D/M/A,R) :-
     sumlist(Pesos,R).
 
 % ------ FUNCIONALIDADES EXTRA ------
-% (1) implementar mais meios de transporte
-% carga, velocidade, preço
-veiculo(jato, 200, 800, 200).
-veiculo(hoverboard, 2, 15, 5).
+% (1) menu
+% em baixo
 
+% (2) implementar mais meios de transporte
+% em cima ^
 
-% (2) Pedir informações sobre as entidades do sistema
+% (3) ?
 
 
 % ------ PREDICADOS AUXILIARES ------
@@ -250,15 +257,20 @@ datahora_intervalo(I, Ii, If) :-
 
 % Calcula o preço da encomenda: 5 (base) + 48 - tempo_em_horas + preço_veiculo
 preco(TLimite, Peso, P) :-
-    veiculo_encomenda(Peso, Veiculo),
-    veiculo(Veiculo,_,_,PrecoVeiculo),
-    P is 5 + 48 - TLimite + PrecoVeiculo.
+    (TLimite > 48 -> write("Tempo máximo de agendamento é 48 horas."); 
+        veiculo_encomenda(Peso, Veiculo),
+        veiculo(Veiculo,_,_,PrecoVeiculo),
+        P is 5 + 48 - TLimite + PrecoVeiculo).
 
 % Determina o veículo a utilizar para uma encomenda a partir do peso
+veiculo_encomenda(Peso, usainBolt) :- Peso =< 1.
 veiculo_encomenda(Peso, bicicleta) :- Peso =< 5.
 veiculo_encomenda(Peso, mota) :- Peso =< 20.
 veiculo_encomenda(Peso, carro) :- Peso =< 100.
-veiculo_encomenda(_, _) :- write("Demasiado peso.").
+veiculo_encomenda(Peso, rollsRoyce) :- Peso =< 150.
+veiculo_encomenda(Peso, jato) :- Peso =< 800.
+veiculo_encomenda(Peso, fogetao) :- Peso =< 24944.
+veiculo_encomenda(_,_) :- write("Demasiado peso.").
 
 % Calcula a ordem dos elementos mais frequentes numa lista, de maior para menor, através de eliminação
 f5_aux([],[]).
@@ -434,7 +446,7 @@ call_f7:-
     write('Primeira Data no formato: D/M/A/Hora/Minuto (separado por barra): '),nl,
     read(Data1),
     write('Segunda Data no formato: D/M/A/Hora/Minuto (separado por barra): '),nl,
-    read(Data1),
+    read(Data2),
     f7_entregasVeiculoIntervalo(Veiculo,Data1,Data2,R),
     write('Entregas efetuadas de '),write(Veiculo),
     write(' na intervalo inserido: '), write(R),nl,nl.
@@ -443,7 +455,7 @@ call_f8:-
     write('Primeira Data no formato: D/M/A/Hora/Minuto (separado por barra): '),nl,
     read(Data1),
     write('Segunda Data no formato: D/M/A/Hora/Minuto (separado por barra): '),nl,
-    read(Data1),
+    read(Data2),
     f8_entregasEstafetaIntervalo(Data1,Data2,R),
     write('Entregas no intervalo de tempo selecionado: '), write(R),nl,nl.
 
@@ -451,7 +463,7 @@ call_f9:-
     write('Primeira Data no formato: D/M/A/Hora/Minuto (separado por barra): '),nl,
     read(Data1),
     write('Segunda Data no formato: D/M/A/Hora/Minuto (separado por barra): '),nl,
-    read(Data1),
+    read(Data2),
     f9_encomendasEntreguesIntervalo(Data1,Data2), nl,nl.
 
 call_f10:-
