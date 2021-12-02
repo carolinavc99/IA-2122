@@ -303,8 +303,15 @@ menu:-
     write('8 - Número total de entregas pelos estafetas num determinado intervalo de tempo'),nl,
     write('9 - Número de encomendas entregues e não entregues pela Green Distribution num determinado periodo de tempo'),nl,
     write('10 - Peso total transportado por estafeta num determinado dia'),nl,
+    write('-----------------------------------------------------------------------------------------------------------'),nl,
+    write('11 - Criar Estafeta'),nl,
+    write('12 - Criar Encomenda'),nl,
+    write('13 - Criar Freguesia'),nl,
+    write('14 - Criar Rua'),nl,
+    write('15 - Criar Cliente'),nl,
+    write('16 - Criar Entrega'),nl,
     write('0 - Sair'), nl,
-    read(Opcao), Opcao>=0, Opcao =<10,
+    read(Opcao), Opcao>=0, Opcao =<16,
     fazOpcao(Opcao).
 
 fazOpcao(1):-call_f1,menu.
@@ -317,7 +324,71 @@ fazOpcao(7):-call_f7,menu.
 fazOpcao(8):-call_f8,menu.
 fazOpcao(9):-call_f9,menu.
 fazOpcao(10):-call_f10,menu.
+fazOpcao(11):-call_criar_estafeta,menu.
+fazOpcao(12):-call_criar_encomenda,menu.
+fazOpcao(13):-call_criar_freguesia,menu.
+fazOpcao(14):-call_criar_rua,menu.
+fazOpcao(15):-call_criar_cliente,menu.
+fazOpcao(16):-call_criar_entrega,menu.
 fazOpcao(0):-halt.
+
+call_criar_estafeta:-
+    write('Código no formato estX: '), nl,
+    read(Codigo),
+    write('Nome: '), nl,
+    read(Nome),
+    criar_estafeta(Codigo,Nome),nl,nl.
+
+call_criar_encomenda:-
+    write('Código no formato encX: '),nl,
+    read(Codigo),
+    write('Tempo de entrega: '),nl,
+    read(Tempo),
+    write('Peso: '),nl,
+    read(Peso),
+    write('Volume: '),nl,
+    read(Volume),
+    write('Rua: '),nl,
+    read(Rua),
+    write('Código de Cliente no formato cliX: '),nl,
+    read(Cliente),
+    criar_encomenda(Codigo,Tempo,Peso,Volume,Rua,CLiente).
+
+call_criar_freguesia:-
+    write('Código no formato fX: '),nl,
+    read(Codigo),
+    criar_freguesia(Codigo).
+
+call_criar_rua:-
+    write('Código de rua no formato ruaX: '),nl,
+    read(Rua),
+    write('Código de freguesia no formato fX: '),nl,
+    read(Freguesia),
+    criar_rua(Rua,Freguesia).
+
+call_criar_cliente:-
+    write('Código no formato cliX: '),nl,
+    read(Codigo),
+    write('Nome: '),
+    read(Nome),
+    write('Rua: '),
+    read(Rua),
+    criar_cliente(Codigo,Nome,Rua).
+
+call_criar_entrega:-
+    write('Código de entrega no formato entX: '),nl,
+    read(Codigo_entrega),
+    write('Código de encomenda no formato encX: '),nl,
+    read(Codigo_encomenda),
+    write('Código de estafeta no formato estX: '),nl,
+    read(Codigo_estafeta),
+    write('Classificação (0-5): '),
+    read(Classificacao),
+    write('Veiculo (bicicleta / mota / carro):'),nl,
+    read(Veiculo),
+    criar_entrega(Codigo_entrega,Codigo_encomenda,Codigo_estafeta,Classificacao,Veiculo).
+
+
 
 call_f1:-
     f1_estafetaEcologico(R),
