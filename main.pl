@@ -18,16 +18,16 @@ estafeta(est5, 'Miriana Rubardezes').
 % ATENÇÃO! Ter em atenção o peso da entrega porque cada veículo tem um limite de peso. Por exemplo é impossível ter uma entrega de 200kg pois nenhum veículo é capaz de carregar tal peso.
 % ATENÇÃO! Ao criar encomenda (ainda não fiz esse predicado), o programa vai atribuir o veículo automaticamente. O que vai fazer é essencialmente ver qual é o veículo mais ecológico que consegue carregar essa encomenda, ou seja, começa por ver se a bicicleta a pode carregar. Se não, vê se a mota consegue. Se não, vê se o carro consegue.
 % Logo, uma encomenda de 20 kilos é SEMPRE levada por uma mota, enquanto que uma encomenda de 30 kilos é sempre levada por um carro, e uma encomenda de 4 kilos é sempre levada por uma bicicleta.
-encomenda(enc1, 1/1/2021/18/30, 2, 10, 5, 56, rua1,c1).
-encomenda(enc2, 20/7/2021/10/00, 24, 40, 5, 44, rua2,c2).
-encomenda(enc3, 20/7/2021/9/20, 4, 5, 5, 54, rua3, c3).
-encomenda(enc4, 20/7/2021/16/00, 1, 15, 5, 62, rua4, c4).
-encomenda(enc5, 2/8/2021/3/40, 4, 20, 5, 59, rua5, c5).
-encomenda(enc6, 2/8/2021/15/50, 6, 25, 5, 62, rua6, c6).
-encomenda(enc7, 2/8/2021/17/10, 2, 96, 5, 66, rua7, c7).
-encomenda(enc8, 2/8/2021/20/00, 2, 4, 5, 56, rua8, c8).
-encomenda(enc9, 2/8/2021/20/00, 2, 4, 5, 56, rua8, c8).
-encomenda(enc10, 20/7/2021/10/00, 24, 40, 5, 44, rua2,c2).
+encomenda(enc1, 1/1/2021/18/30, 2, 10, 5, 56, rua1,cli1).
+encomenda(enc2, 20/7/2021/10/00, 24, 40, 5, 44, rua2,cli2).
+encomenda(enc3, 20/7/2021/9/20, 4, 5, 5, 54, rua3, cli3).
+encomenda(enc4, 20/7/2021/16/00, 1, 15, 5, 62, rua4, cli4).
+encomenda(enc5, 2/8/2021/3/40, 4, 20, 5, 59, rua5, cli5).
+encomenda(enc6, 2/8/2021/15/50, 6, 25, 5, 62, rua6, cli6).
+encomenda(enc7, 2/8/2021/17/10, 2, 96, 5, 66, rua7, cli7).
+encomenda(enc8, 2/8/2021/20/00, 2, 4, 5, 56, rua8, cli8).
+encomenda(enc9, 2/8/2021/20/00, 2, 4, 5, 56, rua8, cli8).
+encomenda(enc10, 20/7/2021/10/00, 24, 40, 5, 44, rua2,cli2).
 
 % freguesias - codigo de identificação
 freguesia(f1).
@@ -49,14 +49,14 @@ rua(rua9, f5).
 rua(rua10, f5).
 
 % clientes - numero de identificação, nome, id da rua de morada
-cliente(c1, 'Filmina Ribano', rua1).
-cliente(c2, 'Santónio Mabalares', rua2).
-cliente(c3, 'Namuel Ponino', rua3).
-cliente(c4, 'Diliana Ramaz', rua4).
-cliente(c5, 'Sarina Compares', rua5).
-cliente(c6, 'Romana Sardezes', rua6).
-cliente(c7, 'Carminela Lopanor', rua7).
-cliente(c8, 'Iolina Rumos', rua8).
+cliente(cli1, 'Filmina Ribano', rua1).
+cliente(cli2, 'Santónio Mabalares', rua2).
+cliente(cli3, 'Namuel Ponino', rua3).
+cliente(cli4, 'Diliana Ramaz', rua4).
+cliente(cli5, 'Sarina Compares', rua5).
+cliente(cli6, 'Romana Sardezes', rua6).
+cliente(cli7, 'Carminela Lopanor', rua7).
+cliente(cli8, 'Iolina Rumos', rua8).
 
 % entregas - número de identificação, encomenda, estafeta, classificação (0-5), veiculo
 entrega(ent1, enc1, est1, 5, bicicleta).
@@ -75,6 +75,30 @@ entrega(ent8, enc10, est2, 4, bicicleta).
 
 
 % ------ FUNCIONALIDADES NECESSÁRIAS ------
+% Criar encomenda
+criar_encomenda(EncId, Tempo, Peso, Volume, Rua, ClienteId) :- 
+    datahora(Data),
+    preco(Tempo, Peso, Preco),
+    cliente(ClienteId, Nome, _),
+    %id_prox_cliente(NumProxCliente),
+    %Id is "cli"/NumProxCliente,
+    veiculo_encomenda(Peso, Veiculo),
+    assert(encomenda(EncId, Data, Tempo, Peso, Volume, Rua, ClienteId)),
+    write("Encomenda realizada:\nCliente: "), write(Nome), write(" "), write(ClienteId),
+        write("\nData atual: "), write(Data), 
+        write("\nTempo limite de entrega: "), write(Tempo), 
+        write("\nPeso: "), write(Peso),
+        write("\nVeiculo: "), write(Veiculo),
+        write("\nVolume: "), write(Volume),
+        write("\nPreço: "), write(Preco),
+        write("\nRua: "), write(Rua).
+
+% Calcula número do Id do próximo cliente
+id_prox_cliente(Id) :-
+    findall(Cliente, cliente(Cliente,_,_), Clientes),
+    length(Clientes, L),
+    Id is L + 1.
+
 % estas funcionalidades são, para *quando o programa está a correr*, fazer coisas do tipo: criar uma nova encomenda, criar um novo estafeta, fazer uma entrega, etc. Não é necessário fazer isto já, principalmente sem o grafo feito!
 % pedir encomenda
 % fazer entrega ( estafeta escolhe, aleatoriamente, o veículo)
@@ -91,11 +115,11 @@ f1_aux(Elem,carro) :- findall(Estafeta,entrega(_,_,Estafeta,_,carro),Lista),elem
 
 % (2) Que estafetas entregaram determinadas encomendas a determinado cliente
 f2_estafetasCliente(C,R):-
-    findall((Encomenda, Estafeta), (entrega(_, Encomenda, Estafeta,_,_), encomenda(Encomenda, _/_/_,_,_,_,_,_,C)), R).
+    findall((Encomenda, Estafeta), (entrega(_, Encomenda, Estafeta,_,_), encomenda(Encomenda, _,_,_,_,_,_,C)), R).
 
 % (3) Os clientes servidos por determinado estafeta
 f3_clientesEstafeta(E,R):-
-    findall(Cliente, (entrega(_, Encomenda, E,_,_), encomenda(Encomenda, _/_/_,_,_,_,_,_,Cliente)), R).
+    findall(Cliente, (entrega(_, Encomenda, E,_,_), encomenda(Encomenda, _,_,_,_,_,_,Cliente)), R).
 
 % (4) O valor faturado pela Green Distribution num determinado dia
 f4_faturacaoDia(D/M/A,R):-
@@ -110,7 +134,6 @@ f5_zonasMaiorVolume(rua,RuasN):-
             encomenda(Encomenda,_,_,_,_,_,Rua,_)),
             Ruas),
         f5_aux(Ruas,RuasN).
-        
 
 f5_zonasMaiorVolume(freguesia,FreguesiasN):-
         findall(Freguesia, 
@@ -129,21 +152,21 @@ f6_classificacaoMedia(E,R) :-
     R is div(Sum, Length).
 
 % (7) Número total de entregas pelos meios de transporte, em determinado intervalo de tempo
-f7_entregasVeiculoIntervalo(V,DI/MI/AI/HI/MiI,DF/MF/AF/HF/MiF,R) :- % veiculo, intervalo inicial, intervalo final, resposta
+f7_entregasVeiculoIntervalo(V,Ii,If,R) :- % veiculo, intervalo inicial, intervalo final, resposta
     findall(Entrega, 
     (entrega(Entrega, Encomenda,_,_,V), 
-        encomenda(Encomenda, D/M/A/H/Mi,_,_,_,_,_,_),
-        datahora_intervalo(D/M/A/H/Mi, DI/MI/AI/HI/MiI, DF/MF/AF/HF/MiF)),
+        encomenda(Encomenda, I,_,_,_,_,_,_),
+        datahora_intervalo(I, Ii, If)),
     Lista),
     length(Lista,R).
 
 % (8) Número total de entregas pelos estafetas, em determinado intervalo de tempo
 % por "estafetas" (plural), interpreto todas as entregas num dado intervalo de tempo
-f8_entregasEstafetaIntervalo(DI/MI/AI/HI/MiI, DF/MF/AF/HF/MiF, R) :-
+f8_entregasEstafetaIntervalo(Ii, If, R) :-
     findall(Entrega, 
     (entrega(Entrega, Encomenda,_,_,_),
-        encomenda(Encomenda, D/M/A/H/Mi,_,_,_,_,_,_),
-        datahora_intervalo(D/M/A/H/Mi, DI/MI/AI/HI/MiI, DF/MF/AF/HF/MiF)),
+        encomenda(Encomenda, I,_,_,_,_,_,_),
+        datahora_intervalo(I, Ii, If)),
     Lista),
     length(Lista,R).
 
@@ -198,7 +221,7 @@ fazOpcao(10):-write('Não implementado').
 
 
 % ------ PREDICADOS AUXILIARES ------
-% Devolve a datahora atual no formato pedido
+% Devolve a datahora atual no formato utilizado neste projetos
 datahora(D/M/A/H/Min) :-
     get_time(Epoch),
     stamp_date_time(Epoch, DateTime, local),
@@ -218,15 +241,24 @@ datahoramenor(D1/M1/A1/H1/Mi1, D2/M2/A2/H2/Mi2) :-
     R1 =< R2.
 
 % True se datahora dada está entre o intervalo de tempo dado
-datahora_intervalo(D/M/A/H/Mi, DI/MI/AI/HI/MiI, DF/MF/AF/HF/MiF) :- 
-    datahoramenor(DI/MI/AI/HI/MiI, D/M/A/H/Mi),
-    datahoramenor(D/M/A/H/Mi, DF/MF/AF/HF/MiF).
+datahora_intervalo(I, Ii, If) :- 
+    datahoramenor(Ii, I),
+    datahoramenor(I, If).
 
 % Calcula o preço da encomenda: 5 (base) + 48 - tempo_em_horas + preço_veiculo
-preco(TLimite, Veiculo, P) :-
+preco(TLimite, Peso, P) :-
+    veiculo_encomenda(Peso, Veiculo),
     veiculo(Veiculo,_,_,PrecoVeiculo),
     P is 5 + 48 - TLimite + PrecoVeiculo.
 
+% Determina o veículo a utilizar para uma encomenda a partir do peso
+veiculo_encomenda(Peso, bicicleta) :- Peso =< 5.
+veiculo_encomenda(Peso, mota) :- Peso =< 20.
+veiculo_encomenda(Peso, carro) :- Peso =< 100.
+veiculo_encomenda(_, _) :- write("Demasiado peso.").
+
+
+% Calcula a ordem dos elementos mais frequentes numa lista, de maior para menor, através de eliminação
 f5_aux([],[]).
 f5_aux(ListaAll,[Elem|ListaFinal]):-
         elemento_mais_frequente(ListaAll,Elem),
