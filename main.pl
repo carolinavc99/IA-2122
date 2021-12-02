@@ -104,8 +104,7 @@ f4_faturacaoDia(D/M/A,R):-
 
 % (5) As zonas com maior volume de entregas
 % Interpreto em: imprime as zonas por ordem de número de entregas, zona pode ser rua ou freguesia
-f5_zonasMaiorVolume(TipoZona).% :-
-    %findall(Zona/Entregas, , Pares)
+f5_zonasMaiorVolume(TipoZona).
 
 % (6) Classificação média de um dado estafeta
 f6_classificacaoMedia(E,R) :-
@@ -174,11 +173,11 @@ fazOpcao(2):-write('Não implementado').
 fazOpcao(3):-write('Não implementado').
 fazOpcao(4):-write('Não implementado').
 fazOpcao(5):-write('Não implementado').
-fazOpcao(6):-f1_estafetaEcologico(R),write(R),nl.
-fazOpcao(7):-f1_estafetaEcologico(R),write(R),nl.
-fazOpcao(8):-f1_estafetaEcologico(R),write(R),nl.
+fazOpcao(6):-write('Não implementado').
+fazOpcao(7):-write('Não implementado').
+fazOpcao(8):-write('Não implementado').
 fazOpcao(9):-write('Não implementado').
-fazOpcao(10):-f1_estafetaEcologico(R),write(R),nl.
+fazOpcao(10):-write('Não implementado').
 
 % (1) implementar mais meios de transporte
     %veiculo(hoverboard, 5, 15, 2) % mais rapido que a bicicleta mas menos ecológico pois usa energia
