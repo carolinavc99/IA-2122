@@ -83,7 +83,7 @@ entrega(ent8, enc10, est2, 4, bicicleta).
 
 % ------ FUNCIONALIDADES PEDIDAS ------
 % (1) O estafeta que utilizou mais vezes um meio de transporte mais ecológico
-f1_estafetaEcologico(R) :- f1_aux(R,V).
+f1_estafetaEcologico(R) :- f1_aux(R,_).
 
 f1_aux(Elem,bicicleta) :- findall(Estafeta,entrega(_,_,Estafeta,_,bicicleta),Lista),elemento_mais_frequente(Lista,Elem).
 f1_aux(Elem,mota) :- findall(Estafeta,entrega(_,_,Estafeta,_,mota),Lista),elemento_mais_frequente(Lista,Elem).
@@ -99,12 +99,26 @@ f3_clientesEstafeta(E,R):-
 
 % (4) O valor faturado pela Green Distribution num determinado dia
 f4_faturacaoDia(D/M/A,R):-
-    findall(Preco, (entrega(_, Encomenda, Estafeta,_,_), encomenda(Encomenda, D/M/A/_/_,_,_,Preco,_,_,_)), Precos),
+    findall(Preco, (entrega(_, Encomenda,_,_,_), encomenda(Encomenda, D/M/A/_/_,_,_,Preco,_,_,_)), Precos),
     sumlist(Precos,R).
 
 % (5) As zonas com maior volume de entregas
 % Interpreto em: imprime as zonas por ordem de número de entregas, zona pode ser rua ou freguesia
-f5_zonasMaiorVolume(TipoZona).
+f5_zonasMaiorVolume(rua,RuasN):-
+        findall(Rua, 
+            (entrega(_,Encomenda,_,_,_), 
+            encomenda(Encomenda,_,_,_,_,_,Rua,_)),
+            Ruas),
+        f5_aux(Ruas,RuasN).
+        
+
+f5_zonasMaiorVolume(freguesia,FreguesiasN):-
+        findall(Freguesia, 
+            (entrega(_,Encomenda,_,_,_), 
+            encomenda(Encomenda,_,_,_,_,_,Rua,_),
+            rua(Rua,Freguesia)), 
+            Freguesias),
+        f5_aux(Freguesias,FreguesiasN).
 
 % (6) Classificação média de um dado estafeta
 f6_classificacaoMedia(E,R) :-
@@ -213,18 +227,24 @@ preco(TLimite, Veiculo, P) :-
     veiculo(Veiculo,_,_,PrecoVeiculo),
     P is 5 + 48 - TLimite + PrecoVeiculo.
 
+f5_aux([],[]).
+f5_aux(ListaAll,[Elem|ListaFinal]):-
+        elemento_mais_frequente(ListaAll,Elem),
+        delete(ListaAll,Elem,ListaIterada),
+        f5_aux(ListaIterada,ListaFinal).
+
 % Calcula o elemento mais frequente de uma lista
 elemento_mais_frequente([],0).
 elemento_mais_frequente(Lista, E) :-
     sort(Lista, [H|T]), % a sort limpa elementos repetidos
-    elemento_mais_frequente_aux(Lista, [H|T], HN, Freq),
+    elemento_mais_frequente_aux(Lista, [H|T], HN, _),
     E = HN.
     
 elemento_mais_frequente_aux(Lista, [H], H, Frequencia) :-
     frequencia(H, Lista, Frequencia).
 elemento_mais_frequente_aux(Lista, [H|T], H, Fx) :-
     frequencia(H, Lista, Fx),
-    elemento_mais_frequente_aux(Lista, T, HCauda, Frequencia),
+    elemento_mais_frequente_aux(Lista, T, _, Frequencia),
     Frequencia =< Fx.
 elemento_mais_frequente_aux(Lista, [H|T], Elemento, Frequencia) :-
     frequencia(H, Lista, Fx),
@@ -232,7 +252,7 @@ elemento_mais_frequente_aux(Lista, [H|T], Elemento, Frequencia) :-
     Frequencia > Fx.
     
 % Calcula frequência de um elemento numa lista
-frequencia(E, [], 0).
+frequencia(_, [], 0).
 frequencia(E, [E|T], F) :- frequencia(E, T, F1), F is F1 + 1.
 frequencia(E, [H|T], F) :- E \= H,
     frequencia(E, T, F).
