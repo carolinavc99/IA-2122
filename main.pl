@@ -3,9 +3,11 @@
 
 % ------ BASE DE CONHECIMENTO ------
 % veículos - tipo, carga, velocidade, preço
+veiculo(usainBolt, 1, 45, 20).
 veiculo(bicicleta, 5, 10, 5).
 veiculo(mota, 20,35,10).
 veiculo(carro, 100,25,15).
+veiculo(rollsRoyce, 150, 120, 80).
 veiculo(jato, 200, 800, 200).
 veiculo(fogetao, 48600, 24944, 185e6).
 
@@ -134,9 +136,11 @@ criar_entrega(EntId, EncId, EstId, Class, Veiculo) :-
 f1_estafetaEcologico(R) :- f1_aux(R,_).
 
 % Por ordem de mais amigo do ambiente para menos
+f1_aux(Elem,usainBolt) :- findall(Estafeta,entrega(_,_,Estafeta,_,usainBolt),Lista),elemento_mais_frequente(Lista,Elem).
 f1_aux(Elem,bicicleta) :- findall(Estafeta,entrega(_,_,Estafeta,_,bicicleta),Lista),elemento_mais_frequente(Lista,Elem).
 f1_aux(Elem,mota) :- findall(Estafeta,entrega(_,_,Estafeta,_,mota),Lista),elemento_mais_frequente(Lista,Elem).
 f1_aux(Elem,carro) :- findall(Estafeta,entrega(_,_,Estafeta,_,carro),Lista),elemento_mais_frequente(Lista,Elem).
+f1_aux(Elem,rollsRoyce) :- findall(Estafeta,entrega(_,_,Estafeta,_,rollsRoyce),Lista),elemento_mais_frequente(Lista,Elem).
 f1_aux(Elem,jato) :- findall(Estafeta,entrega(_,_,Estafeta,_,jato),Lista),elemento_mais_frequente(Lista,Elem).
 f1_aux(Elem,fogetao) :- findall(Estafeta,entrega(_,_,Estafeta,_,fogetao),Lista),elemento_mais_frequente(Lista,Elem).
 
@@ -259,12 +263,14 @@ preco(TLimite, Peso, P) :-
         P is 5 + 48 - TLimite + PrecoVeiculo).
 
 % Determina o veículo a utilizar para uma encomenda a partir do peso
+veiculo_encomenda(Peso, usainBolt) :- Peso =< 1.
 veiculo_encomenda(Peso, bicicleta) :- Peso =< 5.
 veiculo_encomenda(Peso, mota) :- Peso =< 20.
 veiculo_encomenda(Peso, carro) :- Peso =< 100.
+veiculo_encomenda(Peso, rollsRoyce) :- Peso =< 150.
 veiculo_encomenda(Peso, jato) :- Peso =< 800.
 veiculo_encomenda(Peso, fogetao) :- Peso =< 24944.
-veiculo_encomenda(_, _) :- write("Demasiado peso.").
+veiculo_encomenda(_,_) :- write("Demasiado peso.").
 
 % Calcula a ordem dos elementos mais frequentes numa lista, de maior para menor, através de eliminação
 f5_aux([],[]).
