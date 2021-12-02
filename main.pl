@@ -29,6 +29,8 @@ encomenda(enc7, 2/8/2021/17/10, 2, 96, 5, 66, rua7, cli7).
 encomenda(enc8, 2/8/2021/20/00, 2, 4, 5, 56, rua8, cli8).
 encomenda(enc9, 2/8/2021/20/00, 2, 4, 5, 56, rua8, cli8).
 encomenda(enc10, 20/7/2021/10/00, 24, 40, 5, 44, rua2,cli2).
+encomenda(enc11, 2/12/2021/20/11, 3, 0.6, 5, 70, rua3, cli8).
+encomenda(enc12, 2/12/2021/20/11, 4, 7, 5, 59, rua1, cli3).
 
 % freguesias - codigo de identificação
 freguesia(f1).
@@ -68,6 +70,7 @@ entrega(ent5, enc5, est1, 4, mota).
 entrega(ent6, enc6, est3, 2, carro).
 entrega(ent7, enc7, est3, 4, bicicleta).
 entrega(ent8, enc10, est2, 4, bicicleta).
+entrega(ent9, enc11, est5, 4, usainBolt).
 
 % ----------- GRAFO -----------
 % 10 ruas
@@ -89,15 +92,11 @@ criar_encomenda(EncId, Tempo, Peso, Volume, Rua, ClienteId) :-
         preco(Tempo, Peso, Preco),
         cliente(ClienteId, Nome, _),
         rua(Rua,_),
-        %id_prox_cliente(NumProxCliente),
-        %Id is "cli"/NumProxCliente,
-        veiculo_encomenda(Peso, Veiculo),
         assert(encomenda(EncId, Data, Tempo, Peso, Volume, Rua, ClienteId)),
         write("Encomenda realizada:\nCliente: "), write(Nome), write(" "), write(ClienteId),
             write("\nData atual: "), write(Data), 
             write("\nTempo limite de entrega: "), write(Tempo), 
             write("\nPeso: "), write(Peso),
-            write("\nVeiculo: "), write(Veiculo),
             write("\nVolume: "), write(Volume),
             write("\nPreço: "), write(Preco),
             write("\nRua: "), write(Rua)
@@ -125,11 +124,11 @@ criar_cliente(ClienteId, Nome, Rua) :-
 % Criar nova entrega
 criar_entrega(EntId, EncId, EstId, Class, Veiculo) :-
     (entrega(EntId,_,_,_,_) -> write("Id da entrega já existe.");
-        encomenda(EncId,_,_,_,_,_),
+        encomenda(EncId,_,_,_,_,_,_,_),
         estafeta(EstId,_),
         veiculo(Veiculo,_,_,_),
         Class =< 5, Class >= 0,
-        assert(encomenda(EncId, EncId, EstId, Class, Veiculo))).
+        assert(entrega(EncId, EncId, EstId, Class, Veiculo))).
 
 % ------ FUNCIONALIDADES PEDIDAS ------
 % (1) O estafeta que utilizou mais vezes um meio de transporte mais ecológico
@@ -227,8 +226,6 @@ f10_pesoEstafetaDia(Estafeta,D/M/A,R) :-
 % (2) implementar mais meios de transporte
 % em cima ^
 
-% (3) ?
-
 
 % ------ PREDICADOS AUXILIARES ------
 % Devolve a datahora atual no formato utilizado neste projetos
@@ -313,7 +310,7 @@ menu:-
     write('6 - Classificação média de satisfação de cliente para um determinado estafeta'),nl,
     write('7 - Número total de entregas pelos diferentes meios de transporte num determinado intervalo de tempo'),nl,
     write('8 - Número total de entregas pelos estafetas num determinado intervalo de tempo'),nl,
-    write('9 - Número de encomendas entregues e não entregues pela Green Distribution num determinado periodo de tempo'),nl,
+    write('9 - Número de encomendas entregues e não entregues pela Green Distribution num determinado período de tempo'),nl,
     write('10 - Peso total transportado por estafeta num determinado dia'),nl,
     write('-----------------------------------------------------------------------------------------------------------'),nl,
     write('11 - Criar Estafeta'),nl,
@@ -347,7 +344,7 @@ fazOpcao(0):-halt.
 call_criar_estafeta:-
     write('Código no formato estX: '), nl,
     read(Codigo),
-    write('Nome: '), nl,
+    write('Nome (entre aspas): '), nl,
     read(Nome),
     criar_estafeta(Codigo,Nome),nl,nl.
 
@@ -364,7 +361,7 @@ call_criar_encomenda:-
     read(Rua),
     write('Código de Cliente no formato cliX: '),nl,
     read(Cliente),
-    criar_encomenda(Codigo,Tempo,Peso,Volume,Rua,CLiente).
+    criar_encomenda(Codigo,Tempo,Peso,Volume,Rua,Cliente).
 
 call_criar_freguesia:-
     write('Código no formato fX: '),nl,
@@ -381,9 +378,9 @@ call_criar_rua:-
 call_criar_cliente:-
     write('Código no formato cliX: '),nl,
     read(Codigo),
-    write('Nome: '),
+    write('Nome: '),nl,
     read(Nome),
-    write('Rua: '),
+    write('Rua: '),nl,
     read(Rua),
     criar_cliente(Codigo,Nome,Rua).
 
@@ -394,17 +391,17 @@ call_criar_entrega:-
     read(Codigo_encomenda),
     write('Código de estafeta no formato estX: '),nl,
     read(Codigo_estafeta),
-    write('Classificação (0-5): '),
+    write('Classificação (0-5): '),nl,
     read(Classificacao),
-    write('Veiculo (bicicleta / mota / carro):'),nl,
-    read(Veiculo),
+    encomenda(Codigo_encomenda,_,_,Peso,_,_,_,_),
+    veiculo_encomenda(Peso, Veiculo),
     criar_entrega(Codigo_entrega,Codigo_encomenda,Codigo_estafeta,Classificacao,Veiculo).
 
 
 
 call_f1:-
     f1_estafetaEcologico(R),
-    write('Estafeta mais ecológico: '),
+    write('Estafeta mais ecológico: '),nl,
     write(R),nl,nl.
 
 call_f2:-
@@ -422,7 +419,7 @@ call_f3:-
     write(R),nl,nl.
 
 call_f4:-
-    write('Data no formato: D/M/A/Hora/Minuto (separado por barra): '),nl,
+    write('Data no formato: D/M/A/ (separado por barra): '),nl,
     read(Data),
     f4_faturacaoDia(Data,R), 
     write('Faturaram-se '), write(R), write('€'),nl,nl.
@@ -449,7 +446,7 @@ call_f7:-
     read(Data2),
     f7_entregasVeiculoIntervalo(Veiculo,Data1,Data2,R),
     write('Entregas efetuadas de '),write(Veiculo),
-    write(' na intervalo inserido: '), write(R),nl,nl.
+    write(' no intervalo inserido: '), write(R),nl,nl.
 
 call_f8:-
     write('Primeira Data no formato: D/M/A/Hora/Minuto (separado por barra): '),nl,
