@@ -235,7 +235,7 @@ menu:-
     write('9 - Número de encomendas entregues e não entregues pela Green Distribution num determinado periodo de tempo'),nl,
     write('10 - Peso total transportado por estafeta num determinado dia'),nl,
     write('0 - Sair'), nl,
-    read(Opcao), Opcao>0, Opcao =<10,
+    read(Opcao), Opcao>=0, Opcao =<10,
     fazOpcao(Opcao).
 
 fazOpcao(1):-call_f1,menu.
@@ -248,6 +248,7 @@ fazOpcao(7):-call_f7,menu.
 fazOpcao(8):-call_f8,menu.
 fazOpcao(9):-call_f9,menu.
 fazOpcao(10):-call_f10,menu.
+fazOpcao(0):-halt.
 
 call_f1:-
     f1_estafetaEcologico(R),
