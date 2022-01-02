@@ -2,14 +2,14 @@
 % :- discontiguous veiculo/4
 
 % ------ BASE DE CONHECIMENTO ------
-% veículos - tipo, carga, velocidade, preço
-veiculo(usainBolt, 1, 45, 20).
-veiculo(bicicleta, 5, 10, 5).
-veiculo(mota, 20,35,10).
-veiculo(carro, 100,25,15).
-veiculo(rollsRoyce, 150, 120, 80).
-veiculo(jato, 200, 800, 200).
-veiculo(fogetao, 48600, 24944, 185e6).
+% veículos - tipo, carga, velocidade, preço, decrescimento de velocidade em relação ao peso (km/h/kg)
+veiculo(usainBolt, 1, 45, 20, 0). % decréscimo é 0 uma vez que só pode levar mesmo 1 kg anyways
+veiculo(bicicleta, 5, 10, 5, 0.7).
+veiculo(mota, 20, 35, 10, 0.5).
+veiculo(carro, 100, 25, 15, 0.1).
+veiculo(rollsRoyce, 150, 120, 80, 0.1).
+veiculo(jato, 200, 800, 200, 0.05).
+veiculo(fogetao, 48600, 24944, 185e6, 0).
 
 % estafetas - numero de identificação, nome
 estafeta(est1, 'Lomberto Felgado').
@@ -259,15 +259,42 @@ preco(TLimite, Peso, P) :-
         veiculo(Veiculo,_,_,PrecoVeiculo),
         P is 5 + 48 - TLimite + PrecoVeiculo).
 
-% Determina o veículo a utilizar para uma encomenda a partir do peso
-veiculo_encomenda(Peso, usainBolt) :- Peso =< 1.
-veiculo_encomenda(Peso, bicicleta) :- Peso =< 5.
-veiculo_encomenda(Peso, mota) :- Peso =< 20.
-veiculo_encomenda(Peso, carro) :- Peso =< 100.
-veiculo_encomenda(Peso, rollsRoyce) :- Peso =< 150.
-veiculo_encomenda(Peso, jato) :- Peso =< 800.
-veiculo_encomenda(Peso, fogetao) :- Peso =< 24944.
-veiculo_encomenda(_,_) :- write("Demasiado peso.").
+% Soma um certo número de horas a uma data e devolve a nova data
+soma_horas_data(Horas, D/M/A/H/Mi, D1/M1/A1/H1/Mi1) :-
+    date_time_stamp(date(A,M,D,H,Mi,0,0,-,-), Stamp),
+    Segundos is Horas * 60,
+    Soma is Stamp + Segundos,
+    stamp_date_time(Soma, DataX, local),
+    date_time_value(year, DataX, A1),
+    date_time_value(month, DataX, M1),
+    date_time_value(day, DataX, D1),
+    date_time_value(hour, DataX, H1),
+    date_time_value(minute, DataX, Min1).
+
+% Calcula o tempo de entrega de uma encomenda considerando o decréscimo de velocidade comforme o peso
+tempo_de_entrega(VelocidadeBaseVeiculo, DecrescimoVelocidadeVeiculo, Peso, Distancia, TempoViagem) :-
+    VelocidadeVeiculo is VelocidadeBaseVeiculo - (DecrescimoVelocidadeVeiculo * Peso),
+    TempoViagem is VelocidadeVeiculo * Distancia.
+
+% Determina o veículo a utilizar para uma encomenda a partir do peso (kg), da distância a percorrer (km), e do prazo limite de entrega (h)
+veiculo_encomenda(Peso, encomenda(EncID, DataEncomenda, Prazo, Peso, _,_, RuaID, CLienteID)) :-
+    % temos de chamar veiculo_encomenda_aux para todos os veículos EM ORDEM DE MAIS ECOLÓGICO PARA MENOS ECOLÓGICO *até* ser encontrado um veículo que consiga chegar ao ponto de entrega dentro do limite de tempo
+
+
+veiculo_encomenda_aux(Peso, encomenda(EncID, DataEncomenda, Prazo, Peso, _,_, RuaID, CLienteID), Veiculo) :- 
+    % 1.  calcular a distância centro da green distribution -> RuaID
+        % isto apenas é conseguido quando já tivermos o grafo feito e a pesquisa gulosa implementada, pois é aqui que chamamos a pesquisa
+    Distancia is ,
+
+    % 2. calcular o tempo de viagem tendo em conta o decréscimo de velocidade do veiculo
+    tempo_de_entrega(VelocidadeBaseVeiculo, DecrescimoVelocidadeVeiculo, Peso, Distancia, TempoViagem),
+
+    % 3. Testar se: data atual + tempo de viagem <= data da encomenda + prazo de entrega
+    datahora(DataAtual),
+    soma_horas_data(TempoViagem, DataAtual, DataComViagem).
+    soma_horas_data(Prazo, DataEncomenda, DataLimite),
+    DataComViagem =< DataLimite.
+
 
 % Calcula a ordem dos elementos mais frequentes numa lista, de maior para menor, através de eliminação
 f5_aux([],[]).
