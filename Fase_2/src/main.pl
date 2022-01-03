@@ -1,15 +1,18 @@
 % ------ REGRAS PARA EVITAR WARNINGS ------
-% :- discontiguous veiculo/4
+% :- discontiguous seleciona/4
 
 % ------ BASE DE CONHECIMENTO ------
 % veículos - tipo, carga, velocidade, preço, decrescimento de velocidade em relação ao peso (km/h/kg)
-veiculo(usainBolt, 1, 45, 20, 0). % decréscimo é 0 uma vez que só pode levar mesmo 1 kg anyways
+veiculo(usainBolt, 1, 45, 20, 0).
 veiculo(bicicleta, 5, 10, 5, 0.7).
 veiculo(mota, 20, 35, 10, 0.5).
 veiculo(carro, 100, 25, 15, 0.1).
 veiculo(rollsRoyce, 150, 120, 80, 0.1).
 veiculo(jato, 200, 800, 200, 0.05).
 veiculo(fogetao, 48600, 24944, 185e6, 0).
+
+% "Variável" global que guarda a lista ordenada de veículos (mais para menos ecológico)
+lista_veiculos([usainBolt, bicicleta, mota, carro, rollsRoyce, jato, fogetao]).
 
 % estafetas - numero de identificação, nome
 estafeta(est1, 'Lomberto Felgado').
@@ -72,13 +75,220 @@ entrega(ent7, enc7, est3, 4, bicicleta).
 entrega(ent8, enc10, est2, 4, bicicleta).
 entrega(ent9, enc11, est5, 4, usainBolt).
 
-% ----------- GRAFO -----------
-% 10 ruas
-% as freguesias servem puramente para estatística, pelo que não se devem incluir no grafo
-% o algoritmo de pesquisa a utilizar, por indicação do professor, é o de pesquisa gulosa. Logo fazer um grafo que vá de acordo com isso
+% ------ GRAFO ------
+aresta(centro, rua2, 6).
+aresta(rua2, rua3, 7).
+aresta(rua3, rua5, 3).
+aresta(rua5, rua10, 2).
+aresta(rua3, rua4, 2).
+aresta(rua4, rua9, 6).
+aresta(rua2, rua8, 2).
+aresta(rua8, rua9, 1).
+aresta(rua9, rua7, 4).
+aresta(rua7, rua6, 8).
+aresta(rua6, rua8, 2).
+aresta(rua6, rua1, 6).
+aresta(rua1, centro, 5).
 
+aresta(A,B,T) :- aresta(B,A,T).
 
+goal(centro). % correto?
+
+estima(rua1,5).
+estima(rua2,6).
+estima(rua3,15).
+estima(rua4,17).
+estima(rua5,16).
+estima(rua6,11).
+estima(rua7,19).
+estima(rua8,13).
+estima(rua9,14).
+estima(rua10,28).
+
+% ------ OBJETIVOS SEGUNDA FASE ------
+% gerar circuitos de entrega para cada rua, para cada pesquisa
+
+% --DONE-- representação dos diversos pontos de entrega em forma de grafo
+
+% --- os circuitos a comparar são por exemplo para a rua10 usando as diferentes pesquisas ---
+% identificar quais os circuitos com maior número de entregas (por volume e por peso)
+maior_numero_entregas(R).
+
+% comparar circuitos de entrega tendo em conta os indicadores de produtividade
+%melhor_circuito(tempo,).
+%melhor_circuito(distancia,)
+% escolher o circuito mais rápido (critério de distância)
+% escolher o circuito mais ecológico (critério de tempo)
+
+% ------ CIRCUITOS ------
+circuito(RuaID, EstadoInicial, [H|T], EstadoFinal).
+
+% -----------------------------------
+% ---------- PESQUISAS --------------
+% -----------------------------------
+
+% ______ Informada ______
+
+% ------ A Estrela ------
+/*
+resolve_estrela(Nodo, Caminho/Custo) :- 
+    estima(Nodo, Estima),
+    a_estrela([[Nodo]/0/Estima], InvCaminho/Custo/_),
+    reverse(InvCaminho, Caminho).
+
+a_estrela(Caminhos, SCaminho) :-
+    obtem_caminho(Caminhos,MelhorCam),
+    seleciona(MelhorCam,Caminhos,OutrosCam),
+    expande_estrela(MelhorCam,ExpCam),
+    append(OutrosCam,ExpCam,NCam),
+    a_estrela(Nodo,SCaminho).
+
+obtem_caminho([Caminho], Caminho) :- !.
+obtem_caminho([Caminho1/Custo1/Estima1,Caminho2/Custo2/Estima2|Caminhos], MCam) :-
+    Custo1+Estima1 =< Custo2+Estima2,!,
+    obtem_caminho([Caminho1/Custo1/Estima1|Caminhos],MCam).
+obtem_caminho([_|Caminhos],MCam) :- 
+    obtem_caminho(Caminhos,MCam).
+
+seleciona(E,[E|XS],XS).
+seleicona(E,[X|XS],[X|YS]) :-
+    seleciona(E,XS,YS).
+
+expande_estrela(Caminho,ExpCam) :- 
+    findall(NovoCaminho, adjacente(Caminho,NovoCaminho),ExpCam).
+
+*/
+resolve_aestrela(Nodo,Caminho/Custo) :-
+    estima(Nodo, Estima),
+    aestrela([[Nodo]/0/Estima], InvCaminho/Custo/_),
+    inverso(InvCaminho, Caminho). % porque o resultado é descoberto inversamente (o append de novos nodos é feito sempre à cabeça)
+
+% -- A* --
+aestrela(Caminhos, Caminho) :-
+    obtem_melhor(Caminhos, Caminho),
+    Caminho = [Nodo|_]/_/_,
+    goal(Nodo).
+
+aestrela(Caminhos, SCaminho) :-
+    obtem_melhor(Caminhos, MelhorCaminho), % escolhe o melhor dos caminhos já encontrados
+    seleciona(MelhorCaminho, Caminhos, OutrosCaminhos), % na fase inicial, "outros caminhos" está vazio, depois é que é preenchido
+    expande_aestrela(MelhorCaminho, ExpCaminhos), % como parte a partir do melhor caminho, atualiza com o próximo passoa  dar (no grafo da aula: Nodo->[b,a,s]->[c,b,a,s])
+    append(OutrosCaminhos, ExpCaminhos, NCaminhos), % fazer append para descobrir se algum dos caminhos que já lá estava passou a ser melhor, depois da expansão
+    aestrela(NCaminhos, SCaminho).
+
+% -- OBTÉM MELHOR --
+obtem_melhor([Caminho],Caminho) :- !.
+
+obtem_melhor([Caminho1/Custo1/Est1,Caminho2/Custo2/Est2|Caminhos], MelhorCaminho) :-
+    Custo1 + Est1 =< Custo2 + Est2, !,
+    obtem_melhor([Caminho1/Custo1/Est1|Caminhos], MelhorCaminho).
+
+obtem_melhor([_|Caminhos], MelhorCaminho) :- % caso caminho 2 seja melhor que caminho 1 (da cláusula anterior), este último é descartado
+    obtem_melhor(Caminhos, MelhorCaminho).
+
+% -- EXPANDE A* --
+expande_aestrela(Caminho, ExpCaminhos) :-
+    findall(NovoCaminho, adjacente2(Caminho, NovoCaminho), ExpCaminhos). % findall todos os NovoCaminho que são adjacentes a Caminho, e mete-os em ExpCaminhos
+
+adjacente([Nodo|Caminho]/Custo/_,[ProxNodo,Nodo|Caminho]/NovoCusto/NovaEstima) :-
+    aresta(Nodo,ProxNodo,CustoPasso),
+    \+member(ProxNodo,Caminho),
+    NovoCusto is Custo + CustoPasso,
+    estima(ProxNodo,NovaEstima).
+
+% ------ Auxiliares às pesquisas ------
+adjacente2([Nodo|Caminho]/Custo/_,[ProxNodo,Nodo|Caminho]/NovoCusto/Est) :-
+    aresta(Nodo, ProxNodo, CustoPasso),
+    \+ membro(ProxNodo, Caminho),
+    NovoCusto is Custo + CustoPasso,
+    estima(ProxNodo, Est).
+
+seleciona(E, [E|Xs], Xs).
+seleciona(E, [X|Xs], [X|Ys]) :- seleciona(E, Xs, Ys).
+
+inverso(Xs, Ys) :- inverso([X|Xs], [], Ys).
+inverso([], Xs, Ys).
+inverso([X|Xs], Ys, Zs) :- inverso(Xs, [X|Ys], Zs).
+
+membro(X, [X|_]).
+membro(X, [_|Xs]) :- membro(X,Xs).
+
+% ------ PESQUISA GULOSA ------
+resolve_pig(Nodo, Caminho/Custo) :-
+    estima(Nodo, Estima),
+    pig([[Nodo]/0/Estima], InvCaminho/Custo/_),
+    inverso(InvCaminho,Caminho).
+
+pig(Caminhos,Caminho) :-
+    obtem_melhor_g(Caminhos, Caminho),
+    Caminho = [Nodo|_]/_/_,
+    goal(Nodo).
+pig(Caminhos, SolucaoCaminho) :-
+    obtem_melhor_g(Caminhos,MelhorCaminho),
+    seleciona(MelhorCaminho, Caminhos, OutrosCaminhos),
+    expande_pig(melhorCaminho, ExpCaminhos),
+    append(OutrosCaminhos, ExpCaminhos, NovoCaminhos),
+    pig(NovoCaminhos, SolucaoCaminho).
+
+% melhor solução a partir de um grafo é a que tem melhor estimativa
+obtem_melhor_g([Caminho], Caminho) :- !.
+obtem_melhor_g([Caminho1/Custo1/Est1,_/Custo2/Est2|Caminhos], MelhorCaminho) :-
+    Est1 =< Est2, !,
+    obtem_melhor_g([Caminho1/Custo1/Est1|Caminhos], MelhorCaminho).
+
+expande_pig(Caminho, ExpCaminhos) :-
+    findall(NovoCaminho, adjacente2(Caminho,NovoCaminho), ExpCaminhos).
+
+% _______ Não informada _______
+
+% ------ PROFUNDIDADE ------
+
+% Apagar o write das pesquisas se não for necessário
+
+dfs(Origem, Destino, Caminho) :- dfs2(Origem, Destino, [Origem], Caminho).
+dfs2(Destino, Destino, LA, Caminho) :- reverse(LA, Caminho), write(Caminho).
+dfs2(Actual, Destino, LA, Caminho) :- transicao(Actual, Operacao, EstadoX),
+    \+ member(EstadoX,LA),
+    dfs2(EstadoX, Destino, [EstadoX|LA], Caminho).
+
+% ------ LARGURA ------
+resolve_pfp(Nodo, [Nodo|Caminho],C):- pfp(Nodo,[Nodo],Caminho,C).
+
+pfp(Nodo,_,[],0) :- goal(Nodo).
+pfp(Nodo,Historico,[ProxNodo|Caminho],C):-
+    adjacente(Nodo,ProxNodo,C1),
+    not(membro(ProxNodo,Historico)),
+    pfp(ProxNodo,[ProxNodo|Historico],Caminho,C2),
+    C is C1 + C2.
+
+bfs(Origem, Destino, Caminho) :- bfs2(Destino, [[Origem]], Caminho).
+bfs2(Destino, [[Destino|T]|_], Caminho) :- reverse([Destino|T], Caminho), write(Caminho).
+bfs2(Destino, [LA|Outros], Caminho) :- 
+    LA = [Actual|_],
+    findall([X|LA],
+    (Destino\==Actual,transicao(Actual, Operacao, X), \+ member(X, LA)), Novos),
+    append(Outros, Novos, Todos),
+    bfs2(Destino,Todos,Caminho).
+
+% Adjacente
+adjacente(Nodo, ProxNodo, C) :-
+    aresta(Nodo,ProxNodo,C).
+adjacente(Nodo, ProxNodo, C) :-    
+    aresta(ProxNodo,Nodo,C).
+
+% Melhor
+melhor(Nodo,S,Custo) :- findall((SS,CC), resolve_pfp(Nodo,SS,CC),L),
+    minimo(L, (S,Custo)).
+
+% Mínimo
+minimo([(P,X)], (P,X)).
+minimo([(Px,X)|L], (Py,Y)) :- minimo(L, (Py,Y)), X>Y.
+minimo([(Px,X)|L], (Px,X)) :- minimo(L, (Py,Y)), X=<Y.
+
+% -----------------------------------------
 % ------ FUNCIONALIDADES NECESSÁRIAS ------
+% -----------------------------------------
+
 % Criar novo estafeta
 criar_estafeta(EstId, Nome) :-
     (estafeta(EstId, _) -> write("Id do estafeta já existe.");
@@ -277,21 +487,20 @@ tempo_de_entrega(VelocidadeBaseVeiculo, DecrescimoVelocidadeVeiculo, Peso, Dista
     TempoViagem is VelocidadeVeiculo * Distancia.
 
 % Determina o veículo a utilizar para uma encomenda a partir do peso (kg), da distância a percorrer (km), e do prazo limite de entrega (h)
-veiculo_encomenda(Peso, encomenda(EncID, DataEncomenda, Prazo, Peso, _,_, RuaID, CLienteID)) :-
+veiculo_encomenda(Peso, EncID, Distancia, [H|L], R) :- % Distancia é calculada pelo algoritmo escolhido
+    encomenda(EncID, DataEncomenda, Prazo, Peso, _, _, RuaID, ClienteID),
     % temos de chamar veiculo_encomenda_aux para todos os veículos EM ORDEM DE MAIS ECOLÓGICO PARA MENOS ECOLÓGICO *até* ser encontrado um veículo que consiga chegar ao ponto de entrega dentro do limite de tempo
+    veiculo_encomenda_aux(Distancia, EncID, DataEncomenda, Prazo, Peso, RuaID, ClienteID, H),
+    R is H.
+veiculo_encomenda(Peso, EncID, Distancia, [H|L], R) :- veiculo_encomenda(Peso, EncID, Distancia, L, R).
+veiculo_encomenda(Peso, EncID, Distancia, [], R) :- write('Não é possível fazer esta encomenda.').
 
-
-veiculo_encomenda_aux(Peso, encomenda(EncID, DataEncomenda, Prazo, Peso, _,_, RuaID, CLienteID), Veiculo) :- 
-    % 1.  calcular a distância centro da green distribution -> RuaID
-        % isto apenas é conseguido quando já tivermos o grafo feito e a pesquisa gulosa implementada, pois é aqui que chamamos a pesquisa
-    Distancia is ,
-
-    % 2. calcular o tempo de viagem tendo em conta o decréscimo de velocidade do veiculo
+veiculo_encomenda_aux(Distancia, DataEncomenda, Prazo, Peso, RuaID, ClienteID, Veiculo) :- 
+    % 1. calcular o tempo de viagem tendo em conta o decréscimo de velocidade do veiculo
     tempo_de_entrega(VelocidadeBaseVeiculo, DecrescimoVelocidadeVeiculo, Peso, Distancia, TempoViagem),
-
-    % 3. Testar se: data atual + tempo de viagem <= data da encomenda + prazo de entrega
+    % 2. Testar se: data atual + tempo de viagem <= data da encomenda + prazo de entrega
     datahora(DataAtual),
-    soma_horas_data(TempoViagem, DataAtual, DataComViagem).
+    soma_horas_data(TempoViagem, DataAtual, DataComViagem),
     soma_horas_data(Prazo, DataEncomenda, DataLimite),
     DataComViagem =< DataLimite.
 
@@ -327,7 +536,7 @@ frequencia(E, [E|T], F) :- frequencia(E, T, F1), F is F1 + 1.
 frequencia(E, [H|T], F) :- E \= H,
     frequencia(E, T, F).
 
-% Menu
+% ------ Menu ------
 menu:-
     write('1 - Estafeta que utilizou um meio de transporte mais ecológico mais vezes'),nl,
     write('2 - Estafetas que entregaram determinada(s) encomenda(s) a um determinado cliente'),nl,
@@ -421,7 +630,8 @@ call_criar_entrega:-
     write('Classificação (0-5): '),nl,
     read(Classificacao),
     encomenda(Codigo_encomenda,_,_,Peso,_,_,_,_),
-    veiculo_encomenda(Peso, Veiculo),
+    lista_veiculos(L),
+    veiculo_encomenda(Peso, Codigo_encomenda, _, L, Veiculo),
     criar_entrega(Codigo_entrega,Codigo_encomenda,Codigo_estafeta,Classificacao,Veiculo).
 
 
