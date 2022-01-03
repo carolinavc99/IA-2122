@@ -1,29 +1,20 @@
 % ------ LARGURA ------
-depth_first(Goal, Goal, _, [Goal]).
-depth_first(Start, Goal, Visited, [Start|Path]) :-
-    next_node(Start, Next_node, Visited),
-    write(Visited), nl,
-    depth_first(Next_node, Goal, [Next_node|Visited], Path).
+% Código tirado de git --- !!!  COPIADO NÃO USAR NEM DEIXAR NO CÓDIGO  !!! ---
+resolvePPCusto(Inicial,Final,[Inicial|Caminho],Custo):-
+    primeiroprofundidadeCusto(Inicial,Final,[Inicial],Caminho,Custo).
 
-brdepth_first( Start, Goal, Path):-
-    depth_first( Start, Goal, [Start], Path).
+primeiroprofundidadeCusto(Nodo,Final, _, [], 0):-Nodo ==Final.
 
-consed( A, B, [B|A]).
+primeiroprofundidadeCusto(Nodo,Final,Historico,[NodoProx|Caminho],Custo):-
+    adjacenteCusto(Nodo,NodoProx,CustoMovimento),
+    not(member(NodoProx, Historico)),
+    primeiroprofundidadeCusto(NodoProx,Final,[NodoProx|Historico],Caminho,Custo2),
+    Custo is CustoMovimento + Custo2.
 
-bfs( Goal, [Visited|Rest], Path) :-                     % take one from front
-    Visited = [Start|_],            
-    Start \== Goal,
-    findall( X,
-        ( connected2(X, Start, _), \+ member(X, Visited) ),
-        [T|Extend]),
-    maplist( consed(Visited), [T|Extend], VisitedExtended),      % make many
-    append( Rest, VisitedExtended, UpdatedQueue),       % put them at the end
-    bfs( Goal, UpdatedQueue, Path ).
+adjacenteCusto(Nodo, NodoProx, Custo):-
+    adjacente(Nodo,NodoProx,Custo).
 
-    
-next_node(Current, Next, Path) :-
-    adjacente(Current, Next, _),
-    not(member(Next, Path)).
+% !!! ver warning acima !!!
 
 
 /*

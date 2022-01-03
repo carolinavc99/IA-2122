@@ -27,7 +27,7 @@ expande_aestrela(Caminho, ExpCaminhos) :-
 	findall(NovoCaminho, adjacente2(Caminho,NovoCaminho), ExpCaminhos).
 
 adjacente2([Nodo|Caminho]/Custo/_, [ProxNodo,Nodo|Caminho]/NovoCusto/Est) :-
-	aresta(Nodo, ProxNodo, PassoCusto),
+	adjacente(Nodo, ProxNodo, PassoCusto),
 	\+member(ProxNodo, Caminho),
 	NovoCusto is Custo + PassoCusto,
 	estima(ProxNodo, Est).
