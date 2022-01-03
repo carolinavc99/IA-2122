@@ -1,109 +1,19 @@
+:- [grafo].
+:- [datahora].
+:- [base_conhecimento].
+
+% Pesquisa informada
+:- [gulosa].
+:- [aestrela].
+
+% Pesquisa não informada
+:- [profundidade].
+:- [largura].
+:- [iterativa].
+
 % ------ REGRAS PARA EVITAR WARNINGS ------
-% :- discontiguous seleciona/4
+:-style_check(-discontiguous).
 
-% ------ BASE DE CONHECIMENTO ------
-% veículos - tipo, carga, velocidade, preço, decrescimento de velocidade em relação ao peso (km/h/kg)
-veiculo(usainBolt, 1, 45, 20, 0).
-veiculo(bicicleta, 5, 10, 5, 0.7).
-veiculo(mota, 20, 35, 10, 0.5).
-veiculo(carro, 100, 25, 15, 0.1).
-veiculo(rollsRoyce, 150, 120, 80, 0.1).
-veiculo(jato, 200, 800, 200, 0.05).
-veiculo(fogetao, 48600, 24944, 185e6, 0).
-
-% "Variável" global que guarda a lista ordenada de veículos (mais para menos ecológico)
-lista_veiculos([usainBolt, bicicleta, mota, carro, rollsRoyce, jato, fogetao]).
-
-% estafetas - numero de identificação, nome
-estafeta(est1, 'Lomberto Felgado').
-estafeta(est2, 'Marie Madalaide').
-estafeta(est3, 'Davim Ariezes').
-estafeta(est4, 'Sofira Mangostim').
-estafeta(est5, 'Miriana Rubardezes').
-
-% encomenda - numero de identificação, datahora, tempo máximo de entrega, peso, volume, preço, rua, cliente
-encomenda(enc1, 1/1/2021/18/30, 2, 10, 5, 56, rua1,cli1).
-encomenda(enc2, 20/7/2021/10/00, 24, 40, 5, 44, rua2,cli2).
-encomenda(enc3, 20/7/2021/9/20, 4, 5, 5, 54, rua3, cli3).
-encomenda(enc4, 20/7/2021/16/00, 1, 15, 5, 62, rua4, cli4).
-encomenda(enc5, 2/8/2021/3/40, 4, 20, 5, 59, rua5, cli5).
-encomenda(enc6, 2/8/2021/15/50, 6, 25, 5, 62, rua6, cli6).
-encomenda(enc7, 2/8/2021/17/10, 2, 96, 5, 66, rua7, cli7).
-encomenda(enc8, 2/8/2021/20/00, 2, 4, 5, 56, rua8, cli8).
-encomenda(enc9, 2/8/2021/20/00, 2, 4, 5, 56, rua8, cli8).
-encomenda(enc10, 20/7/2021/10/00, 24, 40, 5, 44, rua2,cli2).
-encomenda(enc11, 2/12/2021/20/11, 3, 0.6, 5, 70, rua3, cli8).
-encomenda(enc12, 2/12/2021/20/11, 4, 7, 5, 59, rua1, cli3).
-
-% freguesias - codigo de identificação
-freguesia(f1).
-freguesia(f2).
-freguesia(f3).
-freguesia(f4).
-freguesia(f5).
-
-% ruas - codigo de identificação, id da freguesia
-rua(rua1, f1).
-rua(rua2, f1).
-rua(rua3, f2).
-rua(rua4, f2).
-rua(rua5, f3).
-rua(rua6, f3).
-rua(rua7, f4).
-rua(rua8, f4).
-rua(rua9, f5).
-rua(rua10, f5).
-
-% clientes - numero de identificação, nome, id da rua de morada
-cliente(cli1, 'Filmina Ribano', rua1).
-cliente(cli2, 'Santónio Mabalares', rua2).
-cliente(cli3, 'Namuel Ponino', rua3).
-cliente(cli4, 'Diliana Ramaz', rua4).
-cliente(cli5, 'Sarina Compares', rua5).
-cliente(cli6, 'Romana Sardezes', rua6).
-cliente(cli7, 'Carminela Lopanor', rua7).
-cliente(cli8, 'Iolina Rumos', rua8).
-
-% entregas - número de identificação, encomenda, estafeta, classificação (0-5), veiculo
-entrega(ent1, enc1, est1, 5, bicicleta).
-entrega(ent2, enc2, est2, 3, carro).
-entrega(ent3, enc3, est3, 2, bicicleta).
-entrega(ent4, enc4, est4, 1, mota).
-entrega(ent5, enc5, est1, 4, mota).
-entrega(ent6, enc6, est3, 2, carro).
-entrega(ent7, enc7, est3, 4, bicicleta).
-entrega(ent8, enc10, est2, 4, bicicleta).
-entrega(ent9, enc11, est5, 4, usainBolt).
-
-% ------ GRAFO ------
-aresta(centro, rua2, 6).
-aresta(rua2, rua3, 7).
-aresta(rua3, rua5, 3).
-aresta(rua5, rua10, 2).
-aresta(rua3, rua4, 2).
-aresta(rua4, rua9, 6).
-aresta(rua2, rua8, 2).
-aresta(rua8, rua9, 1).
-aresta(rua9, rua7, 4).
-aresta(rua7, rua6, 8).
-aresta(rua6, rua8, 2).
-aresta(rua6, rua1, 6).
-aresta(rua1, centro, 5).
-
-aresta(A,B,T) :- aresta(B,A,T).
-
-goal(centro). % correto?
-
-estima(rua1,5).
-estima(rua2,6).
-estima(rua3,15).
-estima(rua4,17).
-estima(rua5,16).
-estima(rua6,11).
-estima(rua7,19).
-estima(rua8,13).
-estima(rua9,14).
-estima(rua10,28).
 
 % ------ OBJETIVOS SEGUNDA FASE ------
 % gerar circuitos de entrega para cada rua, para cada pesquisa
@@ -123,60 +33,9 @@ maior_numero_entregas(R).
 % ------ CIRCUITOS ------
 circuito(RuaID, EstadoInicial, [H|T], EstadoFinal).
 
-% -----------------------------------
-% ---------- PESQUISAS --------------
-% -----------------------------------
+% ------ Auxiliares às pesquisas ------
 
-% ______ Informada ______
-
-% ------ A Estrela ------
-/*
-resolve_estrela(Nodo, Caminho/Custo) :- 
-    estima(Nodo, Estima),
-    a_estrela([[Nodo]/0/Estima], InvCaminho/Custo/_),
-    reverse(InvCaminho, Caminho).
-
-a_estrela(Caminhos, SCaminho) :-
-    obtem_caminho(Caminhos,MelhorCam),
-    seleciona(MelhorCam,Caminhos,OutrosCam),
-    expande_estrela(MelhorCam,ExpCam),
-    append(OutrosCam,ExpCam,NCam),
-    a_estrela(Nodo,SCaminho).
-
-obtem_caminho([Caminho], Caminho) :- !.
-obtem_caminho([Caminho1/Custo1/Estima1,Caminho2/Custo2/Estima2|Caminhos], MCam) :-
-    Custo1+Estima1 =< Custo2+Estima2,!,
-    obtem_caminho([Caminho1/Custo1/Estima1|Caminhos],MCam).
-obtem_caminho([_|Caminhos],MCam) :- 
-    obtem_caminho(Caminhos,MCam).
-
-seleciona(E,[E|XS],XS).
-seleicona(E,[X|XS],[X|YS]) :-
-    seleciona(E,XS,YS).
-
-expande_estrela(Caminho,ExpCam) :- 
-    findall(NovoCaminho, adjacente(Caminho,NovoCaminho),ExpCam).
-
-*/
-resolve_aestrela(Nodo,Caminho/Custo) :-
-    estima(Nodo, Estima),
-    aestrela([[Nodo]/0/Estima], InvCaminho/Custo/_),
-    inverso(InvCaminho, Caminho). % porque o resultado é descoberto inversamente (o append de novos nodos é feito sempre à cabeça)
-
-% -- A* --
-aestrela(Caminhos, Caminho) :-
-    obtem_melhor(Caminhos, Caminho),
-    Caminho = [Nodo|_]/_/_,
-    goal(Nodo).
-
-aestrela(Caminhos, SCaminho) :-
-    obtem_melhor(Caminhos, MelhorCaminho), % escolhe o melhor dos caminhos já encontrados
-    seleciona(MelhorCaminho, Caminhos, OutrosCaminhos), % na fase inicial, "outros caminhos" está vazio, depois é que é preenchido
-    expande_aestrela(MelhorCaminho, ExpCaminhos), % como parte a partir do melhor caminho, atualiza com o próximo passoa  dar (no grafo da aula: Nodo->[b,a,s]->[c,b,a,s])
-    append(OutrosCaminhos, ExpCaminhos, NCaminhos), % fazer append para descobrir se algum dos caminhos que já lá estava passou a ser melhor, depois da expansão
-    aestrela(NCaminhos, SCaminho).
-
-% -- OBTÉM MELHOR --
+% Obtém melhor caminho de uma lista
 obtem_melhor([Caminho],Caminho) :- !.
 
 obtem_melhor([Caminho1/Custo1/Est1,Caminho2/Custo2/Est2|Caminhos], MelhorCaminho) :-
@@ -185,110 +44,16 @@ obtem_melhor([Caminho1/Custo1/Est1,Caminho2/Custo2/Est2|Caminhos], MelhorCaminho
 
 obtem_melhor([_|Caminhos], MelhorCaminho) :- % caso caminho 2 seja melhor que caminho 1 (da cláusula anterior), este último é descartado
     obtem_melhor(Caminhos, MelhorCaminho).
-
-% -- EXPANDE A* --
-expande_aestrela(Caminho, ExpCaminhos) :-
-    findall(NovoCaminho, adjacente2(Caminho, NovoCaminho), ExpCaminhos). % findall todos os NovoCaminho que são adjacentes a Caminho, e mete-os em ExpCaminhos
-
-adjacente([Nodo|Caminho]/Custo/_,[ProxNodo,Nodo|Caminho]/NovoCusto/NovaEstima) :-
-    aresta(Nodo,ProxNodo,CustoPasso),
-    \+member(ProxNodo,Caminho),
-    NovoCusto is Custo + CustoPasso,
-    estima(ProxNodo,NovaEstima).
-
-% ------ Auxiliares às pesquisas ------
-adjacente2([Nodo|Caminho]/Custo/_,[ProxNodo,Nodo|Caminho]/NovoCusto/Est) :-
-    aresta(Nodo, ProxNodo, CustoPasso),
-    \+ membro(ProxNodo, Caminho),
-    NovoCusto is Custo + CustoPasso,
-    estima(ProxNodo, Est).
-
+    
 seleciona(E, [E|Xs], Xs).
 seleciona(E, [X|Xs], [X|Ys]) :- seleciona(E, Xs, Ys).
-
-inverso(Xs, Ys) :- inverso([X|Xs], [], Ys).
-inverso([], Xs, Ys).
-inverso([X|Xs], Ys, Zs) :- inverso(Xs, [X|Ys], Zs).
 
 membro(X, [X|_]).
 membro(X, [_|Xs]) :- membro(X,Xs).
 
-% ------ PESQUISA GULOSA ------
-resolve_pig(Nodo, Caminho/Custo) :-
-    estima(Nodo, Estima),
-    pig([[Nodo]/0/Estima], InvCaminho/Custo/_),
-    inverso(InvCaminho,Caminho).
-
-pig(Caminhos,Caminho) :-
-    obtem_melhor_g(Caminhos, Caminho),
-    Caminho = [Nodo|_]/_/_,
-    goal(Nodo).
-pig(Caminhos, SolucaoCaminho) :-
-    obtem_melhor_g(Caminhos,MelhorCaminho),
-    seleciona(MelhorCaminho, Caminhos, OutrosCaminhos),
-    expande_pig(melhorCaminho, ExpCaminhos),
-    append(OutrosCaminhos, ExpCaminhos, NovoCaminhos),
-    pig(NovoCaminhos, SolucaoCaminho).
-
-% melhor solução a partir de um grafo é a que tem melhor estimativa
-obtem_melhor_g([Caminho], Caminho) :- !.
-obtem_melhor_g([Caminho1/Custo1/Est1,_/Custo2/Est2|Caminhos], MelhorCaminho) :-
-    Est1 =< Est2, !,
-    obtem_melhor_g([Caminho1/Custo1/Est1|Caminhos], MelhorCaminho).
-
-expande_pig(Caminho, ExpCaminhos) :-
-    findall(NovoCaminho, adjacente2(Caminho,NovoCaminho), ExpCaminhos).
-
-% _______ Não informada _______
-
-% ------ PROFUNDIDADE ------
-
-% Apagar o write das pesquisas se não for necessário
-
-dfs(Origem, Destino, Caminho) :- dfs2(Origem, Destino, [Origem], Caminho).
-dfs2(Destino, Destino, LA, Caminho) :- reverse(LA, Caminho), write(Caminho).
-dfs2(Actual, Destino, LA, Caminho) :- transicao(Actual, Operacao, EstadoX),
-    \+ member(EstadoX,LA),
-    dfs2(EstadoX, Destino, [EstadoX|LA], Caminho).
-
-% ------ LARGURA ------
-resolve_pfp(Nodo, [Nodo|Caminho],C):- pfp(Nodo,[Nodo],Caminho,C).
-
-pfp(Nodo,_,[],0) :- goal(Nodo).
-pfp(Nodo,Historico,[ProxNodo|Caminho],C):-
-    adjacente(Nodo,ProxNodo,C1),
-    not(membro(ProxNodo,Historico)),
-    pfp(ProxNodo,[ProxNodo|Historico],Caminho,C2),
-    C is C1 + C2.
-
-bfs(Origem, Destino, Caminho) :- bfs2(Destino, [[Origem]], Caminho).
-bfs2(Destino, [[Destino|T]|_], Caminho) :- reverse([Destino|T], Caminho), write(Caminho).
-bfs2(Destino, [LA|Outros], Caminho) :- 
-    LA = [Actual|_],
-    findall([X|LA],
-    (Destino\==Actual,transicao(Actual, Operacao, X), \+ member(X, LA)), Novos),
-    append(Outros, Novos, Todos),
-    bfs2(Destino,Todos,Caminho).
-
-% Adjacente
-adjacente(Nodo, ProxNodo, C) :-
-    aresta(Nodo,ProxNodo,C).
-adjacente(Nodo, ProxNodo, C) :-    
-    aresta(ProxNodo,Nodo,C).
-
-% Melhor
-melhor(Nodo,S,Custo) :- findall((SS,CC), resolve_pfp(Nodo,SS,CC),L),
-    minimo(L, (S,Custo)).
-
-% Mínimo
-minimo([(P,X)], (P,X)).
-minimo([(Px,X)|L], (Py,Y)) :- minimo(L, (Py,Y)), X>Y.
-minimo([(Px,X)|L], (Px,X)) :- minimo(L, (Py,Y)), X=<Y.
-
 % -----------------------------------------
 % ------ FUNCIONALIDADES NECESSÁRIAS ------
 % -----------------------------------------
-
 % Criar novo estafeta
 criar_estafeta(EstId, Nome) :-
     (estafeta(EstId, _) -> write("Id do estafeta já existe.");
@@ -433,53 +198,17 @@ f10_pesoEstafetaDia(Estafeta,D/M/A,R) :-
 % (1) menu
 % em baixo
 
-% (2) implementar mais meios de transporte
+% (2) mais meios de transporte
 % em cima ^
 
 
 % ------ PREDICADOS AUXILIARES ------
-% Devolve a datahora atual no formato utilizado neste projetos
-datahora(D/M/A/H/Min) :-
-    get_time(Epoch),
-    stamp_date_time(Epoch, DateTime, local),
-    date_time_value(year, DateTime, A),
-    date_time_value(month, DateTime, M),
-    date_time_value(day, DateTime, D),
-    date_time_value(hour, DateTime, H),
-    date_time_value(minute, DateTime, Min).
-
-% True se data1 é menor que data2
-datahoramenor(D1/M1/A1/H1/Mi1, D2/M2/A2/H2/Mi2) :-
-    % calcula o número de segundos desde o Epoch até à data dada
-    date_time_stamp(date(A1,M1,D1,H1,Mi1,0,0,-,-), Stamp1),
-    date_time_stamp(date(A2,M2,D2,H2,Mi2,0,0,-,-), Stamp2),
-    R1 is integer(Stamp1),
-    R2 is integer(Stamp2),
-    R1 =< R2.
-
-% True se datahora dada está entre o intervalo de tempo dado
-datahora_intervalo(I, Ii, If) :- 
-    datahoramenor(Ii, I),
-    datahoramenor(I, If).
-
 % Calcula o preço da encomenda: 5 (base) + 48 - tempo_em_horas + preço_veiculo
 preco(TLimite, Peso, P) :-
     (TLimite > 48 -> write("Tempo máximo de agendamento é 48 horas."); 
         veiculo_encomenda(Peso, Veiculo),
         veiculo(Veiculo,_,_,PrecoVeiculo),
         P is 5 + 48 - TLimite + PrecoVeiculo).
-
-% Soma um certo número de horas a uma data e devolve a nova data
-soma_horas_data(Horas, D/M/A/H/Mi, D1/M1/A1/H1/Mi1) :-
-    date_time_stamp(date(A,M,D,H,Mi,0,0,-,-), Stamp),
-    Segundos is Horas * 60,
-    Soma is Stamp + Segundos,
-    stamp_date_time(Soma, DataX, local),
-    date_time_value(year, DataX, A1),
-    date_time_value(month, DataX, M1),
-    date_time_value(day, DataX, D1),
-    date_time_value(hour, DataX, H1),
-    date_time_value(minute, DataX, Min1).
 
 % Calcula o tempo de entrega de uma encomenda considerando o decréscimo de velocidade comforme o peso
 tempo_de_entrega(VelocidadeBaseVeiculo, DecrescimoVelocidadeVeiculo, Peso, Distancia, TempoViagem) :-
