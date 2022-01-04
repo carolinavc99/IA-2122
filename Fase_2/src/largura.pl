@@ -1,6 +1,22 @@
 % ------ LARGURA ------
+
+bfs(Orig, Dest, Cam/C):- 
+    bfs2(Dest,[[Orig]/0],Cam/C).
+
+bfs2(Dest,[[Dest|T]/C|_],Cam/C):- 
+    reverse([Dest|T],Cam).
+
+bfs2(Dest,[LA/Custo|Outros],Cam/C):- 
+    LA=[Act|_],
+    findall([X|LA]/Custo_atualizado,
+        (Dest\==Act,adjacente(Act,X,Custo_aresta),\+member(X,LA),Custo_atualizado is Custo+Custo_aresta),Novos),
+    append(Outros,Novos,Todos),
+    bfs2(Dest,Todos,Cam/C).
+
+
+
 % Código tirado de git --- !!!  COPIADO NÃO USAR NEM DEIXAR NO CÓDIGO  !!! ---
-resolvePPCusto(Inicial,Final,[Inicial|Caminho],Custo):-
+/*resolvePPCusto(Inicial,Final,[Inicial|Caminho],Custo):-
     primeiroprofundidadeCusto(Inicial,Final,[Inicial],Caminho,Custo).
 
 primeiroprofundidadeCusto(Nodo,Final, _, [], 0):-Nodo ==Final.
@@ -13,7 +29,7 @@ primeiroprofundidadeCusto(Nodo,Final,Historico,[NodoProx|Caminho],Custo):-
 
 adjacenteCusto(Nodo, NodoProx, Custo):-
     adjacente(Nodo,NodoProx,Custo).
-
+*/
 % !!! ver warning acima !!!
 
 
