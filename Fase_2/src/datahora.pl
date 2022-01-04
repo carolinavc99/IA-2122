@@ -25,11 +25,11 @@ datahora_intervalo(I, Ii, If) :-
 % Soma um certo número de horas a uma data e devolve a nova data
 soma_horas_data(Horas, D/M/A/H/Mi, D1/M1/A1/H1/Mi1) :-
     date_time_stamp(date(A,M,D,H,Mi,0,0,-,-), Stamp),
-    Segundos is Horas * 60,
+    Segundos is Horas * 3600,
     Soma is Stamp + Segundos,
     stamp_date_time(Soma, DataX, local),
     date_time_value(year, DataX, A1),
     date_time_value(month, DataX, M1),
     date_time_value(day, DataX, D1),
     date_time_value(hour, DataX, H1),
-    date_time_value(minute, DataX, Min1).
+    date_time_value(minute, DataX, Mi1).

@@ -15,9 +15,8 @@ circuitos_gulosa_aux([H|T], Lista, Circuitos) :-
 % ------ ALGORITMO ------
 resolve_gulosa(Nodo,Caminho/Custo) :- 
         estima(Nodo, Estima),
-        agulosa([[Nodo]/0/Estima], Caminho/Custo/_)%,
-        %reverse(InvCaminho, Caminho)
-        .
+        agulosa([[Nodo]/0/Estima], InvCaminho/Custo/_),
+        reverse(InvCaminho, Caminho).
 
 agulosa(Caminhos, Caminho) :-
     obtem_melhor_g(Caminhos,Caminho),

@@ -8,10 +8,6 @@ veiculo(rollsRoyce, 150, 120, 80, 0.1).
 veiculo(jato, 200, 800, 200, 0.05).
 veiculo(fogetao, 48600, 24944, 185e6, 0).
 
-% ------ VARIAVEIS GLOBAIS ------
-lista_veiculos(L) :- findall(Veiculo, veiculo(Veiculo,_,_,_,_), L).
-lista_ruas(L) :- findall(Rua, rua(Rua,_), L).
-
 % estafetas - numero de identificação, nome
 estafeta(est1, 'Lomberto Felgado').
 estafeta(est2, 'Marie Madalaide').
@@ -32,6 +28,9 @@ encomenda(enc9, 2/8/2021/20/00, 2, 4, 5, 56, rua8, cli8).
 encomenda(enc10, 20/7/2021/10/00, 24, 40, 5, 44, rua2,cli2).
 encomenda(enc11, 2/12/2021/20/11, 3, 0.6, 5, 70, rua3, cli8).
 encomenda(enc12, 2/12/2021/20/11, 4, 7, 5, 59, rua1, cli3).
+
+% teste
+encomenda(enc13, 4/1/2022/22/00, 1, 2, 5, 59, rua10, cli2).
 
 % freguesias - codigo de identificação
 freguesia(f1).

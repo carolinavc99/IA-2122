@@ -16,9 +16,8 @@ circuitos_aestrela_aux([H|T], Lista, Circuitos) :-
 % ------ ALGORITMO ------
 resolve_aestrela(Nodo, Caminho/Custo) :-
 	estima(Nodo, Estima),
-	aestrela([[Nodo]/0/Estima], Caminho/Custo/_)%,
-	%reverse(InvCaminho, Caminho)
-	.
+	aestrela([[Nodo]/0/Estima], InvCaminho/Custo/_),
+	reverse(InvCaminho, Caminho).
 
 aestrela(Caminhos, Caminho) :-
 	obtem_melhor(Caminhos, Caminho),
