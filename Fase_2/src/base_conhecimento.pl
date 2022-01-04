@@ -8,8 +8,9 @@ veiculo(rollsRoyce, 150, 120, 80, 0.1).
 veiculo(jato, 200, 800, 200, 0.05).
 veiculo(fogetao, 48600, 24944, 185e6, 0).
 
-% "Variável" global que guarda a lista ordenada de veículos (mais para menos ecológico)
-lista_veiculos([usainBolt, bicicleta, mota, carro, rollsRoyce, jato, fogetao]).
+% ------ VARIAVEIS GLOBAIS ------
+lista_veiculos(L) :- findall(Veiculo, veiculo(Veiculo,_,_,_,_), L).
+lista_ruas(L) :- findall(Rua, rua(Rua,_), L).
 
 % estafetas - numero de identificação, nome
 estafeta(est1, 'Lomberto Felgado').

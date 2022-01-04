@@ -1,4 +1,8 @@
 % ------ LARGURA ------
+% gerar circuitos
+
+% Algoritmo
+
 % Código tirado de git --- !!!  COPIADO NÃO USAR NEM DEIXAR NO CÓDIGO  !!! ---
 resolvePPCusto(Inicial,Final,[Inicial|Caminho],Custo):-
     primeiroprofundidadeCusto(Inicial,Final,[Inicial],Caminho,Custo).
