@@ -19,23 +19,26 @@
 
 
 % ------ OBJETIVOS SEGUNDA FASE ------
-% gerar circuitos de entrega para cada rua, para cada pesquisa
-gerar_circuitos(Circuitos) :-
-    append()
+% (1) gerar circuitos de entrega para cada rua, para cada pesquisa
+gerar_circuitos(L) :- 
+gerar_circuitos_aux([aestrela/AE,gulosa/G,profundidade/P,largura/L/*,iterativa/I*/]) :-
+    circuitos_aestrela(AE),
+    circuitos_gulosa(G),
+    circuitos_pfp(P),
+    circuitos_pfp(L).
+    %circuitos_pfp(Iterativa).
 
-circuito(centro, (rua) , centro).
-
-% --DONE-- representação dos diversos pontos de entrega em forma de grafo
+% (2) representação dos diversos pontos de entrega em forma de grafo
 
 % --- os circuitos a comparar são por exemplo para a rua10 usando as diferentes pesquisas ---
-% identificar quais os circuitos com maior número de entregas (por volume e por peso)
+% (3) identificar quais os circuitos com maior número de entregas (por volume e por peso)
 maior_numero_entregas(R).
 
-% comparar circuitos de entrega tendo em conta os indicadores de produtividade
+% (4) comparar circuitos de entrega tendo em conta os indicadores de produtividade
 %melhor_circuito(tempo,).
 %melhor_circuito(distancia,)
-% escolher o circuito mais rápido (critério de distância)
-% escolher o circuito mais ecológico (critério de tempo)
+% (5) escolher o circuito mais rápido (critério de distância)
+% (6) escolher o circuito mais ecológico (critério de tempo)
 
 % ------ CIRCUITOS ------
 circuito(RuaID, EstadoInicial, [H|T], EstadoFinal).

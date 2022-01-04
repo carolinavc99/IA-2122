@@ -13,12 +13,12 @@ circuitos_pfp_aux([H|T], Lista, Circuitos) :-
 	circuitos_pfp_aux(T, ListaX, Circuitos).
 
 % ------ ALGORITMO ------
+% Todos os caminhos para Nodo
+resolve_pfp(Nodo, [Nodo|Caminho],C):- pfp(Nodo,[Nodo],Caminho,C).
+
 % Melhor
 melhor_pfp(Nodo,S,Custo) :- findall((SS,CC), resolve_pfp(Nodo,SS,CC),L),
     minimo(L, (Sx,Custo)), reverse(Sx, S).
-
-% Todos os caminhos para Nodo
-resolve_pfp(Nodo, [Nodo|Caminho],C):- pfp(Nodo,[Nodo],Caminho,C).
 
 % Corpo principal - devolve o caminho para o nodo
 pfp(Nodo,_,[],0) :- goal(Nodo).
