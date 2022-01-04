@@ -11,12 +11,19 @@
 :- [largura].
 :- [iterativa].
 
+% conhecimento e evolução
+:- [conhecimento].
+
 % ------ REGRAS PARA EVITAR WARNINGS ------
 :-style_check(-discontiguous).
 
 
 % ------ OBJETIVOS SEGUNDA FASE ------
 % gerar circuitos de entrega para cada rua, para cada pesquisa
+gerar_circuitos(Circuitos) :-
+    append()
+
+circuito(centro, (rua) , centro).
 
 % --DONE-- representação dos diversos pontos de entrega em forma de grafo
 
@@ -215,8 +222,19 @@ tempo_de_entrega(VelocidadeBaseVeiculo, DecrescimoVelocidadeVeiculo, Peso, Dista
     VelocidadeVeiculo is VelocidadeBaseVeiculo - (DecrescimoVelocidadeVeiculo * Peso),
     TempoViagem is VelocidadeVeiculo * Distancia.
 
+% Calcula o tempo de regresso de uma entrega
+tempo_de_regresso(VelocidadeBaseVeiculo, Distancia, TempoViagem) :- 
+    tempo_de_entrega(VelocidadeBaseVeiculo, 0, 0, Distancia, TempoViagem).
+
+% Calcula a distância de entrega de uma encomenda, de acordo com o algoritmo pedido
+distancia_de_entrega(aestrela, D, EncID) :-
+    encomenda(EncID, _, _, _, _, _, RuaID, _),
+
+
 % Determina o veículo a utilizar para uma encomenda a partir do peso (kg), da distância a percorrer (km), e do prazo limite de entrega (h)
-veiculo_encomenda(Peso, EncID, Distancia, [H|L], R) :- % Distancia é calculada pelo algoritmo escolhido
+    % Distancia é calculada pelo algoritmo escolhido
+    % [H|L] é a lista de veículos, por ordem de mais ecológicos
+veiculo_encomenda(EncID, Distancia, [H|L], R) :-
     encomenda(EncID, DataEncomenda, Prazo, Peso, _, _, RuaID, ClienteID),
     % temos de chamar veiculo_encomenda_aux para todos os veículos EM ORDEM DE MAIS ECOLÓGICO PARA MENOS ECOLÓGICO *até* ser encontrado um veículo que consiga chegar ao ponto de entrega dentro do limite de tempo
     veiculo_encomenda_aux(Distancia, EncID, DataEncomenda, Prazo, Peso, RuaID, ClienteID, H),
@@ -224,7 +242,7 @@ veiculo_encomenda(Peso, EncID, Distancia, [H|L], R) :- % Distancia é calculada 
 veiculo_encomenda(Peso, EncID, Distancia, [H|L], R) :- veiculo_encomenda(Peso, EncID, Distancia, L, R).
 veiculo_encomenda(Peso, EncID, Distancia, [], R) :- write('Não é possível fazer esta encomenda.').
 
-veiculo_encomenda_aux(Distancia, DataEncomenda, Prazo, Peso, RuaID, ClienteID, Veiculo) :- 
+veiculo_encomenda_aux(Distancia, EncID, DataEncomenda, Prazo, Peso, RuaID, ClienteID, Veiculo) :- 
     % 1. calcular o tempo de viagem tendo em conta o decréscimo de velocidade do veiculo
     tempo_de_entrega(VelocidadeBaseVeiculo, DecrescimoVelocidadeVeiculo, Peso, Distancia, TempoViagem),
     % 2. Testar se: data atual + tempo de viagem <= data da encomenda + prazo de entrega
@@ -232,7 +250,6 @@ veiculo_encomenda_aux(Distancia, DataEncomenda, Prazo, Peso, RuaID, ClienteID, V
     soma_horas_data(TempoViagem, DataAtual, DataComViagem),
     soma_horas_data(Prazo, DataEncomenda, DataLimite),
     DataComViagem =< DataLimite.
-
 
 % Calcula a ordem dos elementos mais frequentes numa lista, de maior para menor, através de eliminação
 f5_aux([],[]).

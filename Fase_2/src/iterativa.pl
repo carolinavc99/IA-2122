@@ -1,0 +1,4 @@
+% ------ ITERATIVA ------
+% gerar circuitos
+
+% Algoritmo

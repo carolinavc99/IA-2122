@@ -1,8 +1,24 @@
 % ------ A Estrela ------
+% ------ CIRCUITOS ------
+% Itera sobre a lista de ruas e guarda o Caminho/Distancia para cada rua
+circuitos_aestrela(Circuitos) :-
+	lista_ruas(Ruas),
+	circuitos_aestrela_aux(Ruas, [], Circuitos).
+
+circuitos_aestrela_aux([], Circuitos, Circuitos).
+
+circuitos_aestrela_aux([H|T], Lista, Circuitos) :-
+	resolve_aestrela(H, Caminho/Custo),
+	append([Caminho/Custo], Lista, ListaX),
+	circuitos_aestrela_aux(T, ListaX, Circuitos).
+
+
+% ------ ALGORITMO ------
 resolve_aestrela(Nodo, Caminho/Custo) :-
 	estima(Nodo, Estima),
-	aestrela([[Nodo]/0/Estima], InvCaminho/Custo/_),
-	reverse(InvCaminho, Caminho).
+	aestrela([[Nodo]/0/Estima], Caminho/Custo/_)%,
+	%reverse(InvCaminho, Caminho)
+	.
 
 aestrela(Caminhos, Caminho) :-
 	obtem_melhor(Caminhos, Caminho),

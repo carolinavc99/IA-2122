@@ -1,5 +1,6 @@
 % ------ LARGURA ------
 
+
 bfs(Orig, Dest, Cam/C):- 
     bfs2(Dest,[[Orig]/0],Cam/C).
 
