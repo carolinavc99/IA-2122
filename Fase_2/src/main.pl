@@ -278,9 +278,8 @@ veiculo_encomenda(EncID, [], V, _) :- write('Não é possível fazer esta encome
 
 
 veiculo_encomenda_aux(EncID, DataEncomenda, Prazo, Peso, RuaID, Veiculo, Algoritmo) :- 
-    write('entrou com '), write(Veiculo),nl,
     % 0. calcular a distancia
-    distancia_por_algoritmo(Algoritmo, RuaID, Distancia),write('here1'),nl,
+    distancia_por_algoritmo(Algoritmo, RuaID, Distancia),
     % 1. calcular o tempo de viagem
     veiculo(Veiculo, Carga, VelocidadeBaseVeiculo, _, DecrescimoVelocidadeVeiculo),
     Peso =< Carga,

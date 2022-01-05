@@ -11,7 +11,6 @@ circuitos_dfs_aux([H|T], Lista, Circuitos) :-
 	append([Caminho/Custo], Lista, ListaX),
 	circuitos_dfs_aux(T, ListaX, Circuitos).
 
-
 % ------ ALGORITMO ------
 % Devolve o primeiro resultado
 primeiro_dfs(Destino, X/C) :-

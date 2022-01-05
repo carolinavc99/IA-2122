@@ -14,10 +14,14 @@ circuitos_aestrela_aux([H|T], Lista, Circuitos) :-
 
 
 % ------ ALGORITMO ------
+primeiro_aestrela(Origem, Destino, R) :-
+	resolve_aestrela(Destino, R).
+
 resolve_aestrela(Nodo, Caminho/Custo) :-
 	estima(Nodo, Estima),
 	aestrela([[Nodo]/0/Estima], InvCaminho/Custo/_),
-	reverse(InvCaminho, Caminho).
+	reverse(InvCaminho, Caminho),
+	!.
 
 aestrela(Caminhos, Caminho) :-
 	obtem_melhor(Caminhos, Caminho),

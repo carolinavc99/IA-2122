@@ -30,7 +30,7 @@ encomenda(enc11, 2/12/2021/20/11, 3, 0.6, 5, 70, rua3, cli8).
 encomenda(enc12, 2/12/2021/20/11, 4, 7, 5, 59, rua1, cli3).
 
 % teste
-encomenda(enc13, 5/1/2022/17/00, 1, 2, 5, 59, rua10, cli2).
+encomenda(enc13, 5/1/2022/21/00, 1, 2, 5, 59, rua10, cli2).
 
 % freguesias - codigo de identificação
 freguesia(f1).

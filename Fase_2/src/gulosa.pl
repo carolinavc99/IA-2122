@@ -13,10 +13,14 @@ circuitos_gulosa_aux([H|T], Lista, Circuitos) :-
 	circuitos_gulosa_aux(T, ListaX, Circuitos).
 
 % ------ ALGORITMO ------
+primeiro_gulosa(Nodo, R) :-
+    resolve_gulosa(Nodo, R).
+
 resolve_gulosa(Nodo,Caminho/Custo) :- 
         estima(Nodo, Estima),
         agulosa([[Nodo]/0/Estima], InvCaminho/Custo/_),
-        reverse(InvCaminho, Caminho).
+        reverse(InvCaminho, Caminho),
+        !.
 
 agulosa(Caminhos, Caminho) :-
     obtem_melhor_g(Caminhos,Caminho),
@@ -41,7 +45,7 @@ expande_gulosa(Caminho,ExpCaminhos) :-
     findall(NovoCaminho, adjacente2(Caminho,NovoCaminho),ExpCaminhos).
 
 adjacente2([Nodo|Caminho]/Custo/_, [ProxNodo,Nodo|Caminho]/NovoCusto/Est) :-
-    aresta(Nodo,ProxNodo,PassoCusto),
+    adjacente(Nodo,ProxNodo,PassoCusto),
     not(member(ProxNodo,Caminho)),
     NovoCusto is Custo + PassoCusto,
     estima(ProxNodo,Est).
