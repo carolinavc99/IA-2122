@@ -31,15 +31,18 @@ aestrela(Caminhos, SolucaoCaminho) :-
 	append(OutrosCaminhos, ExpCaminhos, NovoCaminhos),
     aestrela(NovoCaminhos, SolucaoCaminho).	
 
-obtem_melhor([Caminho], Caminho) :- !.
-obtem_melhor([Caminho1/Custo1/Est1,_/Custo2/Est2|Caminhos], MelhorCaminho) :-
-	Custo1 + Est1 =< Custo2 + Est2, !,
-	obtem_melhor([Caminho1/Custo1/Est1|Caminhos], MelhorCaminho). 
-obtem_melhor([_|Caminhos], MelhorCaminho) :- 
-	           obtem_melhor(Caminhos, MelhorCaminho).
-
 expande_aestrela(Caminho, ExpCaminhos) :-
 	findall(NovoCaminho, adjacente2(Caminho,NovoCaminho), ExpCaminhos).
+
+% ------ AUXILIARES ------
+obtem_melhor([Caminho],Caminho) :- !.
+
+obtem_melhor([Caminho1/Custo1/Est1,Caminho2/Custo2/Est2|Caminhos], MelhorCaminho) :-
+    Custo1 + Est1 =< Custo2 + Est2, !,
+    obtem_melhor([Caminho1/Custo1/Est1|Caminhos], MelhorCaminho).
+
+obtem_melhor([_|Caminhos], MelhorCaminho) :- % caso caminho 2 seja melhor que caminho 1 (da cláusula anterior), este último é descartado
+    obtem_melhor(Caminhos, MelhorCaminho).
 
 adjacente2([Nodo|Caminho]/Custo/_, [ProxNodo,Nodo|Caminho]/NovoCusto/Est) :-
 	adjacente(Nodo, ProxNodo, PassoCusto),

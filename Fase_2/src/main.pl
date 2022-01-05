@@ -56,17 +56,7 @@ maior_numero_entregas(R).
 % (6) escolher o circuito mais ecológico (critério de tempo)
 
 
-% ------ Auxiliares às pesquisas ------
-% Obtém melhor caminho de uma lista
-obtem_melhor([Caminho],Caminho) :- !.
-
-obtem_melhor([Caminho1/Custo1/Est1,Caminho2/Custo2/Est2|Caminhos], MelhorCaminho) :-
-    Custo1 + Est1 =< Custo2 + Est2, !,
-    obtem_melhor([Caminho1/Custo1/Est1|Caminhos], MelhorCaminho).
-
-obtem_melhor([_|Caminhos], MelhorCaminho) :- % caso caminho 2 seja melhor que caminho 1 (da cláusula anterior), este último é descartado
-    obtem_melhor(Caminhos, MelhorCaminho).
-    
+% ------ Auxiliares às pesquisas ------    
 seleciona(E, [E|Xs], Xs).
 seleciona(E, [X|Xs], [X|Ys]) :- seleciona(E, Xs, Ys).
 
@@ -254,7 +244,7 @@ distancia_por_algoritmo(aestrela, Rua, Distancia) :-
 distancia_por_algoritmo(gulosa, Rua, Distancia) :-
     resolve_gulosa(Rua, Caminho/Distancia).
 distancia_por_algoritmo(profundidade, Rua, Distancia) :-
-    resolve_pfp(Rua, Caminho/Distancia).
+    primeiro_dfs(centro, Rua, Caminho/Distancia).
 distancia_por_algoritmo(largura, Rua, Distancia) :-
     bfs(centro, Rua, Caminho/Distancia).
 /*distancia_por_algoritmo(iterativa, Rua, Distancia) :-
@@ -284,7 +274,7 @@ veiculo_encomenda(EncID, [H|L], carro, Algoritmo) :-
     veiculo_encomenda_aux(EncID, DataEncomenda, Prazo, Peso, RuaID, carro, Algoritmo).
 */
 veiculo_encomenda(EncID, [H|L], V, Algoritmo) :- !, veiculo_encomenda(EncID, L, V, Algoritmo).
-veiculo_encomenda(EncID, /*[],*/ V, _) :- write('Não é possível fazer esta encomenda.').
+veiculo_encomenda(EncID, [], V, _) :- write('Não é possível fazer esta encomenda.').
 
 
 veiculo_encomenda_aux(EncID, DataEncomenda, Prazo, Peso, RuaID, Veiculo, Algoritmo) :- 
