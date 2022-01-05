@@ -3,8 +3,14 @@
 
 % Algoritmo
 %iterativa(Orig,Dest,Cam/C,0).
-iterativa(Orig,Dest,Cam/C,Iteracoes):-
-    dfs_iterativa(Orig,Dest,Cam/C,Iteracoes).
+
+iterativa(Orig,Dest,Cam/C):-
+    dfs_iterativa(Orig,Dest,Cam/C,0).
+
+dfs_iterativa(Orig,Dest,Cam/C,Iteracoes):-
+    not(dfs2_iterativa(Orig,Dest,[Orig]/0,Cam/C,Iteracoes)),
+    Niteracoes is Iteracoes+1,
+    dfs_iterativa(Orig,Dest,Cam/C,Niteracoes).
 
 dfs_iterativa(Orig,Dest,Cam/C,Iteracoes):- 
     dfs2_iterativa(Orig,Dest,[Orig]/0,Cam/C,Iteracoes).
