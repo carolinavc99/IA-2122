@@ -119,3 +119,22 @@
         length(S,N),
         N==1
     ).
+
+
+% --------------------------------------------------------------------------------
+% Evolução do Conhecimento
+% --------------------------------------------------------------------------------
+
+evolucao(Termo):-
+    findall(Invariante, +Termo::Invariante, Lista),
+    insercao(Termo),
+    teste(Lista).
+
+insercao(Termo) :-
+    assert(Termo).
+insercao(Termo) :-
+    retract(Termo),!,fail.
+
+teste([]).
+teste([R|LR]) :-
+		R, teste(LR).
