@@ -20,39 +20,61 @@
 % ------ VARIÁVEIS GLOBAIS ------
 lista_veiculos(L) :- findall(Veiculo, veiculo(Veiculo,_,_,_,_), L).
 lista_ruas(L) :- findall(Rua, rua(Rua,_), L).
-lista_algoritmos(L) :- L is [aestrela, gulosa, profundidade,largura,iterativa].
+lista_algoritmos(L) :- L is [aestrela, gulosa, profundidade, largura, iterativa].
 
 % ------ OBJETIVOS SEGUNDA FASE ------
 % (1) gerar circuitos de entrega para cada rua
-/*
-estrutura: [
-            algoritmo/
-            [
-                [rua1,...]/Custo,
-                [rua2,...]/Custo
-            ],
-            algoritmo2/
-            [...]
-            ]
-*/
+
+%circuito(algoritmo, rua_entrega, [caminho], custo, peso, volume).
 gerar_circuitos :-
-    circuitos_aestrela(AE),
-    circuitos_gulosa(G),
-    circuitos_pfp(P),
-    circuitos_bfs(L),
-    %circuitos_it(Iterativa),
-    assert(lista_circuitos([aestrela/0/AE,gulosa/0/G,profundidade/0/P,largura/0/L/*,iterativa/0/I*/])).
+    circuitos_aestrela,
+    circuitos_gulosa,
+    circuitos_profundidade,
+    circuitos_largura,
+    circuitos_iterativa.
 
 % (2) representação dos diversos pontos de entrega em forma de grafo
 
 % --- os circuitos a comparar são por exemplo para a rua10 usando as diferentes pesquisas ---
+% Incrementar circuitos para que possam ser comparados
+incrementa_circuito(Algoritmo, Rua, Volume, Peso) :-
+    circuito(Algoritmo, Rua, Ca, C, V, P),
+    X is Volume + V,
+    Y is Peso + P,
+    retract(circuito(Algoritmo, Rua, Ca, C, V, P)),
+    assert(circuito(Algoritmo, Rua, Ca, C, X,Y)).
+
 % (3) identificar quais os circuitos com maior número de entregas (por volume e por peso)
-maior_numero_entregas(R).
+maior_numero_entregas:-
+    findall(V, circuito(_, _, _, _, _, V), Vx),
+    findall(P, circuito(_, _, _, _, P, _), Px),
+    max_list(Vx, MaxV),
+    max_list(Px, MaxP),
+    circuito(A1, R1, Ca1, C1, P1, MaxV),
+    circuito(A2, R2, Ca2, C2, MaxP, V2),
+    write('Circuito com maior volume total entregue: '),nl,
+    write('Algoritmo - '), write(A1),nl,
+    write('Rua - '), write(R1),nl,
+    write('Peso - '), write(P1),nl,
+    write('Volume - '), write(MaxV),nl,
+    write('Caminho - '), write(Ca1), nl,
+    write('Custo - '), write(C1), nl,
+    nl,
+    write('Circuito com maior peso total entregue: '),nl,
+    write('Algoritmo - '), write(A2),nl,
+    write('Rua - '), write(R2),nl,
+    write('Peso - '), write(MaxP),nl,
+    write('Volume - '), write(V2),nl,
+    write('Caminho - '), write(Ca2), nl,
+    write('Custo - '), write(C2), nl,
+    !.
 
 % (4) comparar circuitos de entrega tendo em conta os indicadores de produtividade
-%melhor_circuito(tempo,).
-%melhor_circuito(distancia,)
+%tempo
+%distancia
+
 % (5) escolher o circuito mais rápido (critério de distância)
+
 % (6) escolher o circuito mais ecológico (critério de tempo)
 
 
@@ -68,61 +90,59 @@ membro(X, [_|Xs]) :- membro(X,Xs).
 % -----------------------------------------
 % Criar novo estafeta
 criar_estafeta(EstId, Nome) :-
-    (estafeta(EstId, _) -> write("Id do estafeta já existe.");
+    (estafeta(EstId, _) -> write('Id do estafeta já existe.');
         assert(estafeta(EstId, Nome)),
-        write("Estafeta criado.")).
+        write('Estafeta criado.')).
 
 % Criar nova encomenda
 criar_encomenda(EncId, Tempo, Peso, Volume, Rua, ClienteId) :- 
-    (encomenda(EncId, _,_,_,_,_,_,_) -> write("Id  da encomenda já existe.");
+    (encomenda(EncId, _,_,_,_,_,_,_) -> write('Id  da encomenda já existe.');
         (datahora(Data),
         preco(Tempo, Peso, Preco),
         cliente(ClienteId, Nome, _),
         rua(Rua,_),
         assert(encomenda(EncId, Data, Tempo, Peso, Volume, Rua, ClienteId)),
-        write("Encomenda realizada:\nCliente: "), write(Nome), write(" "), write(ClienteId),
-            write("\nData atual: "), write(Data), 
-            write("\nTempo limite de entrega: "), write(Tempo), 
-            write("\nPeso: "), write(Peso),
-            write("\nVolume: "), write(Volume),
-            write("\nPreço: "), write(Preco),
-            write("\nRua: "), write(Rua)
+        write('Encomenda realizada:\nCliente: '), write(Nome), write(' '), write(ClienteId),
+            write('\nData atual: '), write(Data), 
+            write('\nTempo limite de entrega: '), write(Tempo), 
+            write('\nPeso: '), write(Peso),
+            write('\nVolume: '), write(Volume),
+            write('\nPreço: '), write(Preco),
+            write('\nRua: '), write(Rua)
         )
     ).
 
 % Criar nova freguesia
 criar_freguesia(Id) :-
-    (freguesia(Id) -> write("Freguesia já existe.\n");
+    (freguesia(Id) -> write('Freguesia já existe.\n');
         assert(freguesia(Id)),
-        write("Freguesia criada.")).
+        write('Freguesia criada.')).
 
 % Criar nova rua
 criar_rua(RId, FId) :-
-    (rua(RId, _) -> write("Rua já existe.\n");
+    (rua(RId, _) -> write('Rua já existe.\n');
     assert(rua(RId, FId)),
-    write("Rua criada.")).
+    write('Rua criada.')).
 
 % Criar novo cliente
 criar_cliente(ClienteId, Nome, Rua) :-
-    (cliente(ClienteId,_,_) -> write("Id do cliente já existe.");
+    (cliente(ClienteId,_,_) -> write('Id do cliente já existe.');
         assert(cliente(ClienteId, Nome, Rua)),
-        write("Cliente criado.")).
+        write('Cliente criado.')).
 
 % Criar nova entrega
-
-% ao fazer entrega ele acede à lista de circuitos e aumenta o contador
-
-% circuito(estadoInicial, [rua], algoritmo).
-
+% ao fazer entrega ele acede à lista de circuitos e aumenta os contadors peso e volume
 criar_entrega(EntId, EncId, EstId, Class) :-
-    (entrega(EntId,_,_,_,_) -> write("Id da entrega já existe.");
-        encomenda(EncId,_,_,_,_,_,Rua,_),
+    (entrega(EntId,_,_,_,_) -> write('Id da entrega já existe.');
+        (encomenda(EncId,_,_,Peso,Volume,_,Rua,_),
         estafeta(EstId,_),
-        veiculo(Veiculo,_,_,_),
+        veiculo(Veiculo,_,_,_,_),
         Class =< 5, Class >= 0,
         % criar circuito
-        assert_algoritmo(Rua, Algoritmo, Veiculo),
-        assert(entrega(EncId, EncId, EstId, Class, Veiculo))).
+        sup_veiculo_encomenda(EncID, Algoritmo, Veiculo),
+        incrementa_circuito(Algoritmo, Rua, Volume, Peso),
+        assert(entrega(EntId, EncId, EstId, Class, Veiculo)))).
+
 
 % ------ FUNCIONALIDADES PEDIDAS ------
 % (1) O estafeta que utilizou mais vezes um meio de transporte mais ecológico
@@ -186,7 +206,7 @@ f7_entregasVeiculoIntervalo(V,Ii,If,R) :- % veiculo, intervalo inicial, interval
     length(Lista,R).
 
 % (8) Número total de entregas pelos estafetas, em determinado intervalo de tempo
-% por "estafetas" (plural), interpreto todas as entregas num dado intervalo de tempo
+% por 'estafetas' (plural), interpreto todas as entregas num dado intervalo de tempo
 f8_entregasEstafetaIntervalo(Ii, If, R) :-
     findall(Entrega, 
     (entrega(Entrega, Encomenda,_,_,_),
@@ -203,7 +223,7 @@ f9_encomendasEntreguesIntervalo(Ii, If) :-
     length(Entregas, E),
     length(EncomendasTotal, ET),
     NE is ET - E,
-    write("Encomendas entregues: "), write(E), write("\nEncomendas não entregues: "), write(NE).
+    write('Encomendas entregues: '), write(E), write('\nEncomendas não entregues: '), write(NE).
 
 % (10) Peso total transportado por um estafeta num determinado dia
 f10_pesoEstafetaDia(Estafeta,D/M/A,R) :-
@@ -224,7 +244,7 @@ f10_pesoEstafetaDia(Estafeta,D/M/A,R) :-
 % ------ PREDICADOS AUXILIARES ------
 % Calcula o preço da encomenda: 5 (base) + 48 - tempo_em_horas + preço_veiculo
 preco(TLimite, Peso, P) :-
-    (TLimite > 48 -> write("Tempo máximo de agendamento é 48 horas."); 
+    (TLimite > 48 -> write('Tempo máximo de agendamento é 48 horas.'); 
         veiculo_encomenda(Peso, Veiculo),
         veiculo(Veiculo,_,_,PrecoVeiculo),
         P is 5 + 48 - TLimite + PrecoVeiculo).
@@ -239,19 +259,18 @@ tempo_de_regresso(VelocidadeBaseVeiculo, Distancia, TempoViagem) :-
     tempo_de_entrega(VelocidadeBaseVeiculo, 0, 0, Distancia, TempoViagem).
 
 % Calcula a distância (custo) para uma rua segundo um algoritmo
-distancia_por_algoritmo(aestrela, Rua, Distancia) :-
-    resolve_aestrela(Rua, Caminho/Distancia).
-distancia_por_algoritmo(gulosa, Rua, Distancia) :-
-    resolve_gulosa(Rua, Caminho/Distancia).
-distancia_por_algoritmo(profundidade, Rua, Distancia) :-
-    primeiro_dfs(centro, Rua, Caminho/Distancia).
-distancia_por_algoritmo(largura, Rua, Distancia) :-
-    bfs(centro, Rua, Caminho/Distancia).
-/*distancia_por_algoritmo(iterativa, Rua, Distancia) :-
-    resolve_it(Rua, Distancia).*/  
+distancia_por_algoritmo(aestrela, Nodo, Distancia) :- % destino
+    resolve_aestrela(Nodo, _/Distancia).
+distancia_por_algoritmo(gulosa, Nodo, Distancia) :- % destino
+    resolve_gulosa(Nodo, _/Distancia).
+distancia_por_algoritmo(profundidade, Nodo, Distancia) :- % origem destino
+    primeiro_dfs(Nodo, _/Distancia).
+distancia_por_algoritmo(largura, Nodo, Distancia) :- % origem destino
+    primeiro_bfs(Nodo, _/Distancia).
+distancia_por_algoritmo(iterativa, Nodo, Distancia) :- % origem destino
+    primeiro_it(Nodo, _/Distancia).
 
-% Determina o veículo a utilizar para uma encomenda a partir do peso (kg), da distância a percorrer (km), e do prazo limite de entrega (h)
-    % [H|L] é a lista de veículos, por ordem de mais ecológicos
+% Determina o veículo a utilizar para uma encomenda
 sup_veiculo_encomenda(EncID, Algoritmo, V) :- 
     lista_veiculos(Veiculos),
     veiculo_encomenda(EncID, Veiculos, V, Algoritmo).
@@ -259,20 +278,6 @@ sup_veiculo_encomenda(EncID, Algoritmo, V) :-
 veiculo_encomenda(EncID, [H|L], V, Algoritmo) :-
     encomenda(EncID, DataEncomenda, Prazo, Peso, _, _, RuaID, _),
     veiculo_encomenda_aux(EncID, DataEncomenda, Prazo, Peso, RuaID, V, Algoritmo).
-/*
-veiculo_encomenda(EncID, [H|L], usainBolt, Algoritmo) :-
-    encomenda(EncID, DataEncomenda, Prazo, Peso, _, _, RuaID, _),
-    veiculo_encomenda_aux(EncID, DataEncomenda, Prazo, Peso, RuaID, usainBolt, Algoritmo).
-veiculo_encomenda(EncID, [H|L], bicicleta, Algoritmo) :-
-    encomenda(EncID, DataEncomenda, Prazo, Peso, _, _, RuaID, _),
-    veiculo_encomenda_aux(EncID, DataEncomenda, Prazo, Peso, RuaID, bicicleta, Algoritmo).
-veiculo_encomenda(EncID, [H|L], mota, Algoritmo) :-
-    encomenda(EncID, DataEncomenda, Prazo, Peso, _, _, RuaID, _),
-    veiculo_encomenda_aux(EncID, DataEncomenda, Prazo, Peso, RuaID, mota, Algoritmo).
-veiculo_encomenda(EncID, [H|L], carro, Algoritmo) :-
-    encomenda(EncID, DataEncomenda, Prazo, Peso, _, _, RuaID, _),
-    veiculo_encomenda_aux(EncID, DataEncomenda, Prazo, Peso, RuaID, carro, Algoritmo).
-*/
 veiculo_encomenda(EncID, [H|L], V, Algoritmo) :- !, veiculo_encomenda(EncID, L, V, Algoritmo).
 veiculo_encomenda(EncID, [], V, _) :- write('Não é possível fazer esta encomenda.').
 
@@ -322,8 +327,30 @@ frequencia(E, [E|T], F) :- frequencia(E, T, F1), F is F1 + 1.
 frequencia(E, [H|T], F) :- E \= H,
     frequencia(E, T, F).
 
+% Gera o próximo ID disponível
+gera_id(estafeta, R):-
+    findall(ID, estafeta(ID, _), Lista),
+    gera_id_aux(Lista, Max, R).
+gera_id(encomenda, R) :-
+    findall(ID, encomenda(ID,_,_,_,_,_,_,_), Lista),
+    gera_id_aux(Lista, Max, R).
+gera_id(cliente, R) :-
+    findall(ID, cliente(ID, _, _), Lista),
+    gera_id_aux(Lista, Max, R).
+gera_id(entrega, R) :-
+    findall(ID, entrega(ID,_,_,_,_), Lista),
+    gera_id_aux(Lista, Max, R).
+gera_id(freguesia, R) :-
+    findall(ID, freguesia(ID), Lista),
+    gera_id_aux(Lista, Max, R).
+
+gera_id_aux(Lista, Max, R):-
+    max_list(Lista, Max),
+    R is Max + 1.
+
 % ------ Menu ------
-menu:-
+fase1:-
+    write('------------------------------------------------- FASE 1 -------------------------------------------------'),nl,
     write('1 - Estafeta que utilizou um meio de transporte mais ecológico mais vezes'),nl,
     write('2 - Estafetas que entregaram determinada(s) encomenda(s) a um determinado cliente'),nl,
     write('3 - Clientes servidos por determinado cliente'),nl,
@@ -334,45 +361,63 @@ menu:-
     write('8 - Número total de entregas pelos estafetas num determinado intervalo de tempo'),nl,
     write('9 - Número de encomendas entregues e não entregues pela Green Distribution num determinado período de tempo'),nl,
     write('10 - Peso total transportado por estafeta num determinado dia'),nl,
-    write('-----------------------------------------------------------------------------------------------------------'),nl,
-    write('11 - Criar Estafeta'),nl,
-    write('12 - Criar Encomenda'),nl,
-    write('13 - Criar Freguesia'),nl,
-    write('14 - Criar Rua'),nl,
-    write('15 - Criar Cliente'),nl,
-    write('16 - Criar Entrega'),nl,
+    write('----------------------------------------------------------------------------------------------------------'),nl,
     write('0 - Sair'), nl,
-    read(Opcao), Opcao>=0, Opcao =<16,
-    fazOpcao(Opcao).
+    write('----------------------------------------------------------------------------------------------------------'),nl,
+    read(Opcao), Opcao>=0, Opcao =<10,
+    fazOpcao(f1, Opcao).
 
-fazOpcao(1):-call_f1,menu.
-fazOpcao(2):-call_f2,menu.
-fazOpcao(3):-call_f3,menu.
-fazOpcao(4):-call_f4,menu.
-fazOpcao(5):-call_f5,menu.
-fazOpcao(6):-call_f6,menu.
-fazOpcao(7):-call_f7,menu.
-fazOpcao(8):-call_f8,menu.
-fazOpcao(9):-call_f9,menu.
-fazOpcao(10):-call_f10,menu.
-fazOpcao(11):-call_criar_estafeta,menu.
-fazOpcao(12):-call_criar_encomenda,menu.
-fazOpcao(13):-call_criar_freguesia,menu.
-fazOpcao(14):-call_criar_rua,menu.
-fazOpcao(15):-call_criar_cliente,menu.
-fazOpcao(16):-call_criar_entrega,menu.
-fazOpcao(0):-halt.
+fase2:-
+    write('------------------------------------------------- FASE 2 -------------------------------------------------'),nl,
+    write('1 - Gerar circuitos de entrega'), nl,
+    write('2 - Representação dos pontos de entrega em grafo'), nl,
+    write('3 - Circuitos com maior número de entregas (por volume e por peso)'), nl,
+    write('4 - Comparar circuitos de entrega tendo em conta os indicadores de produtividade'), nl,
+    write('5 - Escolher o circuito mais rápido (por distância)'), nl,
+    write('6 - Escolher o circuito mais ecológico (por tempo)'), nl,
+    write('----------------------------------------------------------------------------------------------------------'),nl,
+    write('0 - Sair'), nl,
+    write('----------------------------------------------------------------------------------------------------------'),nl,
+    read(Opcao), Opcao >= 0, Opcao =< 8,
+    fazOpcao(f2, Opcao).
+
+menu:-
+    write('------------------------------------------------ IA 21/22 ------------------------------------------------'),nl,
+    write('1 - Criar Estafeta'),nl,
+    write('2 - Criar Encomenda'),nl,
+    write('3 - Criar Freguesia'),nl,
+    write('4 - Criar Rua'),nl,
+    write('5 - Criar Cliente'),nl,
+    write('6 - Criar Entrega'),nl,
+    write('----------------------------------------------------------------------------------------------------------'),nl,
+    write('7 - Fase 1'), nl,
+    write('8 - Fase 2'), nl,
+    write('----------------------------------------------------------------------------------------------------------'),nl,
+    write('0 - Sair'), nl,
+    write('----------------------------------------------------------------------------------------------------------'),nl,
+    read(Opcao), Opcao >= 0, Opcao =< 8,
+    fazOpcao(m, Opcao).
+
+% Menu Principal
+fazOpcao(m,0):-halt.
+
+% Fase 1    
+fazOpcao(f1,0):-menu.
+
+
+% Fase 2
+fazOpcao(f2,0):-menu.
+
+
 
 call_criar_estafeta:-
-    write('Código no formato estX: '), nl,
-    read(Codigo),
-    write('Nome (entre aspas): '), nl,
+    gera_id(estafeta, Codigo),
+    write('Nome (entre plicas): '), nl,
     read(Nome),
     criar_estafeta(Codigo,Nome),nl,nl.
 
 call_criar_encomenda:-
-    write('Código no formato encX: '),nl,
-    read(Codigo),
+    gera_id(encomenda, Codigo),
     write('Tempo de entrega: '),nl,
     read(Tempo),
     write('Peso: '),nl,
@@ -381,25 +426,21 @@ call_criar_encomenda:-
     read(Volume),
     write('Rua: '),nl,
     read(Rua),
-    write('Código de Cliente no formato cliX: '),nl,
-    read(Cliente),
+    gera_id(cliente, Cliente),
     criar_encomenda(Codigo,Tempo,Peso,Volume,Rua,Cliente).
 
 call_criar_freguesia:-
-    write('Código no formato fX: '),nl,
-    read(Codigo),
+    gera_id(freguesia, Codigo),
     criar_freguesia(Codigo).
 
 call_criar_rua:-
-    write('Código de rua no formato ruaX: '),nl,
-    read(Rua),
-    write('Código de freguesia no formato fX: '),nl,
+    gera_id(rua, Rua),
+    write('Código da freguesia: '),nl,
     read(Freguesia),
     criar_rua(Rua,Freguesia).
 
 call_criar_cliente:-
-    write('Código no formato cliX: '),nl,
-    read(Codigo),
+    gera_id(cliente, Codigo),
     write('Nome: '),nl,
     read(Nome),
     write('Rua: '),nl,
@@ -407,21 +448,17 @@ call_criar_cliente:-
     criar_cliente(Codigo,Nome,Rua).
 
 call_criar_entrega:-
-    write('Código de entrega no formato entX: '),nl,
-    read(Codigo_entrega),
-    write('Código de encomenda no formato encX: '),nl,
+    gera_id(entrega, Codigo_entrega),
+    write('Código de encomenda: '),nl,
     read(Codigo_encomenda),
-    write('Código de estafeta no formato estX: '),nl,
+    write('Código de estafeta: '),nl,
     read(Codigo_estafeta),
     write('Classificação (0-5): '),nl,
     read(Classificacao),
-    write('Algoritmo: '),nl,
+    write('Algoritmo (aestrela, gulosa, profundidade, largura, iterativa): '),nl,
     read(Algoritmo),
     encomenda(Codigo_encomenda,_,_,Peso,_,_,_,_),
-    sup_veiculo_encomenda(Codigo_encomenda, Algoritmo, Veiculo),
-    criar_entrega(Codigo_entrega,Codigo_encomenda,Codigo_estafeta,Classificacao,Veiculo).
-
-
+    criar_entrega(Codigo_entrega,Codigo_encomenda,Codigo_estafeta,Classificacao).
 
 call_f1:-
     f1_estafetaEcologico(R),

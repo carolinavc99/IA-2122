@@ -1,32 +1,32 @@
 % ------ GRAFO ------
-aresta(centro, rua2, 6).
-aresta(rua2, rua3, 7).
-aresta(rua3, rua5, 3).
-aresta(rua5, rua10, 2).
-aresta(rua3, rua4, 2).
-aresta(rua4, rua9, 6).
-aresta(rua2, rua8, 2).
-aresta(rua8, rua9, 1).
-aresta(rua9, rua7, 4).
-aresta(rua7, rua6, 8).
-aresta(rua6, rua8, 2).
-aresta(rua6, rua1, 6).
-aresta(rua1, centro, 5).
+aresta(centro, 2, 6).
+aresta(2, 3, 7).
+aresta(3, 5, 3).
+aresta(5, 10, 2).
+aresta(3, 4, 2).
+aresta(4, 9, 6).
+aresta(2, 8, 2).
+aresta(8, 9, 1).
+aresta(9, 7, 4).
+aresta(7, 6, 8).
+aresta(6, 8, 2).
+aresta(6, 1, 6).
+aresta(1, centro, 5).
 
 % Adjacente
 adjacente(Nodo, ProxNodo, C) :- aresta(Nodo,ProxNodo,C).
 adjacente(Nodo, ProxNodo, C) :- aresta(ProxNodo,Nodo,C).
 
-goal(centro). % correto?
+goal(centro).
 
-estima(rua1,5).
-estima(rua2,6).
-estima(rua3,15).
-estima(rua4,17).
-estima(rua5,16).
-estima(rua6,11).
-estima(rua7,19).
-estima(rua8,13).
-estima(rua9,14).
-estima(rua10,28).
+estima(1,5).
+estima(2,6).
+estima(3,15).
+estima(4,17).
+estima(5,16).
+estima(6,11).
+estima(7,19).
+estima(8,13).
+estima(9,14).
+estima(10,28).
 estima(centro,0).

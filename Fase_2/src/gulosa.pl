@@ -1,5 +1,19 @@
 % ------ PESQUISA GULOSA ------
 % ------ CIRCUITOS ------
+%circuito(algoritmo, rua_entrega, [caminho], custo, peso, volume).
+
+circuitos_gulosa:-
+	lista_ruas(Ruas),
+	circuitos_gulosa_aux(Ruas).
+
+circuitos_gulosa_aux([H|T]):-
+	primeiro_gulosa(H, Caminho/Custo),
+	assert(circuito(gulosa, H, Caminho, Custo, 0, 0)),
+    !,
+	circuitos_gulosa_aux(T).
+
+circuitos_gulosa_aux([]).
+/*
 % Itera sobre a lista de ruas e guarda o Caminho/Distancia para cada rua
 circuitos_gulosa(Circuitos) :-
 	lista_ruas(Ruas),
@@ -11,10 +25,11 @@ circuitos_gulosa_aux([H|T], Lista, Circuitos) :-
 	resolve_gulosa(H, Caminho/Custo),
 	append([Caminho/Custo], Lista, ListaX),
 	circuitos_gulosa_aux(T, ListaX, Circuitos).
-
+*/
 % ------ ALGORITMO ------
-primeiro_gulosa(Nodo, R) :-
-    resolve_gulosa(Nodo, R).
+primeiro_gulosa(Nodo, R/C) :-
+    resolve_gulosa(Nodo, RI/C),
+    reverse(RI,R).
 
 resolve_gulosa(Nodo,Caminho/Custo) :- 
         estima(Nodo, Estima),

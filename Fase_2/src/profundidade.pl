@@ -1,5 +1,19 @@
 % ------ PROFUNDIDADE ------
 % ------ CIRCUITOS ------
+%circuito(algoritmo, rua_entrega, [caminho], custo, peso, volume).
+
+circuitos_profundidade:-
+	lista_ruas(Ruas),
+	circuitos_profundidade_aux(Ruas).
+
+circuitos_profundidade_aux([H|T]):-
+	primeiro_dfs(H, Caminho/Custo),
+	assert(circuito(profundidade, H, Caminho, Custo, 0, 0)),
+    !,
+	circuitos_profundidade_aux(T).
+
+circuitos_profundidade_aux([]).
+/*
 % Itera sobre a lista de ruas e guarda o Caminho/Distancia para cada rua
 circuitos_dfs(Circuitos) :-
 	lista_ruas(Ruas),
@@ -10,11 +24,11 @@ circuitos_dfs_aux([H|T], Lista, Circuitos) :-
 	primeiro_dfs(H, Caminho/Custo),
 	append([Caminho/Custo], Lista, ListaX),
 	circuitos_dfs_aux(T, ListaX, Circuitos).
-
+*/
 % ------ ALGORITMO ------
 % Devolve o primeiro resultado
-primeiro_dfs(Destino, X/C) :-
-    findall(Resultado, dfs(centro, Destino, Resultado), [H/C|T]), reverse(H,X).
+primeiro_dfs(Destino, H/C) :-
+    findall(Resultado, dfs(centro, Destino, Resultado), [H/C|T])/*, reverse(H,X)*/.
 
 % Corpo principal
 dfs(Orig,Dest,Cam/C):- 

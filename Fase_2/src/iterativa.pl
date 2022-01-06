@@ -1,5 +1,20 @@
 % ------ ITERATIVA ------
 % ------ CIRCUITOS ------
+%circuito(algoritmo, rua_entrega, [caminho], custo, peso, volume).
+
+circuitos_iterativa:-
+	lista_ruas(Ruas),
+	circuitos_iterativa_aux(Ruas).
+
+circuitos_iterativa_aux([H|T]):-
+	primeiro_it(H, Caminho/Custo),
+	assert(circuito(iterativa, H, Caminho, Custo, 0, 0)),
+    !,
+	circuitos_iterativa_aux(T).
+
+circuitos_iterativa_aux([]).
+
+/*
 % Itera sobre a lista de ruas e guarda o Caminho/Distancia para cada rua
 circuitos_it(Circuitos) :-
 	lista_ruas(Ruas),
@@ -8,17 +23,17 @@ circuitos_it(Circuitos) :-
 circuitos_it_aux([], Circuitos, Circuitos).
 
 circuitos_it_aux([H|T], Lista, Circuitos) :-
-	primeiro_it(centro, H, Caminho/Custo),
+	primeiro_it(H, Caminho/Custo),
 	append([Caminho/Custo], Lista, ListaX),
 	circuitos_it_aux(T, ListaX, Circuitos).
-
+*/
 
 % ------ ALGORITMO ------
-primeiro_it(Origem, Destino, X/C) :-
-    iterativa(Origem, Destino, H/C), !, reverse(H,X).
+% Devolve o primeiro resultado
+primeiro_it(Destino, H/C) :-
+    iterativa(centro, Destino, H/C), !.
 
-%iterativa(Orig,Dest,Cam/C,0).
-
+% Corpo principal
 iterativa(Orig,Dest,Cam/C):-
     dfs_iterativa(Orig,Dest,Cam/C,0).
 

@@ -1,0 +1,82 @@
+____NOTAS:____
+VSCODE: Alt+Z para toggle que dá linewrap para não ter de estar a fazer horizontal scroll
+LEGENDA:
+(C) -> esta tarefa é para deixar para a Carol. falem comigo se a quiserem fazer
+[-] -> esta tarefa foi cancelada/determinou-se que não seria útil ou que iria partir cenas
+[] -> tarefa por fazer
+[X] -> tarefa completada
+__________________________
+OBJETIVO PRINCIPAL: Criação de um sistema de recomendação de circuitos de entrega de encomendas
+
+[] 6 objetivos
+    [] gerar circuitos
+    [] representação em grafo
+    [] comparar circuitos peso e volume
+(C) [] escolher o circuito mais rapido (distancia)
+(C) [] escolher o circuito mais ecologico (tempo)
+
+[] Indicadores de produtividade
+    [] Tempo de Entrega
+    [] Distância percorrida para a entrega
+[] acabar relatório
+(C) [] volume na veiculo_encomenda
+[] implementar mais do que uma entrega (multi_entrega.pl)
+    (nota: é só pegar nas funções que já temos e usá-las para multi_entregas)
+    (notanota: em alguns casos provavelmente usar funções já feitas não vai ser suficiente, por isso o melhor a fazer é olhar para as que já temos feitas, que fazem X função para uma encomenda, e replicar o funcionamento numa nova função (em multi_entrega.pl) que faça X mas para mais do que uma encomenda)
+    (IMPORTANTE: NÃO MEXER NAS FUNÇÕES QUE JÁ ESTÃO FEITAS. se for necessário alguma modificação para as multi-entregas, copiar e colar o código numa função nova em multi_entrega.pl. POR FAVOR não me mexam em funções que já estão feitas)
+(C) [] implementar teste_tempo.pl (usar call_time/2) para poder tirar as cenas para a tabela do enunciado
+[] criar funções de listagem de entidades
+    [] lista_veiculos
+    [] lista_estafetas
+    [] lista_encomendas
+    [] lista_freguesias
+    [] lista_ruas
+    [] lista_clientes
+    [] lista_entregas
+[] adicionar, às circuitos_(algoritmo), os circuitos que supostamente já foram feitos antes de o programa começar
+    (nota: estão à vontade para escolher qual algoritmo foi feito para qual entrega, certifiquem-se só que os dados dos circuitos e os dados das entregas são compatíveis)
+    (notanota: tentem ter pelo menos uma entrega para cada algoritmo)
+    [] aestrela
+    [] gulosa
+    [] profundidade
+    [] largura
+    [] iterativa
+[] adicionar as ^ funções de listagem ^ ao menu principal
+(C) [] testar todas as funções do menu, algumas várias vezes
+[] implementar função que imprime o grafo no terminal
+[] completar função fazOpcao (nota: não se preocupem com as funções call_X em si, porque essas eu dou uma vista de olhos quando estiverem todas feitas, preocupem-se só é que cada opção chama a fazOpcao correta)
+
+
+[X] criar entrega tendo em conta veiculo_encomenda
+[-] estafeta last time online
+[-] fazer grafo maior mas manter o atual de teste
+[X] tornar IDs incrementáveis
+[X] meter resultados origem->destino
+    [-] aestrela
+    [-] gulosa
+    [X] profundidade
+    [X] largura
+    [X] iterativa
+[X] acabar algoritmos
+    [X] gulosa
+    [X] aestrela
+    [X] profundidade
+    [X] largura
+    [X] iterativa
+[X] inverter output da profundidade
+[X] gerar circuitos
+    [X] aestrela
+    [X] gulosa
+    [X] profundidade
+    [X] largura
+    [X] iterativa
+[X] Definir o cenário da cidade (grafo)
+    [X] Definir centro da Green Distribution (aka o nodo onde começamos sempre)
+[X] Atualizar a função que determina que veículo usar para uma dada entrega, para que considere não só o peso, mas também a distância a percorrer e o prazo limite de entrega
+[X] Implementar circuito circuito(estadoInicial, [listaDeNodos], estadoFinal)
+    [-] implica implementar o tipo Estado
+    [X] e também os pontos de entrega (isto é o grafo)
+[X] invariantes
+[X] evolução de conhecimento
+    [X] adicionar à base_de_conhecimento as cenas do conhecimento nulo, impreciso, etc
+[X] reestruturar circuitos
