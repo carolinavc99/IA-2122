@@ -7,15 +7,17 @@
 %tempo_de_entrega(VelocidadeBaseVeiculo, DecrescimoVelocidadeVeiculo, Peso, Distancia, TempoViagem)
 multi_circuito(profundidade,Ruas,Caminho,TempoViagem,Peso):-
     get_caminho_profundidade(Ruas,Caminho,Custo),
-    tempo_de_entrega(45,0,Peso,Custo,TempoViagem).
+    tempo_de_entrega(35,0.5,Peso,Custo,TempoViagem).
     %Caminho de centro para rua1
     %rua1 para rua2 etc
     %juntar caminhos em Caminho
-multi_circuito(largura,Ruas,Caminho,Custo,Peso):-
-    get_caminho_largura(Ruas,Caminho,Custo).
+multi_circuito(largura,Ruas,Caminho,TempoViagem,Peso):-
+    get_caminho_largura(Ruas,Caminho,Custo),
+    tempo_de_entrega(35,0.5,Peso,Custo,TempoViagem).
 
-multi_circuito(iterativa,Ruas,Caminho,Custo,Peso):-
-    get_caminho_iterativa(Ruas,Caminho,Custo).
+multi_circuito(iterativa,Ruas,Caminho,TempoViagem,Peso):-
+    get_caminho_iterativa(Ruas,Caminho,Custo),
+    tempo_de_entrega(35,0.5,Peso,Custo,TempoViagem).
 
 get_caminho_iterativa([Local],Cam,C):-
     iterativa(Local,centro,Cam/C).
