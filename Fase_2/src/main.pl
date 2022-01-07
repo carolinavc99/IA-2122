@@ -16,9 +16,10 @@
 
 % ------ REGRAS PARA EVITAR WARNINGS ------
 :-style_check(-discontiguous).
+:-dynamic circuito/6.
 
 % ------ VARIÁVEIS GLOBAIS ------
-lista_veiculos(L) :- findall(Veiculo, veiculo(Veiculo,_,_,_,_), L).
+lista_veiculos(L) :- findall(Veiculo, veiculo(Veiculo,_,_,_), L).
 lista_ruas(L) :- findall(Rua, rua(Rua,_), L).
 lista_algoritmos(L) :- L is [aestrela, gulosa, profundidade, largura, iterativa].
 
@@ -96,7 +97,7 @@ criar_estafeta(EstId, Nome) :-
 criar_encomenda(EncId, Tempo, Peso, Volume, Rua, ClienteId) :- 
     (encomenda(EncId, _,_,_,_,_,_,_) -> write('Id  da encomenda já existe.');
         (datahora(Data),
-        preco(Tempo, Peso, Preco),
+        preco(Tempo, Preco),
         cliente(ClienteId, Nome, _),
         rua(Rua,_),
         evolucao(encomenda(EncId, Data, Tempo, Peso, Volume, Rua, ClienteId)),
@@ -113,7 +114,7 @@ criar_encomenda(EncId, Tempo, Peso, Volume, Rua, ClienteId) :-
 % Criar nova freguesia
 criar_freguesia(Id) :-
     evolucao(freguesia(Id)),
-    write('Freguesia criada.')).
+    write('Freguesia criada.').
 
 % Criar nova rua
 criar_rua(RId, FId) :-
@@ -123,14 +124,14 @@ criar_rua(RId, FId) :-
 % Criar novo cliente
 criar_cliente(ClienteId, Nome, Rua) :-
     evolucao(cliente(ClienteId,Nome,Rua)),
-    write('Cliente criado.')).
+    write('Cliente criado.').
 
 % Criar nova entrega
 % ao fazer entrega ele acede à lista de circuitos e aumenta os contadors peso e volume
 criar_entrega(EntId, EncId, EstId, Class) :-
         (encomenda(EncId,_,_,Peso,Volume,_,Rua,_),
         estafeta(EstId,_),
-        veiculo(Veiculo,_,_,_,_),
+        veiculo(Veiculo,_,_,_),
         Class =< 5, Class >= 0,
         % criar circuito
         sup_veiculo_encomenda(EncID, Algoritmo, Veiculo),
@@ -236,12 +237,10 @@ f10_pesoEstafetaDia(Estafeta,D/M/A,R) :-
 
 
 % ------ PREDICADOS AUXILIARES ------
-% Calcula o preço da encomenda: 5 (base) + 48 - tempo_em_horas + preço_veiculo
-preco(TLimite, Peso, P) :-
-    (TLimite > 48 -> write('Tempo máximo de agendamento é 48 horas.'); 
-        veiculo_encomenda(Peso, Veiculo),
-        veiculo(Veiculo,_,_,PrecoVeiculo),
-        P is 5 + 48 - TLimite + PrecoVeiculo).
+% Calcula o preço da encomenda: 10 (base) + 48 - tempo_em_horas
+preco(TLimite, P) :-
+    (TLimite > 48 -> write('Tempo máximo de agendamento é 48 horas.');
+        P is 10 + 48 - TLimite).
 
 % Calcula o tempo de entrega de uma encomenda considerando o decréscimo de velocidade comforme o peso
 tempo_de_entrega(VelocidadeBaseVeiculo, DecrescimoVelocidadeVeiculo, Peso, Distancia, TempoViagem) :-
@@ -280,7 +279,7 @@ veiculo_encomenda_aux(EncID, DataEncomenda, Prazo, Peso, RuaID, Veiculo, Algorit
     % 0. calcular a distancia
     distancia_por_algoritmo(Algoritmo, RuaID, Distancia),
     % 1. calcular o tempo de viagem
-    veiculo(Veiculo, Carga, VelocidadeBaseVeiculo, _, DecrescimoVelocidadeVeiculo),
+    veiculo(Veiculo, Carga, VelocidadeBaseVeiculo, DecrescimoVelocidadeVeiculo),
     Peso =< Carga,
     tempo_de_entrega(VelocidadeBaseVeiculo, DecrescimoVelocidadeVeiculo, Peso, Distancia, TempoViagem),
     % 2. Testar se: data atual + tempo de viagem <= data da encomenda + prazo de entrega

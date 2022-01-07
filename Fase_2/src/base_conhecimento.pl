@@ -1,12 +1,12 @@
 % ------ BASE DE CONHECIMENTO ------
 % veículos - tipo, carga, velocidade, preço, decrescimento de velocidade em relação ao peso (km/h/kg)
-veiculo(usainBolt, 1, 45, 20, 0).
-veiculo(bicicleta, 5, 10, 5, 0.7).
-veiculo(mota, 20, 35, 10, 0.5).
-veiculo(carro, 100, 25, 15, 0.1).
-veiculo(rollsRoyce, 150, 120, 80, 0.1).
-veiculo(jato, 200, 800, 200, 0.05).
-veiculo(fogetao, 48600, 24944, 185e6, 0).
+veiculo(usainBolt, 1, 45, 0).
+veiculo(bicicleta, 5, 10, 0.7).
+veiculo(mota, 20, 35, 0.5).
+veiculo(carro, 100, 25, 0.1).
+veiculo(rollsRoyce, 150, 120, 0.1).
+veiculo(jato, 200, 800, 0.05).
+veiculo(fogetao, 48600, 24944, 0).
 
 % estafetas - numero de identificação, nome
 estafeta(1, 'Lomberto Felgado').
