@@ -419,7 +419,6 @@ fase2:-
     write('3 - Comparar circuitos de entrega tendo em conta os indicadores de produtividade'), nl,
     write('4 - Escolher o circuito mais rápido (por distância)'), nl,
     write('5 - Escolher o circuito mais ecológico (por tempo)'), nl,
-    write('6 - Multi entrega'), nl,
     write('----------------------------------------------------------------------------------------------------------'),nl,
     write('0 - Sair'), nl,
     write('----------------------------------------------------------------------------------------------------------'),nl,
@@ -474,7 +473,6 @@ fazOpcao(f2,2):-call_maior_numero_entregas, fase2.
 fazOpcao(f2,3):-call_comparar_circuitos_indicadores, fase2.
 fazOpcao(f2,4):-call_criar_entrega_rapida, fase2.
 fazOpcao(f2,5):-call_criar_entrega_ecologica, fase2.
-fazOpcao(f2,6):-call_comparar_multi_entrega, fase2.
 fazOpcao(f2,0):-menu.
 
 
@@ -635,9 +633,6 @@ call_criar_entrega_rapida:-
     estafeta(Codigo_estafeta,_),
     criar_entrega_rapida(Codigo_entrega,Codigo_encomenda,Codigo_estafeta,Classificacao),
     write('Id de Entrega: '), write(Codigo_entrega), nl.
-
-call_comparar_multi_entrega.
-
 
 call_comparar_circuitos_indicadores:-
     % comparar distancia
