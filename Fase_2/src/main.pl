@@ -133,15 +133,31 @@ criar_cliente(ClienteId, Nome, Rua) :-
 % Criar nova entrega
 % ao fazer entrega ele acede à lista de circuitos e aumenta os contadors peso e volume
 criar_entrega(EntId, EncId, EstId, Class, Algoritmo) :-
-        (encomenda(EncId,_,_,Peso,Volume,_,Rua,_),
-        estafeta(EstId,_),
-        veiculo(Veiculo,_,_,_),
-        Class =< 5, Class >= 0,
-        % criar circuito
-        sup_veiculo_encomenda(EncId, Algoritmo, Veiculo),
-        incrementa_circuito(Algoritmo, Rua, Volume, Peso),
-        evolucao(entrega(EntId, EncId, EstId, Class, Veiculo))).
+    encomenda(EncId,_,_,Peso,Volume,_,Rua,_),
+    estafeta(EstId,_),
+    Class =< 5, Class >= 0,
+    % criar circuito
+    sup_veiculo_encomenda(EncId, Algoritmo, Veiculo),
+    incrementa_circuito(Algoritmo, Rua, Volume, Peso),
+    evolucao(entrega(EntId, EncId, EstId, Class, Veiculo)).
 
+% ele é que escolhe o algoritmo, tentando que tenha o custo mínimo
+criar_entrega_rapida(Ent,Enc,Est,Cl):-
+    encomenda(Enc,_,_,Peso,Volume,_,Rua),
+    estafeta(Est,_),
+    Cl =< 5, Cl >= 0,
+    veiculo_encomenda_rapida(EncId, Algoritmo, Veiculo),
+    incrementa_circuito(Algoritmo, Rua, Volume, Peso),
+    evolucao(entrega(EntId, EncId, EstId, Class, Veiculo)).
+
+% ele é que escolhe o algoritmo, tentando que tenha o veiculo mais ecologico
+criar_entrega_ecologica(Ent,Enc,Est,Cl):-
+    encomenda(Enc,_,_,Peso,Volume,_,Rua),
+    estafeta(Est,_),
+    Cl =< 5, Cl >= 0,
+    veiculo_encomenda_ecologica(EncId, Algoritmo, Veiculo),
+    incrementa_circuito(Algoritmo, Rua, Volume, Peso),
+    evolucao(entrega(EntId, EncId, EstId, Class, Veiculo)).
 
 % ------ FUNCIONALIDADES PEDIDAS ------
 % (1) O estafeta que utilizou mais vezes um meio de transporte mais ecológico
@@ -292,6 +308,35 @@ veiculo_encomenda_aux(DataEncomenda, Prazo, Peso, RuaID, Veiculo, Algoritmo) :-
     soma_horas_data(Prazo, DataEncomenda, DataLimite),
     datahoramenor(DataComViagem, DataLimite).
         
+% devolve o algoritmo e o veiculo que dão o resultado com menos custo
+veiculo_encomenda_rapida(EncId, Algoritmo, Veiculo):-
+    encomenda(EncId, _,_,Peso, _,_,Rua,_),
+    
+    % escolhe o algoritmo com menos custo
+    findall(Custo, circuito(_, Rua, _, Custo, _, _), Circuitos),
+    min_list(Circuitos, MinCusto),
+    circuito(Algoritmo, Rua, _, MinCusto, _, _),
+    
+    % escolhe o veiculo que consegue ir mais rapido
+    findall(Velocidade, veiculo(Vx, _, Velocidade,_,_), Velocidades),
+    max_list(Velocidades, MaxVelocidade),
+    veiculo(Veiculo, _, MaxVelocidade, _, _).
+
+
+% devolve o algoritmo e o veiculo que dão o resultado mais ecologico
+veiculo_encomenda_ecologica(EncId, Algoritmo, Veiculo):-
+    encomenda(EncId, _,_,Peso, _,_,Rua,_),
+    
+    % escolhe o algoritmo com menos custo
+    findall(Custo, circuito(_, Rua, _, Custo, _, _), Circuitos),
+    min_list(Circuitos, MinCusto),
+    circuito(Algoritmo, Rua, _, MinCusto, _, _),
+    
+    % escolhe o veiculo que consegue ir mais rapido
+    findall(Velocidade, veiculo(Vx, _, Velocidade,_,_), Velocidades),
+    max_list(Velocidades, MaxVelocidade),
+    veiculo(Veiculo, _, MaxVelocidade, _, _).
+
 
 % Calcula a ordem dos elementos mais frequentes numa lista, de maior para menor, através de eliminação
 f5_aux([],[]).
@@ -375,6 +420,7 @@ fase2:-
     write('4 - Comparar circuitos de entrega tendo em conta os indicadores de produtividade'), nl,
     write('5 - Escolher o circuito mais rápido (por distância)'), nl,
     write('6 - Escolher o circuito mais ecológico (por tempo)'), nl,
+    write('7 - Multi entrega'), nl,
     write('----------------------------------------------------------------------------------------------------------'),nl,
     write('0 - Sair'), nl,
     write('----------------------------------------------------------------------------------------------------------'),nl,
@@ -415,6 +461,8 @@ fazOpcao(f1,0):-menu.
 
 % Fase 2
 fazOpcao(f2,0):-menu.
+fazOpcao(f2,5):-call_criar_entrega_rapida.
+fazOpcao(f2,6):-call_criar_entrega_ecologica.
 
 
 
@@ -468,6 +516,33 @@ call_criar_entrega:-
     encomenda(Codigo_encomenda,_,_,_,_,_,_,_),
     estafeta(Codigo_estafeta,_),
     criar_entrega(Codigo_entrega,Codigo_encomenda,Codigo_estafeta,Classificacao, Algoritmo).
+
+call_criar_entrega_ecologica:-
+    gera_id(entrega, Codigo_entrega),
+    write('Código de encomenda: '),nl,
+    read(Codigo_encomenda),
+    write('Código de estafeta: '),nl,
+    read(Codigo_estafeta),
+    write('Classificação (0-5): '),nl,
+    read(Classificacao),
+    encomenda(Codigo_encomenda,_,_,_,_,_,_,_),
+    estafeta(Codigo_estafeta,_),
+    criar_entrega_ecologica(Codigo_entrega,Codigo_encomenda,Codigo_estafeta,Classificacao).
+
+
+call_criar_entrega_rapida:-
+    gera_id(entrega, Codigo_entrega),
+    write('Código de encomenda: '),nl,
+    read(Codigo_encomenda),
+    write('Código de estafeta: '),nl,
+    read(Codigo_estafeta),
+    write('Classificação (0-5): '),nl,
+    read(Classificacao),
+    write('Algoritmo (aestrela, gulosa, profundidade, largura, iterativa): '),nl,
+    read(Algoritmo),
+    encomenda(Codigo_encomenda,_,_,_,_,_,_,_),
+    estafeta(Codigo_estafeta,_),
+    criar_entrega_rapida(Codigo_entrega,Codigo_encomenda,Codigo_estafeta,Classificacao).
 
 call_f1:-
     f1_estafetaEcologico(R),

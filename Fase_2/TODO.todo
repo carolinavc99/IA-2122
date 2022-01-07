@@ -12,8 +12,8 @@ OBJETIVO PRINCIPAL: Criação de um sistema de recomendação de circuitos de en
     [] gerar circuitos
     [] representação em grafo
     [] comparar circuitos peso e volume
-(C) [] escolher o circuito mais rapido (distancia)
-(C) [] escolher o circuito mais ecologico (tempo)
+    [] escolher o circuito mais rapido (distancia)
+    [] escolher o circuito mais ecologico (tempo)
 
 [] Indicadores de produtividade
     [] Tempo de Entrega
