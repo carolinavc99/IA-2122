@@ -444,37 +444,37 @@ menu:-
     fazOpcao(m, Opcao).
 
 % Menu Principal
-fazOpcao(m,1):-call_criar_estafeta.
-fazOpcao(m,2):-call_criar_encomenda.
-fazOpcao(m,3):-call_criar_freguesia.
-fazOpcao(m,4):-call_criar_rua.
-fazOpcao(m,5):-call_criar_cliente.
-fazOpcao(m,6):-call_criar_entrega.
+fazOpcao(m,1):-call_criar_estafeta, menu.
+fazOpcao(m,2):-call_criar_encomenda, menu.
+fazOpcao(m,3):-call_criar_freguesia, menu.
+fazOpcao(m,4):-call_criar_rua, menu.
+fazOpcao(m,5):-call_criar_cliente, menu.
+fazOpcao(m,6):-call_criar_entrega, menu.
 fazOpcao(m,7):-fase1.
 fazOpcao(m,8):-fase2.
-fazOpcao(m,0):-halt.
+fazOpcao(m,0).
 
 % Fase 1    
-fazOpcao(f1,1):-call_f1, menu.
-fazOpcao(f1,2):-call_f2, menu.
-fazOpcao(f1,3):-call_f3, menu.
-fazOpcao(f1,4):-call_f4, menu.
-fazOpcao(f1,5):-call_f5, menu.
-fazOpcao(f1,6):-call_f6, menu.
-fazOpcao(f1,7):-call_f7, menu.
-fazOpcao(f1,8):-call_f8, menu.
-fazOpcao(f1,9):-call_f9, menu.
-fazOpcao(f1,10):-call_f10, menu.
+fazOpcao(f1,1):-call_f1, fase1.
+fazOpcao(f1,2):-call_f2, fase1.
+fazOpcao(f1,3):-call_f3, fase1.
+fazOpcao(f1,4):-call_f4, fase1.
+fazOpcao(f1,5):-call_f5, fase1.
+fazOpcao(f1,6):-call_f6, fase1.
+fazOpcao(f1,7):-call_f7, fase1.
+fazOpcao(f1,8):-call_f8, fase1.
+fazOpcao(f1,9):-call_f9, fase1.
+fazOpcao(f1,10):-call_f10, fase1.
 fazOpcao(f1,0):-menu.
 
 
 % Fase 2
-fazOpcao(f2,1):-gerar-circuitos, menu.
-fazOpcao(f2,2):-call_maior_numero_entregas, menu.
-fazOpcao(f2,3):-call_comparar_circuitos_indicadores, menu.
-fazOpcao(f2,4):-call_criar_entrega_rapida, menu.
-fazOpcao(f2,5):-call_criar_entrega_ecologica, menu.
-fazOpcao(f2,6):-call_comparar_multi_entrega, menu.
+fazOpcao(f2,1):-gerar_circuitos, fase2.
+fazOpcao(f2,2):-call_maior_numero_entregas, fase2.
+fazOpcao(f2,3):-call_comparar_circuitos_indicadores, fase2.
+fazOpcao(f2,4):-call_criar_entrega_rapida, fase2.
+fazOpcao(f2,5):-call_criar_entrega_ecologica, fase2.
+fazOpcao(f2,6):-call_comparar_multi_entrega, fase2.
 fazOpcao(f2,0):-menu.
 
 
