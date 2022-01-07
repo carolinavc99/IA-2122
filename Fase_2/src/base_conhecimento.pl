@@ -29,6 +29,9 @@ encomenda(10, 20/7/2021/10/00, 24, 40, 5, 44, 2,2).
 encomenda(11, 2/12/2021/20/11, 3, 0.6, 5, 70, 3, 8).
 encomenda(12, 2/12/2021/20/11, 4, 7, 5, 59, 1, 3).
 encomenda(13, 5/1/2022/21/00, 1, 2, 5, 59, 10, cliente_desconhecido).  %Valor nulo -> incerto
+excecao(encomenda(14, 21/5/2021/21/00,2,2,5,59,10,2)). %impreciso
+excecao(encomenda(14, 22/5/2021/21/00,2,2,5,59,10,2)). %impreciso
+encomenda(15,2/3/2021,4,5,5,42,rua_interdita,3). %interdito
 
 
 

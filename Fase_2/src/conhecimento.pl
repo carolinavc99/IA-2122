@@ -123,15 +123,35 @@
 % --------------------------------------------------------------------------------
 % Conhecimento Incerto
 % --------------------------------------------------------------------------------
-encomenda(13, 1/1/2022/18/00,4,10,5,22,rua1,cliente_desconhecido).
 excecao(encomenda(Identificacao,Datahora,Tempo_Entrega,Peso,Volume,Preco,Rua,Cliente)):-
     encomenda(Identificacao,Datahora,Tempo_Entrega,Peso,Volume,Preco,Rua,cliente_desconhecido).
 
+% encomenda - numero de identificação, datahora, tempo máximo de entrega, peso, volume, preço, rua, cliente
 % --------------------------------------------------------------------------------
 % Conhecimento Impreciso
 % --------------------------------------------------------------------------------
-excecao(encomenda(14, 21/5/2021/21/00,2,2,5,59,10,2)).
-excecao(encomenda(14, 22/5/2021/21/00,2,2,5,59,10,2)).
+
+
+% --------------------------------------------------------------------------------
+% Conhecimento Interdito
+% --------------------------------------------------------------------------------
+
+nulo(rua_interdita).
+
++encomenda(Identificacao,Datahora,Tempo_Entrega,Peso,Volume,Preco,Rua,Cliente)::
+    (
+        findall(
+            (Identificacao,Datahora,Tempo_Entrega,Peso,Volume,Preco, rua_interdita,Cliente),
+            (encomenda(15,2/3/2021,4,5,5,42,Rua,3),not(nulo(Rua))),
+            S
+        ),
+        length(S,N),
+        N==0
+    ).
+
+excecao(encomenda(Identificacao,Datahora,Tempo_Entrega,Peso,Volume,Preco,Rua,Cliente)):-
+    encomenda(Identificacao,Datahora,Tempo_Entrega,Peso,Volume,Preco,rua_interdita,Cliente).
+
 
 % --------------------------------------------------------------------------------
 % Evolução do Conhecimento
