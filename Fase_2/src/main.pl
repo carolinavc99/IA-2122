@@ -15,7 +15,11 @@
 :- [conhecimento].
 
 % ------ REGRAS PARA EVITAR WARNINGS ------
-:-style_check(-discontiguous).
+:- style_check(-discontiguous).
+:- style_check(-singleton).
+
+:- discontiguous excecao/1.
+
 :-dynamic circuito/6.
 
 % ------ VARIÁVEIS GLOBAIS ------
@@ -118,7 +122,7 @@ criar_freguesia(Id) :-
 
 % Criar nova rua
 criar_rua(RId, FId) :-
-    evolucao(rua(RId,Fid)),
+    evolucao(rua(RId,FId)),
     write('Rua criada.').
 
 % Criar novo cliente
@@ -128,13 +132,13 @@ criar_cliente(ClienteId, Nome, Rua) :-
 
 % Criar nova entrega
 % ao fazer entrega ele acede à lista de circuitos e aumenta os contadors peso e volume
-criar_entrega(EntId, EncId, EstId, Class) :-
+criar_entrega(EntId, EncId, EstId, Class, Algoritmo) :-
         (encomenda(EncId,_,_,Peso,Volume,_,Rua,_),
         estafeta(EstId,_),
         veiculo(Veiculo,_,_,_),
         Class =< 5, Class >= 0,
         % criar circuito
-        sup_veiculo_encomenda(EncID, Algoritmo, Veiculo),
+        sup_veiculo_encomenda(EncId, Algoritmo, Veiculo),
         incrementa_circuito(Algoritmo, Rua, Volume, Peso),
         evolucao(entrega(EntId, EncId, EstId, Class, Veiculo))).
 
@@ -270,12 +274,12 @@ sup_veiculo_encomenda(EncID, Algoritmo, V) :-
 
 veiculo_encomenda(EncID, [H|L], V, Algoritmo) :-
     encomenda(EncID, DataEncomenda, Prazo, Peso, _, _, RuaID, _),
-    veiculo_encomenda_aux(EncID, DataEncomenda, Prazo, Peso, RuaID, V, Algoritmo).
+    veiculo_encomenda_aux(DataEncomenda, Prazo, Peso, RuaID, V, Algoritmo).
 veiculo_encomenda(EncID, [H|L], V, Algoritmo) :- !, veiculo_encomenda(EncID, L, V, Algoritmo).
-veiculo_encomenda(EncID, [], V, _) :- write('Não é possível fazer esta encomenda.').
+veiculo_encomenda(_, [], _, _) :- write('Não é possível fazer esta encomenda.').
 
 
-veiculo_encomenda_aux(EncID, DataEncomenda, Prazo, Peso, RuaID, Veiculo, Algoritmo) :- 
+veiculo_encomenda_aux(DataEncomenda, Prazo, Peso, RuaID, Veiculo, Algoritmo) :- 
     % 0. calcular a distancia
     distancia_por_algoritmo(Algoritmo, RuaID, Distancia),
     % 1. calcular o tempo de viagem
@@ -323,24 +327,24 @@ frequencia(E, [H|T], F) :- E \= H,
 % Gera o próximo ID disponível
 gera_id(estafeta, R):-
     findall(ID, estafeta(ID, _), Lista),
-    gera_id_aux(Lista, Max, R).
+    gera_id_aux(Lista, R).
 gera_id(encomenda, R) :-
     findall(ID, encomenda(ID,_,_,_,_,_,_,_), Lista),
-    gera_id_aux(Lista, Max, R).
+    gera_id_aux(Lista, R).
 gera_id(cliente, R) :-
     findall(ID, cliente(ID, _, _), Lista),
-    gera_id_aux(Lista, Max, R).
+    gera_id_aux(Lista, R).
 gera_id(entrega, R) :-
     findall(ID, entrega(ID,_,_,_,_), Lista),
-    gera_id_aux(Lista, Max, R).
+    gera_id_aux(Lista, R).
 gera_id(freguesia, R) :-
     findall(ID, freguesia(ID), Lista),
-    gera_id_aux(Lista, Max, R).
+    gera_id_aux(Lista, R).
 gera_id(rua, R) :-
     findall(ID, rua(ID,_), Lista),
-    gera_id_aux(Lista, Max, R).
+    gera_id_aux(Lista, R).
 
-gera_id_aux(Lista, Max, R):-
+gera_id_aux(Lista, R):-
     max_list(Lista, Max),
     R is Max + 1.
 
@@ -461,8 +465,9 @@ call_criar_entrega:-
     read(Classificacao),
     write('Algoritmo (aestrela, gulosa, profundidade, largura, iterativa): '),nl,
     read(Algoritmo),
-    encomenda(Codigo_encomenda,_,_,Peso,_,_,_,_),
-    criar_entrega(Codigo_entrega,Codigo_encomenda,Codigo_estafeta,Classificacao).
+    encomenda(Codigo_encomenda,_,_,_,_,_,_,_),
+    estafeta(Codigo_estafeta,_),
+    criar_entrega(Codigo_entrega,Codigo_encomenda,Codigo_estafeta,Classificacao, Algoritmo).
 
 call_f1:-
     f1_estafetaEcologico(R),

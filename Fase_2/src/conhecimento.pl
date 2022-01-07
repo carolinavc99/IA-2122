@@ -1,5 +1,9 @@
 % ------ CONHECIMENTO ------
 :- op(900,xfy,'::').
+
+:- discontiguous (::)/2.
+:- discontiguous excecao/1.
+
 :- dynamic veiculo/4.
 :- dynamic estafeta/2.
 :- dynamic freguesia/1.

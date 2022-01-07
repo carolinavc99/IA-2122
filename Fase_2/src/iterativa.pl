@@ -45,7 +45,7 @@ dfs_iterativa(Orig,Dest,Cam/C,Iteracoes):-
 dfs_iterativa(Orig,Dest,Cam/C,Iteracoes):- 
     dfs2_iterativa(Orig,Dest,[Orig]/0,Cam/C,Iteracoes).
 
-dfs2_iterativa(Dest,Dest,LA/Custo,Cam/Custo,Iteracoes):- 
+dfs2_iterativa(Dest,Dest,LA/Custo,Cam/Custo,_):- 
     reverse(LA,Cam).
 dfs2_iterativa(Act,Dest,LA/Custo_LA,Cam/C,Iteracoes):- 
     adjacente(Act,X,Custo_aresta), 

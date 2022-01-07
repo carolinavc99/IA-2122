@@ -28,7 +28,7 @@ circuitos_bfs_aux([H|T], Lista, Circuitos) :-
 */
 % ------ ALGORITMO ------
 primeiro_bfs(Destino, H/C):-
-    findall(Resultado, bfs(centro, Destino, Resultado), [H/C|T])/*, reverse(H,X)*/.
+    findall(Resultado, bfs(centro, Destino, Resultado), [H/C|_])/*, reverse(H,X)*/.
 
 bfs(Orig, Dest, Cam/C):- 
     bfs2(Dest,[[Orig]/0],Cam/C).

@@ -44,22 +44,22 @@ agulosa(Caminhos, Caminho) :-
 
 agulosa(Caminhos, SolucaoCaminho) :-
     obtem_melhor_g(Caminhos,MelhorCaminho),
-    remove(MehorCaminho,Caminhos,OutrosCaminhos),
+    remove(MelhorCaminho,Caminhos,OutrosCaminhos),
     expande_gulosa(MelhorCaminho,ExpCaminhos),
     append(OutrosCaminhos,ExpCaminhos,NovoCaminhos),
     agulosa(NovoCaminhos,SolucaoCaminho).
 
 
 obtem_melhor_g([Caminho],Caminho) :- !.
-obtem_melhor_g([Caminho1/Custo1/Est1, _/Custo2/Est2|Caminhos], MelhorCaminho) :-
+obtem_melhor_g([Caminho1/Custo1/Est1, _/_/Est2|Caminhos], MelhorCaminho) :-
     Est1 =< Est2, !,
     obtem_melhor_g([Caminho1/Custo1/Est1|Caminhos], MelhorCaminho).
 obtem_melhor_g([_|Caminhos], MelhorCaminho) :- obtem_melhor_g(Caminhos, MelhorCaminho).
 
 expande_gulosa(Caminho,ExpCaminhos) :-
-    findall(NovoCaminho, adjacente2(Caminho,NovoCaminho),ExpCaminhos).
+    findall(NovoCaminho, adjacenteGu(Caminho,NovoCaminho),ExpCaminhos).
 
-adjacente2([Nodo|Caminho]/Custo/_, [ProxNodo,Nodo|Caminho]/NovoCusto/Est) :-
+adjacenteGu([Nodo|Caminho]/Custo/_, [ProxNodo,Nodo|Caminho]/NovoCusto/Est) :-
     adjacente(Nodo,ProxNodo,PassoCusto),
     not(member(ProxNodo,Caminho)),
     NovoCusto is Custo + PassoCusto,
