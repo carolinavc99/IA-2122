@@ -90,9 +90,7 @@ membro(X, [_|Xs]) :- membro(X,Xs).
 % -----------------------------------------
 % Criar novo estafeta
 criar_estafeta(EstId, Nome) :-
-    (estafeta(EstId, _) -> write('Id do estafeta já existe.');
-        assert(estafeta(EstId, Nome)),
-        write('Estafeta criado.')).
+    evolucao(estafeta(EstId, Nome)).
 
 % Criar nova encomenda
 criar_encomenda(EncId, Tempo, Peso, Volume, Rua, ClienteId) :- 
@@ -101,7 +99,7 @@ criar_encomenda(EncId, Tempo, Peso, Volume, Rua, ClienteId) :-
         preco(Tempo, Peso, Preco),
         cliente(ClienteId, Nome, _),
         rua(Rua,_),
-        assert(encomenda(EncId, Data, Tempo, Peso, Volume, Rua, ClienteId)),
+        evolucao(encomenda(EncId, Data, Tempo, Peso, Volume, Rua, ClienteId)),
         write('Encomenda realizada:\nCliente: '), write(Nome), write(' '), write(ClienteId),
             write('\nData atual: '), write(Data), 
             write('\nTempo limite de entrega: '), write(Tempo), 
@@ -114,26 +112,22 @@ criar_encomenda(EncId, Tempo, Peso, Volume, Rua, ClienteId) :-
 
 % Criar nova freguesia
 criar_freguesia(Id) :-
-    (freguesia(Id) -> write('Freguesia já existe.\n');
-        assert(freguesia(Id)),
-        write('Freguesia criada.')).
+    evolucao(freguesia(Id)),
+    write('Freguesia criada.')).
 
 % Criar nova rua
 criar_rua(RId, FId) :-
-    (rua(RId, _) -> write('Rua já existe.\n');
-    assert(rua(RId, FId)),
-    write('Rua criada.')).
+    evolucao(rua(RId,Fid)),
+    write('Rua criada.').
 
 % Criar novo cliente
 criar_cliente(ClienteId, Nome, Rua) :-
-    (cliente(ClienteId,_,_) -> write('Id do cliente já existe.');
-        assert(cliente(ClienteId, Nome, Rua)),
-        write('Cliente criado.')).
+    evolucao(cliente(ClienteId,Nome,Rua)),
+    write('Cliente criado.')).
 
 % Criar nova entrega
 % ao fazer entrega ele acede à lista de circuitos e aumenta os contadors peso e volume
 criar_entrega(EntId, EncId, EstId, Class) :-
-    (entrega(EntId,_,_,_,_) -> write('Id da entrega já existe.');
         (encomenda(EncId,_,_,Peso,Volume,_,Rua,_),
         estafeta(EstId,_),
         veiculo(Veiculo,_,_,_,_),
@@ -141,7 +135,7 @@ criar_entrega(EntId, EncId, EstId, Class) :-
         % criar circuito
         sup_veiculo_encomenda(EncID, Algoritmo, Veiculo),
         incrementa_circuito(Algoritmo, Rua, Volume, Peso),
-        assert(entrega(EntId, EncId, EstId, Class, Veiculo)))).
+        evolucao(entrega(EntId, EncId, EstId, Class, Veiculo))).
 
 
 % ------ FUNCIONALIDADES PEDIDAS ------
@@ -343,6 +337,9 @@ gera_id(entrega, R) :-
 gera_id(freguesia, R) :-
     findall(ID, freguesia(ID), Lista),
     gera_id_aux(Lista, Max, R).
+gera_id(rua, R) :-
+    findall(ID, rua(ID,_), Lista),
+    gera_id_aux(Lista, Max, R).
 
 gera_id_aux(Lista, Max, R):-
     max_list(Lista, Max),
@@ -400,6 +397,14 @@ menu:-
 
 % Menu Principal
 fazOpcao(m,0):-halt.
+fazOpcao(m,1):-call_criar_estafeta.
+fazOpcao(m,2):-call_criar_encomenda.
+fazOpcao(m,3):-call_criar_freguesia.
+fazOpcao(m,4):-call_criar_rua.
+fazOpcao(m,5):-call_criar_cliente.
+fazOpcao(m,6):-call_criar_entrega.
+fazOpcao(m,7):-fase1.
+fazOpcao(m,8):-fase2.
 
 % Fase 1    
 fazOpcao(f1,0):-menu.

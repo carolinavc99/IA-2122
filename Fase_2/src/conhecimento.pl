@@ -56,44 +56,44 @@
 
 +estafeta(Identificacao,Nome)::
     (
-        findall(
+        findall
             ((Identificacao,Nome),
             estafeta(Identificacao,Nome),
             S)
-        ),
+        ,
         length(S,N),
         N==1
     ).
 
 +encomenda(Identificacao,Datahora,Tempo_Entrega,Peso,Volume,Preco,Rua,Cliente)::
     (
-        findall(
+        findall
             ((Identificacao,Datahora,Tempo_Entrega,Peso,Volume,Preco,Rua,Cliente),
             encomenda(Identificacao,Datahora,Tempo_Entrega,Peso,Volume,Preco,Rua,Cliente),
             S)
-        ),
+        ,
         length(S,N),
         N==1
     ).
 
 +freguesia(Identificacao)::
     (
-        findall(
+        findall
             ((Identificacao),
             freguesia(Identificacao),
             S)
-        ),
+        ,
         length(S,N),
         N==1
     ).
 
 +rua(Identificacao,Freguesia)::
     (
-        findall(
+        findall
             ((Identificacao,Freguesia),
             rua(Identificacao,Freguesia),
             S)
-        ),
+        ,
         length(S,N),
         N==1
     ).
@@ -101,21 +101,21 @@
 +cliente(Identificacao,Nome,Rua)::
     (
         findall(
-            ((Identificacao,Nome,Rua),
+            (Identificacao,Nome,Rua),
             cliente(Identificacao,Nome,Rua),
             S)
-        ),
+        ,
         length(S,N),
         N==1
     ).
 
 +entrega(Identificacao,Encomenda,Estafeta,Classificacao,Veiculo)::
     (
-        findall(
+        findall
             ((Identificacao,Encomenda,Estafeta,Classificacao,Veiculo),
             entrega(Identificacao,Encomenda,Estafeta,Classificacao,Veiculo),
             S)
-        ),
+        ,
         length(S,N),
         N==1
     ).
@@ -123,7 +123,7 @@
 % --------------------------------------------------------------------------------
 % Conhecimento Incerto
 % --------------------------------------------------------------------------------
-encomenda(enc13, 1/1/2022/18/00,4,10,5,22,rua1,cliente_desconhecido).
+encomenda(13, 1/1/2022/18/00,4,10,5,22,rua1,cliente_desconhecido).
 excecao(encomenda(Identificacao,Datahora,Tempo_Entrega,Peso,Volume,Preco,Rua,Cliente)):-
     encomenda(Identificacao,Datahora,Tempo_Entrega,Peso,Volume,Preco,Rua,cliente_desconhecido).
 
