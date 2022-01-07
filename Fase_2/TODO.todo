@@ -46,7 +46,7 @@ OBJETIVO PRINCIPAL: Criação de um sistema de recomendação de circuitos de en
 [] implementar função que imprime o grafo no terminal
 [] completar função fazOpcao (nota: não se preocupem com as funções call_X em si, porque essas eu dou uma vista de olhos quando estiverem todas feitas, preocupem-se só é que cada opção chama a fazOpcao correta)
 
-
+[] implementar funções de remoção (apagar_entidade)
 [X] criar entrega tendo em conta veiculo_encomenda
 [-] estafeta last time online
 [-] fazer grafo maior mas manter o atual de teste

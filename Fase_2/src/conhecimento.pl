@@ -120,6 +120,12 @@
         N==1
     ).
 
+% --------------------------------------------------------------------------------
+% Conhecimento Incerto
+% --------------------------------------------------------------------------------
+encomenda(enc13, 1/1/2022/18/00,4,10,5,22,rua1,cliente_desconhecido).
+excecao(encomenda(Identificacao,Datahora,Tempo_Entrega,Peso,Volume,Preco,Rua,Cliente)):-
+    encomenda(Identificacao,Datahora,Tempo_Entrega,Peso,Volume,Preco,Rua,cliente_desconhecido).
 
 % --------------------------------------------------------------------------------
 % Evolução do Conhecimento
@@ -138,3 +144,16 @@ insercao(Termo) :-
 teste([]).
 teste([R|LR]) :-
 		R, teste(LR).
+
+
+% ---------------------------------------------------------------------------------
+% Sistema de Inferência
+% ---------------------------------------------------------------------------------
+
+demo( Questao,verdadeiro ) :-
+    Questao.
+demo( Questao,falso ) :-
+    -Questao.
+demo( Questao,desconhecido ) :-
+    not( Questao ),
+    not( -Questao ).
