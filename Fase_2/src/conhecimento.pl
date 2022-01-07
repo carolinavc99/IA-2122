@@ -128,6 +128,12 @@ excecao(encomenda(Identificacao,Datahora,Tempo_Entrega,Peso,Volume,Preco,Rua,Cli
     encomenda(Identificacao,Datahora,Tempo_Entrega,Peso,Volume,Preco,Rua,cliente_desconhecido).
 
 % --------------------------------------------------------------------------------
+% Conhecimento Impreciso
+% --------------------------------------------------------------------------------
+excecao(encomenda(14, 21/5/2021/21/00,2,2,5,59,10,2)).
+excecao(encomenda(14, 22/5/2021/21/00,2,2,5,59,10,2)).
+
+% --------------------------------------------------------------------------------
 % Evolução do Conhecimento
 % --------------------------------------------------------------------------------
 
