@@ -1,6 +1,6 @@
 % ------ CONHECIMENTO ------
 :- op(900,xfy,'::').
-:- dynamic veiculo/5.
+:- dynamic veiculo/4.
 :- dynamic estafeta/2.
 :- dynamic freguesia/1.
 :- dynamic rua/2.
@@ -43,11 +43,11 @@
 % Invariantes de Repetição
 % ------------------------------------------------------------------------------------------------
 
-+veiculo(Tipo,Carga,Velocidade,Preco,Decrescimento)::
++veiculo(Tipo,Carga,Velocidade,Decrescimento)::
     (
         findall(
-            (Tipo,Carga,Velocidade,Preco,Decrescimento),
-            veiculo(Tipo,Carga,Velocidade,Preco,Decrescimento),
+            (Tipo,Carga,Velocidade,Decrescimento),
+            veiculo(Tipo,Carga,Velocidade,Decrescimento),
             S
         ),
         length(S,N),
@@ -56,8 +56,8 @@
 
 +estafeta(Identificacao,Nome)::
     (
-        findall
-            ((Identificacao,Nome),
+        findall(
+            (Identificacao,Nome),
             estafeta(Identificacao,Nome),
             S)
         ,
@@ -67,8 +67,8 @@
 
 +encomenda(Identificacao,Datahora,Tempo_Entrega,Peso,Volume,Preco,Rua,Cliente)::
     (
-        findall
-            ((Identificacao,Datahora,Tempo_Entrega,Peso,Volume,Preco,Rua,Cliente),
+        findall(
+            (Identificacao,Datahora,Tempo_Entrega,Peso,Volume,Preco,Rua,Cliente),
             encomenda(Identificacao,Datahora,Tempo_Entrega,Peso,Volume,Preco,Rua,Cliente),
             S)
         ,
@@ -78,8 +78,8 @@
 
 +freguesia(Identificacao)::
     (
-        findall
-            ((Identificacao),
+        findall(
+            (Identificacao),
             freguesia(Identificacao),
             S)
         ,
@@ -89,8 +89,8 @@
 
 +rua(Identificacao,Freguesia)::
     (
-        findall
-            ((Identificacao,Freguesia),
+        findall(
+            (Identificacao,Freguesia),
             rua(Identificacao,Freguesia),
             S)
         ,
@@ -111,8 +111,8 @@
 
 +entrega(Identificacao,Encomenda,Estafeta,Classificacao,Veiculo)::
     (
-        findall
-            ((Identificacao,Encomenda,Estafeta,Classificacao,Veiculo),
+        findall(
+            (Identificacao,Encomenda,Estafeta,Classificacao,Veiculo),
             entrega(Identificacao,Encomenda,Estafeta,Classificacao,Veiculo),
             S)
         ,
