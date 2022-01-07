@@ -7,46 +7,37 @@ LEGENDA:
 [X] -> tarefa completada
 __________________________
 OBJETIVO PRINCIPAL: Criação de um sistema de recomendação de circuitos de entrega de encomendas
-
-[] 6 objetivos
-    [] gerar circuitos
-    [] representação em grafo
-    [] comparar circuitos peso e volume
-    [] escolher o circuito mais rapido (distancia)
-    [] escolher o circuito mais ecologico (tempo)
-
-[] Indicadores de produtividade
-    [] Tempo de Entrega
-    [] Distância percorrida para a entrega
 [] acabar relatório
-(C) [] volume na veiculo_encomenda
-[] implementar mais do que uma entrega (multi_entrega.pl)
+
+[X] adicionar, às circuitos_(algoritmo), os circuitos que supostamente já foram feitos antes de o programa começar
+    (nota: estão à vontade para escolher qual algoritmo foi feito para qual entrega, certifiquem-se só que os dados dos circuitos e os dados das entregas são compatíveis)
+    (notanota: tentem ter pelo menos uma entrega para cada algoritmo)
+    [X] aestrela
+    [X] gulosa
+    [X] profundidade
+    [X] largura
+    [X] iterativa
+
+
+[X] 6 objetivos
+    [X] gerar circuitos
+    [X] representação em grafo
+    [X] comparar circuitos peso e volume
+    [X] escolher o circuito mais rapido (distancia)
+    [X] escolher o circuito mais ecologico (tempo)
+[X] Indicadores de produtividade
+    [X] Tempo de Entrega
+    [X] Distância percorrida para a entrega
+[-] volume na veiculo_encomenda
+[X] implementar mais do que uma entrega (multi_entrega.pl)
     (nota: é só pegar nas funções que já temos e usá-las para multi_entregas)
     (notanota: em alguns casos provavelmente usar funções já feitas não vai ser suficiente, por isso o melhor a fazer é olhar para as que já temos feitas, que fazem X função para uma encomenda, e replicar o funcionamento numa nova função (em multi_entrega.pl) que faça X mas para mais do que uma encomenda)
     (IMPORTANTE: NÃO MEXER NAS FUNÇÕES QUE JÁ ESTÃO FEITAS. se for necessário alguma modificação para as multi-entregas, copiar e colar o código numa função nova em multi_entrega.pl. POR FAVOR não me mexam em funções que já estão feitas)
-(C) [] implementar teste_tempo.pl (usar call_time/2) para poder tirar as cenas para a tabela do enunciado
-[] criar funções de listagem de entidades
-    [] lista_veiculos
-    [] lista_estafetas
-    [] lista_encomendas
-    [] lista_freguesias
-    [] lista_ruas
-    [] lista_clientes
-    [] lista_entregas
-[] adicionar, às circuitos_(algoritmo), os circuitos que supostamente já foram feitos antes de o programa começar
-    (nota: estão à vontade para escolher qual algoritmo foi feito para qual entrega, certifiquem-se só que os dados dos circuitos e os dados das entregas são compatíveis)
-    (notanota: tentem ter pelo menos uma entrega para cada algoritmo)
-    [] aestrela
-    [] gulosa
-    [] profundidade
-    [] largura
-    [] iterativa
-[] adicionar as ^ funções de listagem ^ ao menu principal
-(C) [] testar todas as funções do menu, algumas várias vezes
-[] implementar função que imprime o grafo no terminal
-[] completar função fazOpcao (nota: não se preocupem com as funções call_X em si, porque essas eu dou uma vista de olhos quando estiverem todas feitas, preocupem-se só é que cada opção chama a fazOpcao correta)
-
-[] implementar funções de remoção (apagar_entidade)
+[X] implementar teste_tempo.pl (usar call_time/2) para poder tirar as cenas para a tabela do enunciado
+[X] testar todas as funções do menu, algumas várias vezes
+[-] implementar função que imprime o grafo no terminal
+[X] completar função fazOpcao (nota: não se preocupem com as funções call_X em si, porque essas eu dou uma vista de olhos quando estiverem todas feitas, preocupem-se só é que cada opção chama a fazOpcao correta)
+[-] implementar funções de remoção (apagar_entidade)
 [X] criar entrega tendo em conta veiculo_encomenda
 [-] estafeta last time online
 [-] fazer grafo maior mas manter o atual de teste

@@ -38,7 +38,36 @@ gerar_circuitos :-
     circuitos_gulosa,
     circuitos_profundidade,
     circuitos_largura,
-    circuitos_iterativa.
+    circuitos_iterativa,
+    faz_circuitos.
+
+% preenche nos circuitos os que já foram feitos
+%circuito(algoritmo, rua_entrega, [caminho], custo, peso, volume).
+faz_circuitos:-
+    % entrega 1
+    incrementa_circuito(aestrela, 1, 2, 5),
+
+    % entrega 2
+    incrementa_circuito(gulosa, 9, 2, 24),
+
+    % entrega 3
+    incrementa_circuito(profundidade, 4, 60, 90),
+    
+    % entrega 4
+    incrementa_circuito(largura, 7, 50, 300),
+
+    % entrega 5
+    incrementa_circuito(profundidade, 1, 4, 40),
+
+    % entrega 6
+    incrementa_circuito(largura, 3, 7, 20),
+
+    % entrega 7
+    incrementa_circuito(largura, 5, 7, 4),
+
+    % entrega 8
+    incrementa_circuito(iterativa, 3, 1, 16).
+
 
 % (2) representação dos diversos pontos de entrega em forma de grafo
 
@@ -101,21 +130,18 @@ criar_estafeta(EstId, Nome) :-
 
 % Criar nova encomenda
 criar_encomenda(EncId, Tempo, Peso, Volume, Rua, ClienteId) :- 
-    (encomenda(EncId, _,_,_,_,_,_,_) -> write('Id  da encomenda já existe.');
-        (datahora(Data),
-        preco(Tempo, Preco),
-        cliente(ClienteId, Nome, _),
-        rua(Rua,_),
-        evolucao(encomenda(EncId, Data, Tempo, Peso, Volume, Rua, ClienteId)),
-        write('Encomenda realizada:\nCliente: '), write(Nome), write(' '), write(ClienteId),
-            write('\nData atual: '), write(Data), 
-            write('\nTempo limite de entrega: '), write(Tempo), 
-            write('\nPeso: '), write(Peso),
-            write('\nVolume: '), write(Volume),
-            write('\nPreço: '), write(Preco),
-            write('\nRua: '), write(Rua)
-        )
-    ).
+    datahora(Data),
+    preco(Tempo, Preco),
+    cliente(ClienteId, Nome, _),
+    rua(Rua,_),
+    evolucao(encomenda(EncId, Data, Tempo, Peso, Volume, Rua, ClienteId)),
+    write('Encomenda realizada:\nCliente: '), write(Nome), write(' - '), write(ClienteId),
+        write('\nData atual: '), write(Data), 
+        write('\nTempo limite de entrega: '), write(Tempo), 
+        write('\nPeso: '), write(Peso),
+        write('\nVolume: '), write(Volume),
+        write('\nPreço: '), write(Preco),
+        write('\nRua: '), write(Rua).
 
 % Criar nova freguesia
 criar_freguesia(Id) :-
@@ -389,6 +415,7 @@ gera_id(rua, R) :-
     findall(ID, rua(ID,_), Lista),
     gera_id_aux(Lista, R).
 
+gera_id_aux([], 1).
 gera_id_aux(Lista, R):-
     max_list(Lista, Max),
     R is Max + 1.

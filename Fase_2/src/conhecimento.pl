@@ -16,7 +16,7 @@
 % PMF
 % --------------------------------------
 -veiculo(Tipo,Carga,Velocidade,Preco,Decrescimento):-
-    not(veiculo(Tipo,Carga,Velocidade,Preco,Decrescimento)),
+    not(veiculo(Tipo,Carga,Velocidade,Decrescimento)),
     not(excecao(veiculo(Tipo,Carga,Velocidade,Preco,Decrescimento))).
 
 -estafeta(Identificacao,Nome):-

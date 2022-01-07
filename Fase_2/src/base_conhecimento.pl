@@ -18,22 +18,22 @@ estafeta(3, 'Davim Ariezes').
 estafeta(4, 'Sofira Mangostim').
 estafeta(5, 'Miriana Rubardezes').
 
-% encomenda - numero de identificação, datahora, tempo máximo de entrega, peso, volume, preço, rua, cliente
-encomenda(1, 1/1/2021/18/30, 2, 10, 5, 56, 1,1).
-encomenda(2, 20/7/2021/10/00, 24, 40, 5, 44, 2,2).
-encomenda(3, 20/7/2021/9/20, 4, 5, 5, 54, 3, 3).
-encomenda(4, 20/7/2021/16/00, 1, 15, 5, 62, 4, 4).
-encomenda(5, 2/8/2021/3/40, 4, 20, 5, 59, 5, 5).
-encomenda(6, 2/8/2021/15/50, 6, 25, 5, 62, 6, 6).
-encomenda(7, 2/8/2021/17/10, 2, 96, 5, 66, 7, 7).
-encomenda(8, 2/8/2021/20/00, 2, 4, 5, 56, 8, 8).
-encomenda(9, 2/8/2021/20/00, 2, 4, 5, 56, 8, 8).
-encomenda(10, 20/7/2021/10/00, 24, 40, 5, 44, 2,2).
-encomenda(11, 2/12/2021/20/11, 3, 0.6, 5, 70, 3, 8).
-encomenda(12, 2/12/2021/20/11, 4, 7, 5, 59, 1, 3).
+% encomenda - numero de identificação, datahora, tempo máximo de entrega, 
+%       peso, volume, preço, rua, cliente
+encomenda(1, 7/1/2022/21/35, 2, 5, 2, 56, 1, 1).
+encomenda(2, 7/1/2022/21/39, 24, 2, 6, 34, 9, 2).
+encomenda(3, 7/1/2022/21/46, 24, 90, 60, 34, 4, 3).
+encomenda(4, 7/1/2022/21/50, 12, 300, 50, 46, 7, 4).
+encomenda(5, 7/1/2022/21/56, 7, 40, 4, 51, 1, 4).
+encomenda(6, 7/1/2022/22/1, 30, 20, 7, 28, 3, 2).
+encomenda(7, 7/1/2022/22/2, 22, 4, 7, 36, 5, 1).
+encomenda(8, 7/1/2022/22/5, 35, 1, 4, 23, 3, 3).
+encomenda(9, 7/1/2022/22/6, 40, 2, 5, 18, 2, 1).
+encomenda(10, 7/1/2022/22/7, 48, 10, 5, 10, 2, 2).
+
 
 % teste
-encomenda(100, 7/01/2022/18/00, 10, 7, 5, 59, 1, 3).
+%encomenda(100, 7/01/2022/18/00, 10, 7, 5, 59, 1, 3).
 
 %Valor nulo -> incerto
 encomenda(13, 5/1/2022/21/00, 1, 2, 5, 59, 10, cliente_desconhecido).
@@ -75,14 +75,15 @@ cliente(7, 'Carminela Lopanor', 7).
 cliente(8, 'Iolina Rumos', 8).
 
 % entregas - número de identificação, encomenda, estafeta, classificação (0-5), veiculo
-entrega(1, 1, 1, 5, bicicleta).
-entrega(2, 2, 2, 3, carro).
-entrega(3, 3, 3, 2, bicicleta).
-entrega(4, 4, 4, 1, mota).
-entrega(5, 5, 1, 4, mota).
-entrega(6, 6, 3, 2, carro).
-entrega(7, 7, 3, 4, bicicleta).
-entrega(8, 10, 2, 4, bicicleta).
-entrega(9, 11, 5, 4, usainBolt).
+entrega(1, 1, 1, 2, bicicleta).
+entrega(2, 2, 2, 4, bicicleta).
+entrega(3, 3, 3, 1, carro).
+entrega(4, 4, 2, 3, fogetao).
+entrega(5, 4, 2, 4, fogetao).
+entrega(6, 6, 1, 2, mota).
+entrega(7, 7, 5, 2, bicicleta).
+entrega(8, 8, 2, 5, usainBolt).
+
+
 
 %circuito(algoritmo, rua_entrega, [caminho], custo, peso, volume).
