@@ -415,12 +415,11 @@ fase1:-
 fase2:-
     write('------------------------------------------------- FASE 2 -------------------------------------------------'),nl,
     write('1 - Gerar circuitos de entrega'), nl,
-    write('2 - Representação dos pontos de entrega em grafo'), nl,
-    write('3 - Circuitos com maior número de entregas (por volume e por peso)'), nl,
-    write('4 - Comparar circuitos de entrega tendo em conta os indicadores de produtividade'), nl,
-    write('5 - Escolher o circuito mais rápido (por distância)'), nl,
-    write('6 - Escolher o circuito mais ecológico (por tempo)'), nl,
-    write('7 - Multi entrega'), nl,
+    write('2 - Circuitos com maior número de entregas (por volume e por peso)'), nl,
+    write('3 - Comparar circuitos de entrega tendo em conta os indicadores de produtividade'), nl,
+    write('4 - Escolher o circuito mais rápido (por distância)'), nl,
+    write('5 - Escolher o circuito mais ecológico (por tempo)'), nl,
+    write('6 - Multi entrega'), nl,
     write('----------------------------------------------------------------------------------------------------------'),nl,
     write('0 - Sair'), nl,
     write('----------------------------------------------------------------------------------------------------------'),nl,
@@ -471,12 +470,11 @@ fazOpcao(f1,0):-menu.
 
 % Fase 2
 fazOpcao(f2,1):-gerar-circuitos, menu.
-fazOpcao(f2,2):-menu.
-fazOpcao(f2,3):-call_maior_numero_entregas, menu.
-fazOpcao(f2,4):-call_comparar_circuitos_indicadores, menu.
-fazOpcao(f2,5):-call_criar_entrega_rapida, menu.
-fazOpcao(f2,6):-call_criar_entrega_ecologica, menu.
-fazOpcao(f2,7):-call_comparar_multi_entrega, menu.
+fazOpcao(f2,2):-call_maior_numero_entregas, menu.
+fazOpcao(f2,3):-call_comparar_circuitos_indicadores, menu.
+fazOpcao(f2,4):-call_criar_entrega_rapida, menu.
+fazOpcao(f2,5):-call_criar_entrega_ecologica, menu.
+fazOpcao(f2,6):-call_comparar_multi_entrega, menu.
 fazOpcao(f2,0):-menu.
 
 
@@ -642,22 +640,128 @@ call_comparar_multi_entrega.
 
 
 call_comparar_circuitos_indicadores:-
-    write('Tempo de Entrega:'),nl,
+    % comparar distancia
+    write('Distância:'),nl,
     write('------ Aestrela ------'), nl,
-    findall(Volume1, circuito(aestrela, _, _, _, _, Volume1), ListaAE),
-    sort(ListaAE, ListaAE1),
-    forall(member(X1,ListaAE1), (write(X),nl)),
-    nl, write('------ Gulosa ------'), nl,
-    findall(Volume2, circuito(aestrela, _, _, _, _, Volume2), ListaG),
-    sort(ListaG, ListaG1),
-    forall(member(X2,ListaG1), (write(X),nl)),
-    nl, write('------ Profundidade ------'), nl,
-    findall(Volume2, circuito(aestrela, _, _, _, _, Volume2), ListaG),
-    sort(ListaG, ListaG1),
-    forall(member(X1,ListaG1), (write(X),nl)),
-    
-    
-    
-    % tempo de entrega
+    findall(Distancia1, 
+        circuito(aestrela,_, _, Distancia1, _, _), 
+        ListaAE),
+    sort(ListaAE, SortedAE),
+    comparar_aux(SortedAE, aestrela, distancia),
 
-    % distancia percorrida
+    write('------ Gulosa ------'), nl,
+    findall(Distancia2, 
+        circuito(gulosa,_, _, Distancia2, _, _), 
+        ListaG),
+    sort(ListaG, SortedG),
+    comparar_aux(SortedG, gulosa, distancia),
+
+    write('------ Profundidade ------'), nl,
+    findall(Distancia3, 
+        circuito(profundidade,_, _, Distancia3, _, _), 
+        ListaP),
+    sort(ListaP, SortedP),
+    comparar_aux(SortedP, profundidade, distancia),
+
+    write('------ Largura ------'), nl,
+    findall(Distancia4, 
+        circuito(largura,_, _, Distancia4, _, _), 
+        ListaL),
+    sort(ListaL, SortedL),
+    comparar_aux(SortedL, largura, distancia),
+
+    write('------ Iterativa ------'), nl,
+    findall(Distancia5, 
+        circuito(iterativa,_, _, Distancia5, _, _), 
+        ListaI),
+    sort(ListaI, SortedI),
+    comparar_aux(SortedI, iterativa, distancia),
+
+    % comparar tempo de viagem
+    write('Tempo de Viagem:'),nl,
+    write('------ Aestrela ------'), nl,
+    % extrair os tempos de entrega das encomendas
+    findall((Enc6, Veiculo6, Rua6, Tempo6, Distancia6), (
+        entrega(Ent6, Enc6, Est6, Class6, Veiculo6), 
+        encomenda(Enc6, Data6, Prazo6, Peso6, Volume6, Preco6, Rua6, _),
+        veiculo(Veiculo6, Carga6, Velocidade6, Decrescimo6),
+        distancia_por_algoritmo(aestrela, Rua6, Distancia6),
+        tempo_de_entrega(Velocidade6, Decrescimo6, Peso6, Distancia6, Tempo6)
+        ), TemposAE),
+    sort(TemposAE, STemposAE),
+    comparar_aux(STemposAE, aestrela, tempo),
+
+    write('------ Gulosa ------'), nl,
+    % extrair os tempos de entrega das encomendas
+    findall((Enc7, Veiculo7, Rua7, Tempo7, Distancia7), (
+        entrega(Ent7, Enc7, Est7, Class7, Veiculo7), 
+        encomenda(Enc7, Data7, Prazo7, Peso7, Volume7, Preco7, Rua7, _),
+        veiculo(Veiculo7, Carga7, Velocidade7, Decrescimo7),
+        distancia_por_algoritmo(gulosa, Rua7, Distancia7),
+        tempo_de_entrega(Velocidade7, Decrescimo7, Peso7, Distancia7, Tempo7)
+        ), TemposG),
+    sort(TemposG, STemposG),
+    comparar_aux(STemposG, gulosa, tempo),
+
+    write('------ Profundidade ------'), nl,
+    % extrair os tempos de entrega das encomendas
+    findall((Enc8, Veiculo8, Rua8, Tempo8, Distancia8), (
+        entrega(Ent8, Enc8, Est8, Class8, Veiculo8), 
+        encomenda(Enc8, Data8, Prazo8, Peso8, Volume8, Preco8, Rua8, _),
+        veiculo(Veiculo8, Carga8, Velocidade8, Decrescimo8),
+        distancia_por_algoritmo(profundidade, Rua8, Distancia8),
+        tempo_de_entrega(Velocidade8, Decrescimo8, Peso8, Distancia8, Tempo8)
+        ), TemposP),
+    sort(TemposP, STemposP),
+    comparar_aux(STemposP, profundidade, tempo),
+
+    write('------ Largura ------'), nl,
+    % extrair os tempos de entrega das encomendas
+    findall((Enc9, Veiculo9, Rua9, Tempo9, Distancia9), (
+        entrega(Ent9, Enc9, Est9, Class9, Veiculo9), 
+        encomenda(Enc9, Data9, Prazo9, Peso9, Volume9, Preco9, Rua9, _),
+        veiculo(Veiculo9, Carga9, Velocidade9, Decrescimo9),
+        distancia_por_algoritmo(largura, Rua9, Distancia9),
+        tempo_de_entrega(Velocidade9, Decrescimo9, Peso9, Distancia9, Tempo9)
+        ), TemposL),
+    sort(TemposL, STemposL),
+    comparar_aux(STemposL, largura, tempo),
+
+    write('------ Iterativa ------'), nl,
+    % extrair os tempos de entrega das encomendas
+    findall((Enc8, Veiculo8, Rua8, Tempo8, Distancia8), (
+        entrega(Ent8, Enc8, Est8, Class8, Veiculo8), 
+        encomenda(Enc8, Data8, Prazo8, Peso8, Volume8, Preco8, Rua8, _),
+        veiculo(Veiculo8, Carga8, Velocidade8, Decrescimo8),
+        distancia_por_algoritmo(iterativa, Rua8, Distancia8),
+        tempo_de_entrega(Velocidade8, Decrescimo8, Peso8, Distancia8, Tempo8)
+        ), TemposI),
+    sort(TemposI, STemposI),
+    comparar_aux(STemposI, iterativa, tempo),
+    nl.
+
+comparar_aux([H|T], Algoritmo, distancia):-
+    circuito(Algoritmo, Rua, Caminho, H, Peso, Volume),
+    write('circuito('),
+        write(Algoritmo), write(','), write(Rua), write(','), 
+        write(Caminho), write(','), write(H), write(','), 
+        write(Peso), write(','), write(Volume), write(')'),
+    nl,!,
+    comparar_aux(T, Algoritmo, distancia).
+
+
+comparar_aux([(Enc, Veiculo, Rua, Tempo, Distancia)|T], Algoritmo, tempo):-
+    % ver cada circuito que utilizam
+    % ordenar esses circuitos
+    circuito(Algoritmo, Rua, Caminho, Custo, Peso, Volume),
+    write('Encomenda: '), write(Enc), write(' - '),
+    write('circuito('),
+        write(Algoritmo), write(','), write(Rua), write(','), 
+        write(Caminho), write(','), write(Distancia), write(','), 
+        write(Peso), write(','), write(Volume), write(')'),
+    write(' - Tempo:'), write(Tempo),
+    nl,!,
+    comparar_aux(T, Algoritmo, tempo).
+
+
+comparar_aux([], _, _):-nl.
