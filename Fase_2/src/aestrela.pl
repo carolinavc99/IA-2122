@@ -14,19 +14,6 @@ circuitos_aestrela_aux([H|T]):-
 
 circuitos_aestrela_aux([]).
 
-/*
-circuitos_aestrela(Circuitos) :-
-	lista_ruas(Ruas),
-	circuitos_aestrela_aux(Ruas, [], Circuitos).
-
-circuitos_aestrela_aux([], Circuitos, Circuitos).
-
-circuitos_aestrela_aux([H|T], Lista, Circuitos) :-
-	primeiro_aestrela(H, Caminho/Custo),
-	append([Caminho/Custo], Lista, ListaX),
-	circuitos_aestrela_aux(T, ListaX, Circuitos).
-*/
-
 % ------ ALGORITMO ------
 primeiro_aestrela(Destino, R/C) :-
 	resolve_aestrela(Destino, RI/C),

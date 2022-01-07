@@ -142,19 +142,19 @@ criar_entrega(EntId, EncId, EstId, Class, Algoritmo) :-
     evolucao(entrega(EntId, EncId, EstId, Class, Veiculo)).
 
 % ele é que escolhe o algoritmo, tentando que tenha o custo mínimo
-criar_entrega_rapida(Ent,Enc,Est,Cl):-
-    encomenda(Enc,_,_,Peso,Volume,_,Rua),
+criar_entrega_rapida(EntId,EncId,EstId,Class):-
+    encomenda(Enc,_,_,Peso,Volume,_,Rua,_),
     estafeta(Est,_),
-    Cl =< 5, Cl >= 0,
+    Class =< 5, Class >= 0,
     veiculo_encomenda_rapida(EncId, Algoritmo, Veiculo),
     incrementa_circuito(Algoritmo, Rua, Volume, Peso),
     evolucao(entrega(EntId, EncId, EstId, Class, Veiculo)).
 
 % ele é que escolhe o algoritmo, tentando que tenha o veiculo mais ecologico
-criar_entrega_ecologica(Ent,Enc,Est,Cl):-
-    encomenda(Enc,_,_,Peso,Volume,_,Rua),
+criar_entrega_ecologica(EntId,EncId,EstId,Class):-
+    encomenda(Enc,_,_,Peso,Volume,_,Rua,_),
     estafeta(Est,_),
-    Cl =< 5, Cl >= 0,
+    Class =< 5, Class >= 0,
     veiculo_encomenda_ecologica(EncId, Algoritmo, Veiculo),
     incrementa_circuito(Algoritmo, Rua, Volume, Peso),
     evolucao(entrega(EntId, EncId, EstId, Class, Veiculo)).
@@ -308,7 +308,7 @@ veiculo_encomenda_aux(DataEncomenda, Prazo, Peso, RuaID, Veiculo, Algoritmo) :-
     soma_horas_data(Prazo, DataEncomenda, DataLimite),
     datahoramenor(DataComViagem, DataLimite).
         
-% devolve o algoritmo e o veiculo que dão o resultado com menos custo
+% devolve o algoritmo e o veiculo que dão o resultado com menos custo (mais rapido)
 veiculo_encomenda_rapida(EncId, Algoritmo, Veiculo):-
     encomenda(EncId, _,_,Peso, _,_,Rua,_),
     
@@ -318,24 +318,22 @@ veiculo_encomenda_rapida(EncId, Algoritmo, Veiculo):-
     circuito(Algoritmo, Rua, _, MinCusto, _, _),
     
     % escolhe o veiculo que consegue ir mais rapido
-    findall(Velocidade, veiculo(Vx, _, Velocidade,_,_), Velocidades),
+    findall(Velocidade, veiculo(Vx, _, Velocidade,_), Velocidades),
     max_list(Velocidades, MaxVelocidade),
-    veiculo(Veiculo, _, MaxVelocidade, _, _).
+    veiculo(Veiculo, Carga, MaxVelocidade, Decrescimo).
 
 
-% devolve o algoritmo e o veiculo que dão o resultado mais ecologico
+% devolve o algoritmo e o veiculo que dão o resultado de menor tempo de entrega (mais ecologico)
 veiculo_encomenda_ecologica(EncId, Algoritmo, Veiculo):-
-    encomenda(EncId, _,_,Peso, _,_,Rua,_),
+    encomenda(EncId, DataEncomenda, Prazo, Peso, _,_, Rua, _),
     
-    % escolhe o algoritmo com menos custo
-    findall(Custo, circuito(_, Rua, _, Custo, _, _), Circuitos),
-    min_list(Circuitos, MinCusto),
+    % tirar o custo mínimo
+    findall(Custo, circuito(_, Rua, _, Custo, _, _), Custos),
+    min_list(Custos, MinCusto),
     circuito(Algoritmo, Rua, _, MinCusto, _, _),
-    
-    % escolhe o veiculo que consegue ir mais rapido
-    findall(Velocidade, veiculo(Vx, _, Velocidade,_,_), Velocidades),
-    max_list(Velocidades, MaxVelocidade),
-    veiculo(Veiculo, _, MaxVelocidade, _, _).
+
+    % ver o primeiro veiculo que consegue entregar a tempo
+    veiculo_encomenda_aux(DataEncomenda, Prazo, Peso, Rua, Veiculo, Algoritmo).
 
 
 % Calcula a ordem dos elementos mais frequentes numa lista, de maior para menor, através de eliminação
@@ -445,7 +443,6 @@ menu:-
     fazOpcao(m, Opcao).
 
 % Menu Principal
-fazOpcao(m,0):-halt.
 fazOpcao(m,1):-call_criar_estafeta.
 fazOpcao(m,2):-call_criar_encomenda.
 fazOpcao(m,3):-call_criar_freguesia.
@@ -454,16 +451,31 @@ fazOpcao(m,5):-call_criar_cliente.
 fazOpcao(m,6):-call_criar_entrega.
 fazOpcao(m,7):-fase1.
 fazOpcao(m,8):-fase2.
+fazOpcao(m,0):-halt.
 
 % Fase 1    
+fazOpcao(f1,1):-call_f1, menu.
+fazOpcao(f1,2):-call_f2, menu.
+fazOpcao(f1,3):-call_f3, menu.
+fazOpcao(f1,4):-call_f4, menu.
+fazOpcao(f1,5):-call_f5, menu.
+fazOpcao(f1,6):-call_f6, menu.
+fazOpcao(f1,7):-call_f7, menu.
+fazOpcao(f1,8):-call_f8, menu.
+fazOpcao(f1,9):-call_f9, menu.
+fazOpcao(f1,10):-call_f10, menu.
 fazOpcao(f1,0):-menu.
 
 
 % Fase 2
+fazOpcao(f2,1):-gerar-circuitos, menu.
+fazOpcao(f2,2):-menu.
+fazOpcao(f2,3):-call_maior_numero_entregas, menu.
+fazOpcao(f2,4):-call_comparar_circuitos_indicadores, menu.
+fazOpcao(f2,5):-call_criar_entrega_rapida, menu.
+fazOpcao(f2,6):-call_criar_entrega_ecologica, menu.
+fazOpcao(f2,7):-call_comparar_multi_entrega, menu.
 fazOpcao(f2,0):-menu.
-fazOpcao(f2,5):-call_criar_entrega_rapida.
-fazOpcao(f2,6):-call_criar_entrega_ecologica.
-
 
 
 call_criar_estafeta:-
@@ -482,8 +494,10 @@ call_criar_encomenda:-
     read(Volume),
     write('Rua: '),nl,
     read(Rua),
-    gera_id(cliente, Cliente),
-    criar_encomenda(Codigo,Tempo,Peso,Volume,Rua,Cliente).
+    write('Cliente: '),nl,
+    read(Cliente),
+    criar_encomenda(Codigo,Tempo,Peso,Volume,Rua,Cliente),
+    write('Id de Encomenda: '), write(Codigo), nl.
 
 call_criar_freguesia:-
     gera_id(freguesia, Codigo),
@@ -504,45 +518,19 @@ call_criar_cliente:-
     criar_cliente(Codigo,Nome,Rua).
 
 call_criar_entrega:-
-    gera_id(entrega, Codigo_entrega),
+    gera_id(entrega, Entrega),
     write('Código de encomenda: '),nl,
-    read(Codigo_encomenda),
+    read(Encomenda),
     write('Código de estafeta: '),nl,
-    read(Codigo_estafeta),
+    read(Estafeta),
     write('Classificação (0-5): '),nl,
-    read(Classificacao),
+    read(Cls),
     write('Algoritmo (aestrela, gulosa, profundidade, largura, iterativa): '),nl,
     read(Algoritmo),
-    encomenda(Codigo_encomenda,_,_,_,_,_,_,_),
-    estafeta(Codigo_estafeta,_),
-    criar_entrega(Codigo_entrega,Codigo_encomenda,Codigo_estafeta,Classificacao, Algoritmo).
-
-call_criar_entrega_ecologica:-
-    gera_id(entrega, Codigo_entrega),
-    write('Código de encomenda: '),nl,
-    read(Codigo_encomenda),
-    write('Código de estafeta: '),nl,
-    read(Codigo_estafeta),
-    write('Classificação (0-5): '),nl,
-    read(Classificacao),
-    encomenda(Codigo_encomenda,_,_,_,_,_,_,_),
-    estafeta(Codigo_estafeta,_),
-    criar_entrega_ecologica(Codigo_entrega,Codigo_encomenda,Codigo_estafeta,Classificacao).
-
-
-call_criar_entrega_rapida:-
-    gera_id(entrega, Codigo_entrega),
-    write('Código de encomenda: '),nl,
-    read(Codigo_encomenda),
-    write('Código de estafeta: '),nl,
-    read(Codigo_estafeta),
-    write('Classificação (0-5): '),nl,
-    read(Classificacao),
-    write('Algoritmo (aestrela, gulosa, profundidade, largura, iterativa): '),nl,
-    read(Algoritmo),
-    encomenda(Codigo_encomenda,_,_,_,_,_,_,_),
-    estafeta(Codigo_estafeta,_),
-    criar_entrega_rapida(Codigo_entrega,Codigo_encomenda,Codigo_estafeta,Classificacao).
+    encomenda(Encomenda,_,_,_,_,_,_,_),
+    estafeta(Estafeta,_),
+    criar_entrega(Entrega,Encomenda,Estafeta,Cls, Algoritmo),
+    write('Id de Entrega: '), write(Entrega), nl.
 
 call_f1:-
     f1_estafetaEcologico(R),
@@ -616,3 +604,58 @@ call_f10:-
     f10_pesoEstafetaDia(Estafeta,Data,R),
     write('O peso total transportado por '), write(Estafeta),
     write(' é: '), write(R),nl,nl.
+
+
+call_maior_numero_entregas:-
+    maior_numero_entregas.
+
+call_criar_entrega_ecologica:-
+    gera_id(entrega, Codigo_entrega),
+    write('Código de encomenda: '),nl,
+    read(Codigo_encomenda),
+    write('Código de estafeta: '),nl,
+    read(Codigo_estafeta),
+    write('Classificação (0-5): '),nl,
+    read(Classificacao),
+    encomenda(Codigo_encomenda,_,_,_,_,_,_,_),
+    estafeta(Codigo_estafeta,_),
+    criar_entrega_ecologica(Codigo_entrega,Codigo_encomenda,Codigo_estafeta,Classificacao),
+    write('Id de Entrega: '), write(Codigo_entrega), nl.
+
+
+call_criar_entrega_rapida:-
+    gera_id(entrega, Codigo_entrega),
+    write('Código de encomenda: '),nl,
+    read(Codigo_encomenda),
+    write('Código de estafeta: '),nl,
+    read(Codigo_estafeta),
+    write('Classificação (0-5): '),nl,
+    read(Classificacao),
+    encomenda(Codigo_encomenda,_,_,_,_,_,_,_),
+    estafeta(Codigo_estafeta,_),
+    criar_entrega_rapida(Codigo_entrega,Codigo_encomenda,Codigo_estafeta,Classificacao),
+    write('Id de Entrega: '), write(Codigo_entrega), nl.
+
+call_comparar_multi_entrega.
+
+
+call_comparar_circuitos_indicadores:-
+    write('Tempo de Entrega:'),nl,
+    write('------ Aestrela ------'), nl,
+    findall(Volume1, circuito(aestrela, _, _, _, _, Volume1), ListaAE),
+    sort(ListaAE, ListaAE1),
+    forall(member(X1,ListaAE1), (write(X),nl)),
+    nl, write('------ Gulosa ------'), nl,
+    findall(Volume2, circuito(aestrela, _, _, _, _, Volume2), ListaG),
+    sort(ListaG, ListaG1),
+    forall(member(X2,ListaG1), (write(X),nl)),
+    nl, write('------ Profundidade ------'), nl,
+    findall(Volume2, circuito(aestrela, _, _, _, _, Volume2), ListaG),
+    sort(ListaG, ListaG1),
+    forall(member(X1,ListaG1), (write(X),nl)),
+    
+    
+    
+    % tempo de entrega
+
+    % distancia percorrida
