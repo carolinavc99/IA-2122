@@ -131,10 +131,6 @@ excecao(encomenda(Identificacao,Datahora,Tempo_Entrega,Peso,Volume,Preco,Rua,Cli
     encomenda(Identificacao,Datahora,Tempo_Entrega,Peso,Volume,Preco,Rua,cliente_desconhecido).
 
 % encomenda - numero de identificação, datahora, tempo máximo de entrega, peso, volume, preço, rua, cliente
-% --------------------------------------------------------------------------------
-% Conhecimento Impreciso
-% --------------------------------------------------------------------------------
-
 
 % --------------------------------------------------------------------------------
 % Conhecimento Interdito

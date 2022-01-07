@@ -14,6 +14,8 @@
 % conhecimento e evolução
 :- [conhecimento].
 
+:- [multi_entrega].
+
 % ------ REGRAS PARA EVITAR WARNINGS ------
 :- style_check(-discontiguous).
 :- style_check(-singleton).
