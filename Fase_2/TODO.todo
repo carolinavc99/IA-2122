@@ -17,11 +17,10 @@ OBJETIVO PRINCIPAL: Criação de um sistema de recomendação de circuitos de en
     [X] profundidade
     [X] largura
     [X] iterativa
-
-
 [X] 6 objetivos
     [X] gerar circuitos
     [X] representação em grafo
+    [X] circuito com maior numero de entregas (por volume e por peso)
     [X] comparar circuitos peso e volume
     [X] escolher o circuito mais rapido (distancia)
     [X] escolher o circuito mais ecologico (tempo)
