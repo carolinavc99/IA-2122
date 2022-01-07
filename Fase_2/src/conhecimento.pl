@@ -146,6 +146,20 @@ teste([R|LR]) :-
 		R, teste(LR).
 
 
+% --------------------------------------------------------------------------------
+% Involução do Conhecimento
+% --------------------------------------------------------------------------------
+
+involucao(Termo) :-
+	findall(Invariante,-Termo::Invariante,Lista),
+	remocao(Termo),
+	teste(Lista).
+
+remocao(Termo) :- 
+    retract(Termo).
+remocao(Termo) :-
+	assert(Termo),!,fail.
+
 % ---------------------------------------------------------------------------------
 % Sistema de Inferência
 % ---------------------------------------------------------------------------------
