@@ -154,7 +154,7 @@ f3_clientesEstafeta(E,R):-
 
 % (4) O valor faturado pela Green Distribution num determinado dia
 f4_faturacaoDia(D/M/A,R):-
-    findall(Preco, (entrega(_, Encomenda,_,_,_), encomenda(Encomenda, D/M/A/_/_,_,_,Preco,_,_,_)), Precos),
+    findall(Preco, (entrega(_, Encomenda,_,_,_), encomenda(Encomenda, D/M/A/_/_,_,_,_,Preco,_,_)), Precos),
     sumlist(Precos,R).
 
 % (5) As zonas com maior volume de entregas
@@ -304,7 +304,7 @@ frequencia(E, [H|T], F) :- E \= H,
 menu:-
     write('1 - Estafeta que utilizou um meio de transporte mais ecológico mais vezes'),nl,
     write('2 - Estafetas que entregaram determinada(s) encomenda(s) a um determinado cliente'),nl,
-    write('3 - Clientes servidos por determinado cliente'),nl,
+    write('3 - Clientes servidos por determinado estafeta'),nl,
     write('4 - Valor faturado pela Green Distribution num determinado dia'),nl,
     write('5 - Zonas com maior volume de entregas por parte da Green Distribution'),nl,
     write('6 - Classificação média de satisfação de cliente para um determinado estafeta'),nl,
